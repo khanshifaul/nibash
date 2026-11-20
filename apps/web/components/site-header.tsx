@@ -4,10 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Search, Plus, Moon, Sun, Monitor } from "lucide-react";
+import { FiUser } from "react-icons/fi";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth";
 import { SearchDialog } from "@/components/search-dialog";
 import { Logo } from "@/components/logo";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -72,19 +81,39 @@ export function SiteHeader() {
             <ThemeToggle />
             {user ? (
               <>
-                <Link href="/dashboard" className="hover:text-foreground text-muted-foreground transition-colors hidden lg:inline">Dashboard</Link>
-                <Link href="/dashboard/profile" className="hover:text-foreground text-muted-foreground transition-colors hidden lg:inline">Profile</Link>
                 <Link href="/dashboard/properties/new" className="bg-primary text-primary-foreground rounded-md px-3 py-2 font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-1.5">
                   <Plus className="h-4 w-4" />
                   <span className="hidden sm:inline">Add property</span>
                   <span className="sm:hidden">Add</span>
                 </Link>
-                <button
-                  onClick={() => logout()}
-                  className="border rounded-md px-3 py-1.5 hover:bg-muted transition-colors hidden md:inline-flex"
-                >
-                  Sign out
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    className="h-9 w-9 inline-flex items-center justify-center rounded-md border hover:bg-muted transition-colors cursor-pointer"
+                    aria-label="Account menu"
+                    title="Account"
+                  >
+                    <FiUser className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-medium leading-none truncate">{user.name || "Account"}</span>
+                        <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard">Dashboard</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/profile">Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => { void logout(); }}>
+                      Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               <Link href="/sign-in" className="bg-primary text-primary-foreground rounded-md px-3 sm:px-4 py-2 font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-1.5">
