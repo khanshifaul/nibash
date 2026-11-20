@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { FiArrowLeft } from "react-icons/fi";
 
 export default function EditBuildingPage() {
   const params = useParams<{ id: string }>();
@@ -70,7 +71,7 @@ export default function EditBuildingPage() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <Link href={`/dashboard/properties/${id}`} className="text-sm text-muted-foreground hover:text-foreground">← Back to property</Link>
+        <Link href={`/dashboard/properties/${id}`} className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Back to property</Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Edit property</h1>
       </div>
 

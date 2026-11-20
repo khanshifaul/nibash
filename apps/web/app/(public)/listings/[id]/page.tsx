@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Phone, Mail, Building2 } from "lucide-react";
 import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdRoofing } from "react-icons/md";
 import { Button } from "@/components/ui/button";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const MONTH_NAMES = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -126,7 +127,7 @@ export default function ListingDetailPage() {
                       className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/45 text-white hover:bg-black/60 flex items-center justify-center cursor-pointer transition-colors"
                       aria-label="Previous image"
                     >
-                      ‹
+                      <FiChevronLeft className="h-5 w-5" aria-hidden="true" />
                     </button>
                     <button
                       type="button"
@@ -134,7 +135,7 @@ export default function ListingDetailPage() {
                       className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/45 text-white hover:bg-black/60 flex items-center justify-center cursor-pointer transition-colors"
                       aria-label="Next image"
                     >
-                      ›
+                      <FiChevronRight className="h-5 w-5" aria-hidden="true" />
                     </button>
                     <div className="absolute bottom-3 right-3 bg-black/55 text-white text-xs px-2 py-1 rounded-md">
                       {activeImage + 1} / {apartmentImages.length}

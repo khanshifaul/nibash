@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Inbox } from "lucide-react";
+import { FiArrowLeft } from "react-icons/fi";
 
 const STATUSES = ["CONTACTED", "SCHEDULED", "CLOSED", "SPAM"] as const;
 
@@ -36,7 +37,7 @@ export default function DashboardInboxPage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 sm:py-10">
       <div className="mb-8">
-        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">← Dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Dashboard</Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-2">Owner inbox</h1>
         <p className="text-muted-foreground mt-1">Inquiries from renters interested in your properties.</p>
       </div>

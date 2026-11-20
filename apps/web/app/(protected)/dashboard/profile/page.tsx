@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FiArrowLeft } from "react-icons/fi";
 
 export default function DashboardProfilePage() {
   const { user, loading, refresh } = useAuth();
@@ -58,7 +59,7 @@ export default function DashboardProfilePage() {
   return (
     <main className="max-w-2xl mx-auto px-4 py-8 sm:py-10">
       <div className="mb-6">
-        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">← Back to dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Back to dashboard</Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-2">Profile</h1>
         <p className="text-muted-foreground mt-1">Manage your account details used for inquiries and property management.</p>
       </div>

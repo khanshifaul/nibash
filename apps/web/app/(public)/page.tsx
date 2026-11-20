@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import useEmblaCarousel from "embla-carousel-react";
-import { Building2, MapPin, Bed, Bath, Maximize, ChevronLeft, ChevronRight, Grid3X3, List, Shield, Zap, MessageSquare } from "lucide-react";
+import { Building2, MapPin, Bed, Bath, Maximize, Grid3X3, List, Shield, Zap, MessageSquare } from "lucide-react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -175,7 +176,7 @@ function PropertyCard({ item }: { item: ListingCard }) {
           </div>
         </CardFooter>
         <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
-          View details <ChevronRight className="h-3.5 w-3.5" />
+          View details <FiChevronRight className="h-3.5 w-3.5" />
         </span>
       </Card>
     </Link>
@@ -232,7 +233,7 @@ function PropertyListCard({ item }: { item: ListingCard }) {
               </div>
             </div>
             <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
-              View details <ChevronRight className="h-3.5 w-3.5" />
+              View details <FiChevronRight className="h-3.5 w-3.5" />
             </span>
           </div>
         </div>
@@ -267,10 +268,10 @@ function FeaturedCarousel({ items, loading }: { items: ListingCard[]; loading: b
         </div>
         <div className="flex gap-2 shrink-0">
           <Button variant="outline" size="icon" onClick={() => emblaApi?.scrollPrev()} aria-label="Previous">
-            <ChevronLeft className="h-4 w-4" />
+            <FiChevronLeft className="h-4 w-4" />
           </Button>
           <Button variant="outline" size="icon" onClick={() => emblaApi?.scrollNext()} aria-label="Next">
-            <ChevronRight className="h-4 w-4" />
+            <FiChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>

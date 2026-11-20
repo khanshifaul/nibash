@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Grid3X3, List, MapPin, Bed, Bath, Maximize, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { Grid3X3, List, MapPin, Bed, Bath, Maximize, SlidersHorizontal } from "lucide-react";
+import { FiChevronRight } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -320,7 +321,7 @@ export default function SearchPage() {
                         </div>
                       </CardFooter>
                       <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
-                        View details <ChevronRight className="h-3.5 w-3.5" />
+                        View details <FiChevronRight className="h-3.5 w-3.5" />
                       </span>
                     </Card>
                   </Link>
@@ -380,7 +381,7 @@ export default function SearchPage() {
                             </div>
                           </div>
                           <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
-                            View details <ChevronRight className="h-3.5 w-3.5" />
+                            View details <FiChevronRight className="h-3.5 w-3.5" />
                           </span>
                         </div>
                       </div>

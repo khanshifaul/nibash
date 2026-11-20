@@ -3,7 +3,8 @@
 import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, EyeOff, Lock, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Lock, CheckCircle2, Loader2 } from "lucide-react";
+import { FiArrowLeft } from "react-icons/fi";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -148,7 +149,7 @@ function ResetInner() {
           </CardContent>
           <CardFooter className="px-6 sm:px-7 pb-6 pt-0 flex flex-col">
             <Link href="/sign-in" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 mx-auto">
-              <ArrowLeft className="h-4 w-4" /> Back to sign in
+              <FiArrowLeft className="h-4 w-4" /> Back to sign in
             </Link>
           </CardFooter>
         </Card>

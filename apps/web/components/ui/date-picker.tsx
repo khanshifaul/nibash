@@ -6,6 +6,7 @@ import { Calendar } from "./calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 import { Button } from "./button"
 import { cn } from "@/lib/utils"
+import { FiArrowRight } from "react-icons/fi"
 
 // Calendar icon
 const CalendarIcon = () => (
@@ -36,7 +37,7 @@ const formatDate = (date: Date) => {
 const formatRange = (dates: Date[]) => {
     if (dates.length === 0) return null
     if (dates.length === 1) return formatDate(dates[0])
-    return `${formatDate(dates[0])} → ${formatDate(dates[1])}`
+    return <>{formatDate(dates[0])} <FiArrowRight className="inline h-3.5 w-3.5 mx-0.5 align-middle" aria-hidden="true" /> {formatDate(dates[1])}</>
 }
 
 const formatMultiple = (dates: Date[]) => {

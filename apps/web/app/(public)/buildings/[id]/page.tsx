@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, Building2, Home } from "lucide-react";
 import Map from "@/components/ui/map";
 import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdPhoneInTalk, MdRoofing, MdWaterDrop } from "react-icons/md";
+import { FiArrowRight } from "react-icons/fi";
 
 export default function BuildingPage() {
   const params = useParams<{ id: string }>();
@@ -152,7 +153,7 @@ export default function BuildingPage() {
                         href={`/listings/${u.id}`}
                         className="text-xs text-primary underline underline-offset-4 hover:underline"
                       >
-                        View details &rarr;
+                        View details <FiArrowRight className="inline h-4 w-4" aria-hidden="true" />
                       </Link>
                     </CardContent>
                   </Card>

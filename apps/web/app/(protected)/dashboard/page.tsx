@@ -8,7 +8,8 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Inbox, MessageSquare, Plus, UserCircle, ArrowRight } from "lucide-react";
+import { Building2, Inbox, MessageSquare, Plus, UserCircle } from "lucide-react";
+import { FiArrowRight } from "react-icons/fi";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -84,13 +85,13 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="text-lg flex items-center gap-2"><Building2 className="h-5 w-5" /> My properties</CardTitle>
-            <Link href="/dashboard/properties" className="text-sm text-primary hover:underline inline-flex items-center gap-1">View all <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/dashboard/properties" className="text-sm text-primary hover:underline inline-flex items-center gap-1">View all <FiArrowRight className="h-4 w-4" /></Link>
           </CardHeader>
           <CardContent>
             {buildings.length === 0 ? (
               <div className="text-sm text-muted-foreground">
                 <p>You haven’t listed any properties yet.</p>
-                <Link href="/dashboard/properties/new" className="inline-flex items-center gap-1 text-primary hover:underline mt-2">Add your first property <ArrowRight className="h-4 w-4" /></Link>
+                <Link href="/dashboard/properties/new" className="inline-flex items-center gap-1 text-primary hover:underline mt-2">Add your first property <FiArrowRight className="h-4 w-4" /></Link>
               </div>
             ) : (
               <div className="space-y-3">
@@ -114,7 +115,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-2">
               <CardTitle className="text-lg flex items-center gap-2"><Inbox className="h-5 w-5" /> Owner inbox</CardTitle>
-              <Link href="/dashboard/inbox" className="text-sm text-primary hover:underline inline-flex items-center gap-1">View all <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/dashboard/inbox" className="text-sm text-primary hover:underline inline-flex items-center gap-1">View all <FiArrowRight className="h-4 w-4" /></Link>
             </CardHeader>
             <CardContent>
               {ownerInbox.length === 0 ? (
@@ -138,7 +139,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-2">
               <CardTitle className="text-lg flex items-center gap-2"><MessageSquare className="h-5 w-5" /> My inquiries</CardTitle>
-              <Link href="/dashboard/inquiries" className="text-sm text-primary hover:underline inline-flex items-center gap-1">View all <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/dashboard/inquiries" className="text-sm text-primary hover:underline inline-flex items-center gap-1">View all <FiArrowRight className="h-4 w-4" /></Link>
             </CardHeader>
             <CardContent>
               {myInquiries.length === 0 ? (

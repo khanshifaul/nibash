@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Building2, MapPin, Plus } from "lucide-react";
+import { FiArrowLeft } from "react-icons/fi";
 
 export default function DashboardPropertiesPage() {
   const { user, loading } = useAuth();
@@ -34,7 +35,7 @@ export default function DashboardPropertiesPage() {
     <main className="max-w-6xl mx-auto px-4 py-8 sm:py-10">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
         <div>
-          <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">← Dashboard</Link>
+          <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Dashboard</Link>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-2">My properties</h1>
           <p className="text-muted-foreground mt-1">Manage your buildings and apartments as an owner.</p>
         </div>

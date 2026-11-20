@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, SlidersHorizontal, X, ChevronRight } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
+import { FiChevronRight } from "react-icons/fi";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -218,7 +219,7 @@ export function SearchDialog({
               {loading ? "Searching..." : `${total} ${total === 1 ? "property" : "properties"} found`}
             </p>
             <Button variant="link" size="sm" className="h-auto p-0 text-sm" onClick={goToSearchPage}>
-              View all on search page <ChevronRight className="h-4 w-4 ml-0.5" />
+              View all on search page <FiChevronRight className="h-4 w-4 ml-0.5" />
             </Button>
           </div>
 
@@ -254,7 +255,7 @@ export function SearchDialog({
                         {item.building.hasParking && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700"><MdLocalParking className="h-3 w-3" />Parking</span>}
                       </div>
                     </CardFooter>
-                    <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl">View details <ChevronRight className="h-3.5 w-3.5" /></span>
+                    <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl">View details <FiChevronRight className="h-3.5 w-3.5" /></span>
                   </Card>
                 </Link>
               ))}

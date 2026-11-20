@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
+import { FiArrowLeft } from "react-icons/fi";
 
 export default function DashboardInquiriesPage() {
   const { user, loading } = useAuth();
@@ -30,7 +31,7 @@ export default function DashboardInquiriesPage() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 sm:py-10">
       <div className="mb-8">
-        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">← Dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Dashboard</Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-2">My inquiries</h1>
         <p className="text-muted-foreground mt-1">Track inquiries you’ve sent to property owners as a renter.</p>
       </div>

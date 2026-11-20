@@ -10,8 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdRoofing } from "react-icons/md";
+import { FiArrowLeft } from "react-icons/fi";
 
 export default function OwnerBuildingPage() {
   const params = useParams<{ id: string }>();
@@ -23,9 +25,9 @@ export default function OwnerBuildingPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [apt, setApt] = useState({
-    floorNumber: 1, unitLabel: "", bedrooms: 2, bathrooms: 2, verandas: 1,
-    diningRooms: 1, drawingRooms: 1, kitchens: 1, rentAmount: 2000000, serviceCharge: 0,
-    securityDepositAmount: 0,
+    floorNumber: "1", unitLabel: "", bedrooms: "2", bathrooms: "2", verandas: "1",
+    diningRooms: "1", drawingRooms: "1", kitchens: "1", rentAmount: "2000000", serviceCharge: "0",
+    securityDepositAmount: "0",
   });
   const [saving, setSaving] = useState(false);
   const [imageDialog, setImageDialog] = useState(false);
@@ -54,7 +56,19 @@ export default function OwnerBuildingPage() {
     e.preventDefault();
     setSaving(true); setError(null);
     try {
-      await apartmentsApi.create(id, apt);
+      await apartmentsApi.create(id, {
+        floorNumber: Number(apt.floorNumber),
+        unitLabel: apt.unitLabel,
+        bedrooms: Number(apt.bedrooms || 0),
+        bathrooms: Number(apt.bathrooms || 0),
+        verandas: Number(apt.verandas || 0),
+        diningRooms: Number(apt.diningRooms || 0),
+        drawingRooms: Number(apt.drawingRooms || 0),
+        kitchens: Number(apt.kitchens || 0),
+        rentAmount: Number(apt.rentAmount),
+        serviceCharge: Number(apt.serviceCharge || 0),
+        securityDepositAmount: Number(apt.securityDepositAmount || 0),
+      });
       setShowAdd(false);
       setApt((a) => ({ ...a, unitLabel: "" }));
       await load();
@@ -116,7 +130,7 @@ export default function OwnerBuildingPage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href="/dashboard/properties" className="text-sm text-muted-foreground hover:text-foreground">← My properties</Link>
+        <Link href="/dashboard/properties" className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> My properties</Link>
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mt-4">
           <div>
             <h1 className="text-2xl font-bold">{building.name}</h1>
@@ -202,44 +216,55 @@ export default function OwnerBuildingPage() {
       </div>
 
       {showAdd && (
-        <form onSubmit={addApartment} className="border rounded p-4 mb-6 space-y-3">
-          <h3 className="font-semibold">Add apartment (Stage B)</h3>
+        <form onSubmit={addApartment} className="border rounded-lg p-4 mb-6 space-y-4">
+          <h3 className="font-semibold">Add apartment/unit</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <label className="text-sm">
-              Floor <Input type="number" min={0} max={building.totalFloors} value={apt.floorNumber} onChange={(e) => setApt({ ...apt, floorNumber: Number(e.target.value) })} />
-            </label>
-            <label className="text-sm">
-              Unit label <Input value={apt.unitLabel} onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })} required />
-            </label>
-            <label className="text-sm">
-              Bedrooms <Input type="number" min={0} value={apt.bedrooms} onChange={(e) => setApt({ ...apt, bedrooms: Number(e.target.value) })} />
-            </label>
-            <label className="text-sm">
-              Bathrooms <Input type="number" min={0} value={apt.bathrooms} onChange={(e) => setApt({ ...apt, bathrooms: Number(e.target.value) })} />
-            </label>
-            <label className="text-sm">
-              Verandas <Input type="number" min={0} value={apt.verandas} onChange={(e) => setApt({ ...apt, verandas: Number(e.target.value) })} />
-            </label>
-            <label className="text-sm">
-              Dining <Input type="number" min={0} value={apt.diningRooms} onChange={(e) => setApt({ ...apt, diningRooms: Number(e.target.value) })} />
-            </label>
-            <label className="text-sm">
-              Drawing <Input type="number" min={0} value={apt.drawingRooms} onChange={(e) => setApt({ ...apt, drawingRooms: Number(e.target.value) })} />
-            </label>
-            <label className="text-sm">
-              Kitchens <Input type="number" min={0} value={apt.kitchens} onChange={(e) => setApt({ ...apt, kitchens: Number(e.target.value) })} />
-            </label>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-floor">Floor</Label>
+              <Input id="apt-floor" type="text" inputMode="numeric" placeholder={`0–${building.totalFloors}`} value={apt.floorNumber} onChange={(e) => setApt({ ...apt, floorNumber: e.target.value.replace(/[^0-9]/g, "") })} required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-unit">Unit label</Label>
+              <Input id="apt-unit" type="text" placeholder="e.g. A-1" value={apt.unitLabel} onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })} required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-bedrooms">Bedrooms</Label>
+              <Input id="apt-bedrooms" type="text" inputMode="numeric" placeholder="e.g. 3" value={apt.bedrooms} onChange={(e) => setApt({ ...apt, bedrooms: e.target.value.replace(/[^0-9]/g, "") })} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-bathrooms">Bathrooms</Label>
+              <Input id="apt-bathrooms" type="text" inputMode="numeric" placeholder="e.g. 2" value={apt.bathrooms} onChange={(e) => setApt({ ...apt, bathrooms: e.target.value.replace(/[^0-9]/g, "") })} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-verandas">Verandas</Label>
+              <Input id="apt-verandas" type="text" inputMode="numeric" placeholder="e.g. 2" value={apt.verandas} onChange={(e) => setApt({ ...apt, verandas: e.target.value.replace(/[^0-9]/g, "") })} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-dining">Dining rooms</Label>
+              <Input id="apt-dining" type="text" inputMode="numeric" placeholder="e.g. 1" value={apt.diningRooms} onChange={(e) => setApt({ ...apt, diningRooms: e.target.value.replace(/[^0-9]/g, "") })} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-drawing">Drawing rooms</Label>
+              <Input id="apt-drawing" type="text" inputMode="numeric" placeholder="e.g. 1" value={apt.drawingRooms} onChange={(e) => setApt({ ...apt, drawingRooms: e.target.value.replace(/[^0-9]/g, "") })} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-kitchens">Kitchens</Label>
+              <Input id="apt-kitchens" type="text" inputMode="numeric" placeholder="e.g. 1" value={apt.kitchens} onChange={(e) => setApt({ ...apt, kitchens: e.target.value.replace(/[^0-9]/g, "") })} />
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <label className="text-sm">
-              Rent (minor units) <Input type="number" min={0} value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: Number(e.target.value) })} required />
-            </label>
-            <label className="text-sm">
-              Service charge <Input type="number" min={0} value={apt.serviceCharge} onChange={(e) => setApt({ ...apt, serviceCharge: Number(e.target.value) })} />
-            </label>
-            <label className="text-sm">
-              Security deposit <Input type="number" min={0} value={apt.securityDepositAmount} onChange={(e) => setApt({ ...apt, securityDepositAmount: Number(e.target.value) })} />
-            </label>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-rent">Monthly rent (BDT, minor units)</Label>
+              <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 2500000" value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })} required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-service">Service charge (minor units)</Label>
+              <Input id="apt-service" type="text" inputMode="numeric" placeholder="e.g. 0" value={apt.serviceCharge} onChange={(e) => setApt({ ...apt, serviceCharge: e.target.value.replace(/[^0-9]/g, "") })} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-deposit">Security deposit (minor units)</Label>
+              <Input id="apt-deposit" type="text" inputMode="numeric" placeholder="e.g. 0" value={apt.securityDepositAmount} onChange={(e) => setApt({ ...apt, securityDepositAmount: e.target.value.replace(/[^0-9]/g, "") })} />
+            </div>
           </div>
           <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save apartment"}</Button>
         </form>

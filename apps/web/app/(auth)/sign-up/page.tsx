@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Mail, Phone, Lock, CheckCircle2, Circle, Loader2, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Mail, Phone, Lock, CheckCircle2, Circle, Loader2 } from "lucide-react";
+import { FiArrowRight } from "react-icons/fi";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -281,7 +282,7 @@ export default function SignUpPage() {
                   ) : (
                     <>
                       Create account
-                      <ArrowRight className="h-4 w-4" />
+                      <FiArrowRight className="h-4 w-4" />
                     </>
                   )}
                 </Button>
