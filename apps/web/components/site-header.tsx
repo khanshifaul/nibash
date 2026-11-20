@@ -115,6 +115,7 @@ export function SiteHeader() {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
+                      className="text-destructive focus:text-destructive"
                       onClick={() => {
                         void logout();
                       }}
