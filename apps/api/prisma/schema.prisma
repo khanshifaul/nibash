@@ -20,6 +20,12 @@ enum AvailabilityStatus {
   RENTED
   MAINTENANCE
   COMING_SOON
+  SOLD
+}
+
+enum ListingType {
+  RENT
+  SALE
 }
 
 enum GasType {
@@ -174,7 +180,9 @@ model Apartment {
   gasType               GasType            @default(NONE)
   utilityBillingType    String?            @db.VarChar(50)
   preferredTenantTypes  String[]           @default([])
-  rentAmount            Int
+  listingType           ListingType        @default(RENT)
+  rentAmount            Int                @default(0)
+  salePrice             Int?
   serviceCharge         Int                @default(0)
   securityDepositAmount Int                @default(0)
   depositMonths         Int?

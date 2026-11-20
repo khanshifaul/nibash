@@ -23,7 +23,9 @@ type AddedUnit = {
   unitLabel: string;
   bedrooms: number;
   bathrooms: number;
+  listingType: string;
   rentAmount: number;
+  salePrice: number | null;
   availabilityStatus: string;
   listed: boolean;
 };
@@ -54,8 +56,8 @@ export default function NewPropertyWizardPage() {
   });
   const [apt, setApt] = useState({
     floorNumber: "1", unitLabel: "", bedrooms: "2", bathrooms: "2", verandas: "1",
-    diningRooms: "1", drawingRooms: "1", kitchens: "1", rentAmount: "2500000", serviceCharge: "0",
-    securityDepositAmount: "0", availabilityStatus: "AVAILABLE" as "AVAILABLE" | "RENTED" | "MAINTENANCE" | "COMING_SOON", listed: true,
+    diningRooms: "1", drawingRooms: "1", kitchens: "1", listingType: "RENT" as "RENT" | "SALE", rentAmount: "2500000", salePrice: "", serviceCharge: "0",
+    securityDepositAmount: "0", availabilityStatus: "AVAILABLE" as "AVAILABLE" | "RENTED" | "MAINTENANCE" | "COMING_SOON" | "SOLD", listed: true,
   });
 
 
@@ -155,7 +157,9 @@ export default function NewPropertyWizardPage() {
         diningRooms: Number(apt.diningRooms || 0),
         drawingRooms: Number(apt.drawingRooms || 0),
         kitchens: Number(apt.kitchens || 0),
-        rentAmount: Number(apt.rentAmount),
+        listingType: apt.listingType,
+        rentAmount: Number(apt.rentAmount || 0),
+        salePrice: apt.listingType === "SALE" && apt.salePrice ? Number(apt.salePrice) : null,
         serviceCharge: Number(apt.serviceCharge || 0),
         securityDepositAmount: Number(apt.securityDepositAmount || 0),
         availabilityStatus: apt.availabilityStatus,
@@ -169,7 +173,9 @@ export default function NewPropertyWizardPage() {
         unitLabel: payload.unitLabel,
         bedrooms: payload.bedrooms,
         bathrooms: payload.bathrooms,
+        listingType: payload.listingType,
         rentAmount: payload.rentAmount,
+        salePrice: payload.salePrice ?? null,
         availabilityStatus: payload.availabilityStatus,
         listed: !!payload.publish,
       }]);
@@ -395,26 +401,38 @@ export default function NewPropertyWizardPage() {
                     <Input id="apt-kitchens" type="text" inputMode="numeric" placeholder="e.g. 1" value={apt.kitchens} onChange={(e) => setApt({ ...apt, kitchens: e.target.value.replace(/[^0-9]/g, "") })} />
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-listing-type">Listing type</Label>
+                    <NativeSelect id="apt-listing-type" value={apt.listingType} onChange={(e) => setApt({ ...apt, listingType: e.target.value as "RENT" | "SALE" })}>
+                      <option value="RENT">For rent</option>
+                      <option value="SALE">For sale</option>
+                    </NativeSelect>
+                  </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="apt-status">Status</Label>
                     <NativeSelect id="apt-status" value={apt.availabilityStatus} onChange={(e) => setApt({ ...apt, availabilityStatus: e.target.value as typeof apt.availabilityStatus })}>
-                      <option value="AVAILABLE">Available for rent</option>
-                      <option value="RENTED">Already rented</option>
+                      <option value="AVAILABLE">Available</option>
+                      <option value="RENTED">Rented</option>
                       <option value="MAINTENANCE">Maintenance / not available</option>
                       <option value="COMING_SOON">Coming soon</option>
+                      <option value="SOLD">Sold</option>
                     </NativeSelect>
                   </div>
                   <label className="flex items-center gap-2 cursor-pointer pt-7">
                     <Checkbox checked={apt.listed} onCheckedChange={(v) => setApt({ ...apt, listed: !!v })} />
-                    <span className="text-sm">List publicly (visible in search when eligible)</span>
+                    <span className="text-sm">List publicly</span>
                   </label>
                 </div>
-                <p className="text-xs text-muted-foreground">Uncheck "List publicly" if you don&apos;t want this unit shown in public search/listings. Public search currently shows listed units with status Available or Coming soon. Sale/Sold are not yet modeled (rental-only schema).</p>
+                <p className="text-xs text-muted-foreground">Uncheck &quot;List publicly&quot; to keep a unit unlisted/hidden from public search. Public search shows listed units with status Available or Coming soon (rent or sale). Mark Rented/Sold/Maintenance or unlist units as needed.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="apt-rent">Monthly rent (BDT, minor units)</Label>
-                    <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 2500000" value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })} required />
+                    <Label htmlFor="apt-rent">{apt.listingType === "SALE" ? "Sale price (BDT, minor units)" : "Monthly rent (BDT, minor units)"}</Label>
+                    {apt.listingType === "SALE" ? (
+                      <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 1250000000" value={apt.salePrice} onChange={(e) => setApt({ ...apt, salePrice: e.target.value.replace(/[^0-9]/g, "") })} required />
+                    ) : (
+                      <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 2500000" value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })} required />
+                    )}
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="apt-service">Service charge (minor units)</Label>
@@ -439,7 +457,7 @@ export default function NewPropertyWizardPage() {
                       <div key={u.id} className="flex flex-wrap items-center justify-between gap-2 rounded border p-3 text-sm">
                         <div>
                           <span className="font-medium">Floor {u.floorNumber} · {u.unitLabel}</span>
-                          <span className="text-muted-foreground"> — {u.bedrooms} bed, {u.bathrooms} bath, ৳{(u.rentAmount / 100).toLocaleString()}/mo · {u.availabilityStatus} · {u.listed ? "Listed" : "Unlisted"}</span>
+                          <span className="text-muted-foreground"> — {u.bedrooms} bed, {u.bathrooms} bath, {u.listingType === "SALE" ? `৳${((u.salePrice ?? 0) / 100).toLocaleString()} sale` : `৳${(u.rentAmount / 100).toLocaleString()}/mo rent`} · {u.availabilityStatus} · {u.listed ? "Listed" : "Unlisted"}</span>
                         </div>
                         <Badge variant="secondary">Saved</Badge>
                       </div>

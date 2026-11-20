@@ -5,8 +5,11 @@ import { DatabaseService } from "../database/database.service";
 export interface SearchQuery {
   q?: string;
   area?: string;
+  listingType?: "RENT" | "SALE";
   minRent?: number;
   maxRent?: number;
+  minPrice?: number;
+  maxPrice?: number;
   bedrooms?: number;
   bathrooms?: number;
   verandas?: number;
@@ -18,7 +21,7 @@ export interface SearchQuery {
   hasGenerator?: boolean;
   page?: number;
   limit?: number;
-  sort?: "newest" | "rent_asc" | "rent_desc";
+  sort?: "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc";
 }
 
 @Injectable()
@@ -36,8 +39,26 @@ export class SearchService {
       building: { moderationStatus: "APPROVED" },
     };
 
-    if (query.minRent !== undefined) apartmentWhere.rentAmount = { ...(apartmentWhere.rentAmount ?? {}), gte: query.minRent };
-    if (query.maxRent !== undefined) apartmentWhere.rentAmount = { ...(apartmentWhere.rentAmount ?? {}), lte: query.maxRent };
+    if (query.listingType) apartmentWhere.listingType = query.listingType;
+
+    const minPrice = query.minPrice ?? query.minRent;
+    const maxPrice = query.maxPrice ?? query.maxRent;
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      const range: any = {};
+      if (minPrice !== undefined) range.gte = minPrice;
+      if (maxPrice !== undefined) range.lte = maxPrice;
+      if (query.listingType === "SALE") {
+        apartmentWhere.salePrice = range;
+      } else if (query.listingType === "RENT") {
+        apartmentWhere.rentAmount = range;
+      } else {
+        // mixed/unspecified: match either rent or sale price in range
+        apartmentWhere.OR = [
+          { ...(apartmentWhere.OR ? {} : {}), listingType: "RENT", rentAmount: range },
+          { listingType: "SALE", salePrice: range },
+        ];
+      }
+    }
     if (query.bedrooms !== undefined) apartmentWhere.bedrooms = { gte: query.bedrooms };
     if (query.bathrooms !== undefined) apartmentWhere.bathrooms = { gte: query.bathrooms };
     if (query.verandas !== undefined) apartmentWhere.verandas = { gte: query.verandas };
@@ -77,12 +98,21 @@ export class SearchService {
     );
 
     // Featured properties first (especially after search/filters), then by selected sort.
-    const orderBy: Prisma.ApartmentOrderByWithRelationInput[] =
-      query.sort === "rent_asc"
-        ? [{ building: { isFeatured: "desc" } }, { rentAmount: "asc" }, { createdAt: "desc" }]
-        : query.sort === "rent_desc"
-          ? [{ building: { isFeatured: "desc" } }, { rentAmount: "desc" }, { createdAt: "desc" }]
-          : [{ building: { isFeatured: "desc" } }, { createdAt: "desc" }];
+    const sort = query.sort ?? "newest";
+    const isSale = query.listingType === "SALE";
+    const asc = sort === "rent_asc" || sort === "price_asc";
+    const desc = sort === "rent_desc" || sort === "price_desc";
+    const priceField = (sort === "price_asc" || sort === "price_desc")
+      ? (isSale ? "salePrice" : "rentAmount")
+      : (sort === "rent_asc" || sort === "rent_desc")
+        ? "rentAmount"
+        : (isSale ? "salePrice" : "rentAmount");
+
+    const orderBy: Prisma.ApartmentOrderByWithRelationInput[] = asc
+      ? [{ building: { isFeatured: "desc" } }, { [priceField]: "asc" } as any, { createdAt: "desc" }]
+      : desc
+        ? [{ building: { isFeatured: "desc" } }, { [priceField]: "desc" } as any, { createdAt: "desc" }]
+        : [{ building: { isFeatured: "desc" } }, { createdAt: "desc" }];
 
     void hasSearchCriteria; // ordering rule: featured-first always acceptable before/after search
 
@@ -166,7 +196,9 @@ export class SearchService {
       gasType: apt.gasType,
       utilityBillingType: apt.utilityBillingType,
       preferredTenantTypes: apt.preferredTenantTypes,
+      listingType: apt.listingType,
       rentAmount: apt.rentAmount,
+      salePrice: apt.salePrice,
       serviceCharge: apt.serviceCharge,
       securityDepositAmount: apt.securityDepositAmount,
       depositMonths: apt.depositMonths,
@@ -211,7 +243,9 @@ export class SearchService {
       bathrooms: apt.bathrooms,
       verandas: apt.verandas,
       sizeSqft: apt.sizeSqft,
+      listingType: apt.listingType,
       rentAmount: apt.rentAmount,
+      salePrice: apt.salePrice,
       serviceCharge: apt.serviceCharge,
       availabilityStatus: apt.availabilityStatus,
       images: apt.images,

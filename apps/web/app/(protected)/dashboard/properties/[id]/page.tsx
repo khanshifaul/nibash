@@ -26,7 +26,7 @@ export default function OwnerBuildingPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [apt, setApt] = useState({
     floorNumber: "1", unitLabel: "", bedrooms: "2", bathrooms: "2", verandas: "1",
-    diningRooms: "1", drawingRooms: "1", kitchens: "1", rentAmount: "2000000", serviceCharge: "0",
+    diningRooms: "1", drawingRooms: "1", kitchens: "1", listingType: "RENT" as "RENT" | "SALE", rentAmount: "2000000", salePrice: "", serviceCharge: "0",
     securityDepositAmount: "0",
   });
   const [saving, setSaving] = useState(false);
@@ -65,7 +65,9 @@ export default function OwnerBuildingPage() {
         diningRooms: Number(apt.diningRooms || 0),
         drawingRooms: Number(apt.drawingRooms || 0),
         kitchens: Number(apt.kitchens || 0),
-        rentAmount: Number(apt.rentAmount),
+        listingType: apt.listingType,
+        rentAmount: Number(apt.rentAmount || 0),
+        salePrice: apt.listingType === "SALE" && apt.salePrice ? Number(apt.salePrice) : undefined,
         serviceCharge: Number(apt.serviceCharge || 0),
         securityDepositAmount: Number(apt.securityDepositAmount || 0),
       });
@@ -135,6 +137,7 @@ export default function OwnerBuildingPage() {
   const availableCount = allUnits.filter((u) => u.availabilityStatus === "AVAILABLE").length;
   const rentedCount = allUnits.filter((u) => u.availabilityStatus === "RENTED").length;
   const unlistedCount = allUnits.filter((u) => !(u as any).publishedAt).length;
+  const soldCount = allUnits.filter((u) => u.availabilityStatus === "SOLD").length;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
@@ -210,6 +213,11 @@ export default function OwnerBuildingPage() {
                 </div>
                 <Separator />
                 <div className="text-center">
+                  <div className="text-2xl font-bold">{soldCount}</div>
+                  <div className="text-xs text-muted-foreground">Sold</div>
+                </div>
+                <Separator />
+                <div className="text-center">
                   <div className="text-2xl font-bold">{unlistedCount}</div>
                   <div className="text-xs text-muted-foreground">Unlisted</div>
                 </div>
@@ -268,8 +276,19 @@ export default function OwnerBuildingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="apt-rent">Monthly rent (BDT, minor units)</Label>
-              <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 2500000" value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })} required />
+              <Label htmlFor="apt-listing-type">Listing type</Label>
+              <select id="apt-listing-type" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={apt.listingType} onChange={(e) => setApt({ ...apt, listingType: e.target.value as "RENT" | "SALE" })}>
+                <option value="RENT">For rent</option>
+                <option value="SALE">For sale</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt-rent">{apt.listingType === "SALE" ? "Sale price (BDT, minor units)" : "Monthly rent (BDT, minor units)"}</Label>
+              {apt.listingType === "SALE" ? (
+                <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 1250000000" value={apt.salePrice} onChange={(e) => setApt({ ...apt, salePrice: e.target.value.replace(/[^0-9]/g, "") })} required />
+              ) : (
+                <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 2500000" value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })} required />
+              )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-service">Service charge (minor units)</Label>
@@ -303,16 +322,17 @@ export default function OwnerBuildingPage() {
                           <Badge variant={a.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>{a.availabilityStatus}</Badge>
                           <Badge variant={(a as any).publishedAt ? "outline" : "secondary"}>{(a as any).publishedAt ? "Listed" : "Unlisted"}</Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground mt-1">{a.bedrooms} bed • {a.bathrooms} bath • {a.verandas} veranda • ৳{(a.rentAmount / 100).toLocaleString()}/mo (rent)</div>
+                        <div className="text-sm text-muted-foreground mt-1">{a.bedrooms} bed • {a.bathrooms} bath • {a.verandas} veranda • {a.listingType === "SALE" ? `৳${((a.salePrice ?? 0) / 100).toLocaleString()} (sale)` : `৳${(a.rentAmount / 100).toLocaleString()}/mo (rent)`}</div>
                       </div>
                       <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                         <label className="text-xs text-muted-foreground flex flex-col gap-1">
                           Status
                           <select className="h-8 rounded border bg-background px-2 text-sm text-foreground" value={a.availabilityStatus} onChange={(e) => void setStatus(a.id, e.target.value)}>
-                            <option value="AVAILABLE">Available (rent)</option>
+                            <option value="AVAILABLE">Available</option>
                             <option value="RENTED">Rented</option>
                             <option value="MAINTENANCE">Maintenance</option>
                             <option value="COMING_SOON">Coming soon</option>
+                            <option value="SOLD">Sold</option>
                           </select>
                         </label>
                         <Button size="sm" variant="outline" onClick={() => void setListed(a.id, !(a as any).publishedAt)}>{(a as any).publishedAt ? "Unlist (hide)" : "List publicly"}</Button>

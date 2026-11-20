@@ -18,8 +18,8 @@ const BEDROOM_OPTIONS = [1, 2, 3, 4, 5];
 const BATHROOM_OPTIONS = [1, 2, 3, 4];
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest first" },
-  { value: "rent_asc", label: "Rent: low to high" },
-  { value: "rent_desc", label: "Rent: high to low" },
+  { value: "price_asc", label: "Price: low to high" },
+  { value: "price_desc", label: "Price: high to low" },
 ] as const;
 
 export default function SearchPage() {
@@ -108,8 +108,11 @@ export default function SearchPage() {
     filters.hasElevator || filters.hasParking || filters.hasGenerator
   );
 
-  const formatRent = (n: number | null) =>
-    n == null ? "—" : `৳${(n / 100).toLocaleString()}`;
+
+  const formatPrice = (item: { listingType?: string; rentAmount: number; salePrice?: number | null }) =>
+    item.listingType === "SALE"
+      ? (item.salePrice == null ? "—" : `৳${item.salePrice.toLocaleString()}`)
+      : `৳${item.rentAmount.toLocaleString()}/mo`;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 sm:py-10">
@@ -160,7 +163,7 @@ export default function SearchPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium">Monthly rent (৳)</label>
+                <label className="text-sm font-medium">Price (৳, rent/mo or sale)</label>
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     type="number"
@@ -289,9 +292,10 @@ export default function SearchPage() {
                             <span className="text-4xl font-bold text-muted-foreground/30">{item.unitLabel}</span>
                           </div>
                         )}
-                        <Badge className="absolute top-3 left-3 shadow-sm" variant={item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>
-                          {item.availabilityStatus === "AVAILABLE" ? "Available" : item.availabilityStatus.replace("_", " ")}
-                        </Badge>
+                        <div className="absolute top-3 left-3 flex gap-1 flex-wrap">
+                          <Badge variant="outline" className="bg-background/90 shadow-sm">{item.listingType === "SALE" ? "For sale" : "For rent"}</Badge>
+                          <Badge className="shadow-sm" variant={item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>{item.availabilityStatus === "AVAILABLE" ? "Available" : item.availabilityStatus === "COMING_SOON" ? "Coming soon" : item.availabilityStatus === "SOLD" ? "Sold" : item.availabilityStatus === "RENTED" ? "Rented" : item.availabilityStatus.replace("_", " ")}</Badge>
+                        </div>
                       </div>
                       <CardHeader className="pb-2 pt-4">
                         <CardTitle className="text-base line-clamp-1 group-hover:text-primary transition-colors">
@@ -304,8 +308,8 @@ export default function SearchPage() {
                       </CardHeader>
                       <CardContent className="pb-3 pt-0">
                         <div className="text-lg font-bold tracking-tight">
-                          {formatRent(item.rentAmount)}
-                          <span className="text-sm font-normal text-muted-foreground">/mo</span>
+                          {formatPrice(item)}
+                          
                         </div>
                         <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1"><Bed className="h-3.5 w-3.5" /> {item.bedrooms}</span>
@@ -362,7 +366,7 @@ export default function SearchPage() {
                                 </div>
                               </div>
                               <div className="text-right shrink-0">
-                                <div className="text-xl font-bold tracking-tight">{formatRent(item.rentAmount)}</div>
+                                <div className="text-xl font-bold tracking-tight">{formatPrice(item)}</div>
                                 <div className="text-xs text-muted-foreground">per month</div>
                               </div>
                             </div>

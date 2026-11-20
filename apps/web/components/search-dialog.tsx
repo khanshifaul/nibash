@@ -25,7 +25,7 @@ type SearchFilters = {
   hasElevator: boolean;
   hasParking: boolean;
   hasGenerator: boolean;
-  sort: "newest" | "rent_asc" | "rent_desc";
+  sort: "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc";
 };
 
 const defaultFilters: SearchFilters = {
@@ -84,8 +84,7 @@ export function SearchDialog({
     return () => clearTimeout(t);
   }, [open, filters, runSearch]);
 
-  const formatRent = (n: number | null) =>
-    n == null ? "—" : `৳${(n / 100).toLocaleString()}`;
+  const formatPrice = (item: { listingType?: string; rentAmount: number; salePrice?: number | null }) => item.listingType === "SALE" ? (item.salePrice == null ? "—" : `৳${item.salePrice.toLocaleString()}`) : `৳${item.rentAmount.toLocaleString()}/mo`;
 
   const goToSearchPage = useCallback(() => {
     const params = new URLSearchParams();
@@ -180,8 +179,8 @@ export function SearchDialog({
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="rent_asc">Price: low to high</SelectItem>
-                    <SelectItem value="rent_desc">Price: high to low</SelectItem>
+                    <SelectItem value="price_asc">Price: low to high</SelectItem>
+                    <SelectItem value="price_desc">Price: high to low</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -244,7 +243,7 @@ export function SearchDialog({
                       <div className="text-xs text-muted-foreground">
                         {item.floorNumber != null && `Floor ${item.floorNumber} • `}{item.building.areaZone}
                       </div>
-                      <div className="font-bold">{formatRent(item.rentAmount)}/mo</div>
+                      <div className="font-bold">{formatPrice(item)}/mo</div>
                     </CardHeader>
                     <CardContent className="pt-0 text-xs text-muted-foreground">
                       {item.bedrooms} bed • {item.bathrooms} bath • {item.verandas} veranda

@@ -18,11 +18,17 @@ export enum GasTypeDto {
   NONE = "NONE",
 }
 
+export enum ListingTypeDto {
+  RENT = "RENT",
+  SALE = "SALE",
+}
+
 export enum AvailabilityStatusDto {
   AVAILABLE = "AVAILABLE",
   RENTED = "RENTED",
   MAINTENANCE = "MAINTENANCE",
   COMING_SOON = "COMING_SOON",
+  SOLD = "SOLD",
 }
 
 export class CreateApartmentDto {
@@ -73,11 +79,24 @@ export class CreateApartmentDto {
   @IsOptional()
   preferredTenantTypes?: string[];
 
-  @ApiProperty({ description: "Monthly rent in minor units (paisa)" })
+  @ApiProperty({ enum: ListingTypeDto, default: "RENT" })
+  @IsEnum(ListingTypeDto)
+  @IsOptional()
+  listingType?: ListingTypeDto;
+
+  @ApiProperty({ required: false, description: "Monthly rent in minor units (paisa). Required/used for RENT listings." })
   @Type(() => Number)
   @IsInt()
   @Min(0)
-  rentAmount!: number;
+  @IsOptional()
+  rentAmount?: number;
+
+  @ApiProperty({ required: false, description: "Sale price in minor units (paisa). Required/used for SALE listings." })
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  salePrice?: number;
 
   @ApiProperty({ default: 0 })
   @Type(() => Number)

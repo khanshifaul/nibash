@@ -27,10 +27,6 @@ const HERO_IMAGES = [
   "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1600&q=80",
 ];
 
-function formatRent(n: number | null) {
-  return n == null ? "—" : `৳${(n / 100).toLocaleString()}`;
-}
-
 function statusLabel(status: string) {
   if (status === "AVAILABLE") return "Available";
   if (status === "COMING_SOON") return "Coming soon";
@@ -160,7 +156,7 @@ function PropertyCard({ item }: { item: ListingCard }) {
         </CardHeader>
         <CardContent className="pb-3 pt-0">
           <div className="text-lg font-bold tracking-tight">
-            {formatRent(item.rentAmount)}<span className="text-sm font-normal text-muted-foreground">/mo</span>
+            {formatPrice(item)}
           </div>
           <div className="flex items-center gap-4 mt-2.5 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Bed className="h-3.5 w-3.5" /> {item.bedrooms} bed</span>
@@ -214,7 +210,7 @@ function PropertyListCard({ item }: { item: ListingCard }) {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-xl font-bold tracking-tight">{formatRent(item.rentAmount)}</div>
+                  <div className="text-xl font-bold tracking-tight">{formatPrice(item)}</div>
                   <div className="text-xs text-muted-foreground">per month</div>
                 </div>
               </div>
@@ -472,6 +468,14 @@ function FeaturesSection() {
       </div>
     </section>
   );
+}
+
+
+function formatPrice(item: { listingType?: string; rentAmount: number; salePrice?: number | null }) {
+  if (item.listingType === "SALE") {
+    return item.salePrice == null ? "—" : `৳${item.salePrice.toLocaleString()}`;
+  }
+  return `৳${item.rentAmount.toLocaleString()}/mo`;
 }
 
 export default function Page() {

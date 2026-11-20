@@ -103,7 +103,8 @@ export const searchApi = {
     hasGenerator?: boolean;
     page?: number;
     limit?: number;
-    sort?: "newest" | "rent_asc" | "rent_desc";
+    listingType?: "RENT" | "SALE";
+    sort?: "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc";
   }) => {
     const searchParams = new URLSearchParams();
     if (params.q !== undefined) searchParams.set("q", params.q);
@@ -121,6 +122,7 @@ export const searchApi = {
     if (params.hasGenerator !== undefined) searchParams.set("hasGenerator", String(params.hasGenerator));
     if (params.page !== undefined) searchParams.set("page", String(params.page));
     if (params.limit !== undefined) searchParams.set("limit", String(params.limit));
+    if (params.listingType !== undefined) searchParams.set("listingType", params.listingType);
     if (params.sort !== undefined) searchParams.set("sort", params.sort);
     return api.get<Paginated<ListingCard>>(`/search/listings?${searchParams.toString()}`);
   },

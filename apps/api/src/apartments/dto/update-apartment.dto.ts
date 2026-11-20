@@ -22,6 +22,6 @@ export class CloneApartmentDto {
 }
 
 export class UpdateApartmentStatusDto {
-  @ApiProperty({ enum: ["AVAILABLE", "RENTED", "MAINTENANCE", "COMING_SOON"] })
-  availabilityStatus!: "AVAILABLE" | "RENTED" | "MAINTENANCE" | "COMING_SOON";
+  @ApiProperty({ enum: ["AVAILABLE", "RENTED", "MAINTENANCE", "COMING_SOON", "SOLD"] })
+  availabilityStatus!: "AVAILABLE" | "RENTED" | "MAINTENANCE" | "COMING_SOON" | "SOLD";
 }

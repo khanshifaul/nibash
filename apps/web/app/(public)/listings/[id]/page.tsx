@@ -61,10 +61,11 @@ export default function ListingDetailPage() {
 
   const apartmentImages = listing?.images ?? [];
 
-  const monthlyRent = listing ? listing.rentAmount / 100 : 0;
+  const isSale = listing?.listingType === "SALE";
+  const priceMajor = listing ? ((isSale ? (listing.salePrice ?? 0) : listing.rentAmount) / 100) : 0;
   const serviceCharge = listing ? listing.serviceCharge / 100 : 0;
   const deposit = listing ? listing.securityDepositAmount / 100 : 0;
-  const moveInTotal = monthlyRent + serviceCharge + deposit;
+  const moveInTotal = isSale ? priceMajor : priceMajor + serviceCharge + deposit;
 
   async function submitInquiry(e: React.FormEvent) {
     e.preventDefault();
@@ -177,7 +178,7 @@ export default function ListingDetailPage() {
               </div>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-bold">৳{monthlyRent.toLocaleString()}/mo</span>
+              <span className="text-3xl font-bold">৳{priceMajor.toLocaleString()}{isSale ? "" : "/mo"}</span>
               <p className="text-sm text-muted-foreground">
                 + ৳{serviceCharge.toLocaleString()} service charge
               </p>
@@ -198,8 +199,8 @@ export default function ListingDetailPage() {
           <h3 className="text-lg font-semibold mb-2">Cost breakdown</h3>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Monthly rent</span>
-              <span className="font-medium">৳{monthlyRent.toLocaleString()}</span>
+              <span>{isSale ? "Sale price" : "Monthly rent"}</span>
+              <span className="font-medium">৳{priceMajor.toLocaleString()}{isSale ? "" : "/mo"}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Service charge</span>

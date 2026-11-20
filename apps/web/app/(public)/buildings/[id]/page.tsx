@@ -146,7 +146,7 @@ export default function BuildingPage() {
                           </div>
                         </div>
                         <div className="text-sm font-bold">
-                          ৳{(u.rentAmount / 100).toLocaleString()}/mo
+                          {u.listingType === "SALE" ? `৳${((u.salePrice ?? 0) / 100).toLocaleString()}` : `৳${(u.rentAmount / 100).toLocaleString()}/mo`} {" "}({u.listingType === "SALE" ? "sale" : "rent"})
                         </div>
                       </div>
                       <Link

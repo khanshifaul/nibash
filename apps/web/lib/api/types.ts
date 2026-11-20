@@ -1,3 +1,4 @@
+export type ListingType = "RENT" | "SALE";
 // Generated from API contract (apps/api/src) — matches NestJS response envelopes.
 export type ApiResponse<T> = {
   success: boolean;
@@ -156,7 +157,9 @@ export type Apartment = {
   gasType: string;
   utilityBillingType: string | null;
   preferredTenantTypes: string[];
+  listingType: ListingType;
   rentAmount: number;
+  salePrice: number | null;
   serviceCharge: number;
   securityDepositAmount: number;
   depositMonths: number | null;
@@ -184,7 +187,9 @@ export type CreateApartmentInput = {
   gasType?: string;
   utilityBillingType?: string;
   preferredTenantTypes?: string[];
-  rentAmount: number;
+  listingType?: ListingType;
+  rentAmount?: number;
+  salePrice?: number | null;
   serviceCharge?: number;
   securityDepositAmount?: number;
   depositMonths?: number;
@@ -246,7 +251,9 @@ export type ListingCard = {
   bathrooms: number;
   verandas: number;
   sizeSqft: number | null;
+  listingType: ListingType;
   rentAmount: number;
+  salePrice: number | null;
   serviceCharge: number;
   availabilityStatus: string;
   images: ApartmentImage[];
@@ -278,7 +285,8 @@ export type SearchInput = {
   hasGenerator?: boolean;
   page?: number;
   limit?: number;
-  sort?: "newest" | "rent_asc" | "rent_desc";
+  listingType?: ListingType;
+  sort?: "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc";
 };
 
 export type ListingDetail = {
@@ -298,7 +306,9 @@ export type ListingDetail = {
   gasType: string;
   utilityBillingType: string | null;
   preferredTenantTypes: string[];
+  listingType: ListingType;
   rentAmount: number;
+  salePrice: number | null;
   serviceCharge: number;
   securityDepositAmount: number;
   depositMonths: number | null;
