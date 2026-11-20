@@ -28,6 +28,5 @@ import { JwtStrategy } from "./token/strategies/jwt.strategy";
   ],
   controllers: [AuthenticationController],
   providers: [AuthenticationService, JwtStrategy],
-  exports: [AuthenticationService],
 })
 export class AuthModule {}
