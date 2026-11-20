@@ -18,7 +18,7 @@ COPY apps/api ./apps/api
 ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
 ENV DATABASE_URL=$DATABASE_URL
 WORKDIR /app/apps/api
-RUN bun ./node_modules/prisma/build/index.js generate || bun ../../node_modules/prisma/build/index.js generate || bunx --no-install prisma generate
+RUN bunx prisma@7.10.1 generate
 RUN bun run build
 
 # Runtime
@@ -35,4 +35,4 @@ COPY --from=build /app/apps/api/generated ./apps/api/generated
 WORKDIR /app/apps/api
 EXPOSE 4000
 # Run migrations on startup (single-instance friendly), then start server
-CMD ["sh", "-c", "(bun ./node_modules/prisma/build/index.js migrate deploy || bun ../../node_modules/prisma/build/index.js migrate deploy) && bun dist/src/main.js"]
+CMD ["sh", "-c", "bunx prisma@7.10.1 migrate deploy && bun dist/src/main.js"]
