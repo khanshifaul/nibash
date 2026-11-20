@@ -58,7 +58,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/apps/api/prisma ./apps/api/prisma
 COPY --from=build /app/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
-COPY --from=build /app/apps/api/generated ./apps/api/generated
 WORKDIR /app/apps/api
 EXPOSE 4000
 # Run migrations on startup (single-instance friendly), then start server
