@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Param, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { User } from "../common/decorators/user.decorator";
 import { Verified } from "../common/decorators/verified.decorator";
-import type { AttachApartmentImageDto, AttachBuildingImageDto, PresignDto } from "./dto/media.dto";
+import { AttachApartmentImageDto, AttachBuildingImageDto, PresignDto } from "./dto/media.dto";
 import { MediaService } from "./media.service";
 
 @ApiTags("Media")

@@ -5,12 +5,11 @@ import type { Request, Response } from "express";
 import { clearAuthCookies, REFRESH_COOKIE, setAuthCookies } from "../../common/cookie.util";
 import { Public } from "../../common/decorators/public.decorator";
 import { User } from "../../common/decorators/user.decorator";
-import type { AuthResult } from "./authentication.service";
-import { AuthenticationService } from "./authentication.service";
-import type { LoginDto } from "./dto/login.dto";
-import type { RegisterDto } from "./dto/register.dto";
-import type { ForgotPasswordDto, ResetPasswordDto } from "./dto/reset-password.dto";
-import type { ResendVerificationDto, VerifyEmailDto } from "./dto/verify-email.dto";
+import { AuthenticationService, AuthResult } from "./authentication.service";
+import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
+import { ForgotPasswordDto, ResetPasswordDto } from "./dto/reset-password.dto";
+import { ResendVerificationDto, VerifyEmailDto } from "./dto/verify-email.dto";
 
 @ApiTags("Auth")
 @Controller("auth")

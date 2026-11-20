@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { User } from "../common/decorators/user.decorator";
 import { Verified } from "../common/decorators/verified.decorator";
-import type { CreateInquiryDto, UpdateInquiryStatusDto } from "./dto/inquiry.dto";
+import { CreateInquiryDto, UpdateInquiryStatusDto } from "./dto/inquiry.dto";
 import { InquiriesService } from "./inquiries.service";
 
 @ApiTags("Inquiries")

@@ -3,8 +3,8 @@ import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swa
 import { User } from "../common/decorators/user.decorator";
 import { Verified } from "../common/decorators/verified.decorator";
 import { ApartmentsService } from "./apartments.service";
-import type { CreateApartmentDto } from "./dto/create-apartment.dto";
-import type {
+import { CreateApartmentDto } from "./dto/create-apartment.dto";
+import {
   CloneApartmentDto,
   UpdateApartmentDto,
   UpdateApartmentStatusDto,
