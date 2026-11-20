@@ -18,7 +18,18 @@ COPY apps/api ./apps/api
 ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
 ENV DATABASE_URL=$DATABASE_URL
 WORKDIR /app/apps/api
-RUN set -e;   export PATH="/app/node_modules/.bin:/app/apps/api/node_modules/.bin:$PATH";   if command -v prisma >/dev/null 2>&1; then prisma generate;   elif [ -f /app/node_modules/.bin/prisma ]; then /app/node_modules/.bin/prisma generate;   elif [ -f /app/apps/api/node_modules/.bin/prisma ]; then /app/apps/api/node_modules/.bin/prisma generate;   elif [ -f /app/node_modules/prisma/build/index.js ]; then bun /app/node_modules/prisma/build/index.js generate;   else bunx prisma@7.10.1 generate; fi
+RUN set -e; \
+  PRISMA_BIN=""; \
+  for p in \
+    /app/node_modules/.bin/prisma \
+    /app/apps/api/node_modules/.bin/prisma \
+    /app/node_modules/prisma/build/index.js \
+    /app/apps/api/node_modules/prisma/build/index.js \
+    ; do [ -e "$p" ] && PRISMA_BIN="$p" && break; done; \
+  if [ -z "$PRISMA_BIN" ]; then PRISMA_BIN=$(find /app -path '*prisma/build/index.js' 2>/dev/null | head -1 || true); fi; \
+  if [ -z "$PRISMA_BIN" ]; then echo "prisma binary not found"; find /app -name '*prisma*' | head -120; exit 1; fi; \
+  echo "Using prisma: $PRISMA_BIN"; \
+  case "$PRISMA_BIN" in *.js) bun "$PRISMA_BIN" generate ;; *) "$PRISMA_BIN" generate ;; esac
 RUN bun run build
 
 # Runtime
@@ -35,4 +46,4 @@ COPY --from=build /app/apps/api/generated ./apps/api/generated
 WORKDIR /app/apps/api
 EXPOSE 4000
 # Run migrations on startup (single-instance friendly), then start server
-CMD ["sh", "-c", "set -e; export PATH=\"/app/node_modules/.bin:/app/apps/api/node_modules/.bin:$PATH\"; if command -v prisma >/dev/null 2>&1; then prisma migrate deploy; elif [ -f /app/node_modules/.bin/prisma ]; then /app/node_modules/.bin/prisma migrate deploy; elif [ -f /app/apps/api/node_modules/.bin/prisma ]; then /app/apps/api/node_modules/.bin/prisma migrate deploy; elif [ -f /app/node_modules/prisma/build/index.js ]; then bun /app/node_modules/prisma/build/index.js migrate deploy; else bunx prisma@7.10.1 migrate deploy; fi; exec bun dist/src/main.js"]
+CMD ["sh", "-c", "set -e; PRISMA_BIN=\"\"; for p in /app/node_modules/.bin/prisma /app/apps/api/node_modules/.bin/prisma /app/node_modules/prisma/build/index.js /app/apps/api/node_modules/prisma/build/index.js; do [ -e \"$p\" ] && PRISMA_BIN=\"$p\" && break; done; if [ -z \"$PRISMA_BIN\" ]; then PRISMA_BIN=$(find /app -path '*prisma/build/index.js' 2>/dev/null | head -1 || true); fi; if [ -z \"$PRISMA_BIN\" ]; then echo prisma-not-found; exit 1; fi; case \"$PRISMA_BIN\" in *.js) bun \"$PRISMA_BIN\" migrate deploy ;; *) \"$PRISMA_BIN\" migrate deploy ;; esac; exec bun dist/src/main.js"]
