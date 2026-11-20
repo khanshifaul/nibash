@@ -12,6 +12,7 @@ RUN bun install --frozen-lockfile
 # Build API
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY package.json bun.lock ./
 COPY apps/api ./apps/api
 # Prisma generate needs schema + DATABASE_URL at generate time in some setups; use a dummy if unset
@@ -65,6 +66,7 @@ ENV NODE_ENV=production
 COPY package.json bun.lock ./
 COPY apps/api/package.json ./apps/api/package.json
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/apps/api/prisma ./apps/api/prisma
 COPY --from=build /app/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
