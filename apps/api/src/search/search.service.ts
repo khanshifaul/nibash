@@ -64,7 +64,7 @@ export class SearchService {
     if (query.verandas !== undefined) apartmentWhere.verandas = { gte: query.verandas };
     if (query.minSqft !== undefined) apartmentWhere.sizeSqft = { gte: query.minSqft };
     if (query.floorNumber !== undefined) apartmentWhere.floor = { floorNumber: query.floorNumber };
-    if (query.excludeGround) apartmentWhere.floor = { ...(apartmentWhere.floor ?? {}), floorNumber: { gt: 0 } };
+    if (query.excludeGround) apartmentWhere.floor = { ...apartmentWhere.floor, floorNumber: { gt: 0 } };
 
     const buildingFilters: any = {};
     if (query.area) buildingFilters.areaZone = { contains: query.area, mode: "insensitive" };
