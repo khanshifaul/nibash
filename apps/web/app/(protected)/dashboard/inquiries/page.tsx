@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { inquiriesApi, type Inquiry } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { FiArrowLeft } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
-import { FiArrowLeft } from "react-icons/fi";
+import { Card, CardContent } from "@/components/ui/card";
+import { type Inquiry, inquiriesApi } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 export default function DashboardInquiriesPage() {
   const { user, loading } = useAuth();

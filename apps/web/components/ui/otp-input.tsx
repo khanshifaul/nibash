@@ -41,7 +41,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
       onChange,
       value = "",
       disabled,
-      autoFocus,
+      autoFocus: _autoFocus,
       type = "number",
       className,
     },
@@ -138,7 +138,6 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
             onPaste={handlePaste}
             onFocus={(e) => e.target.select()}
             disabled={disabled}
-            autoFocus={autoFocus && index === 0}
             className={cn(
               "h-12 w-12 rounded-md border border-input bg-transparent text-center text-lg font-semibold shadow-sm transition-colors",
               "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",

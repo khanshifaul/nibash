@@ -5,7 +5,7 @@ set -euo pipefail
 # - blocks secrets/env/credential files and common leak patterns
 # - blocks unresolved merge conflict markers in staged content
 # - blocks very large staged files
-# - runs required checks before commit: oxlint, oxfmt format, typecheck (web/api), biome (if configured)
+# - runs required checks before commit: biome check, oxlint, typecheck (web/api)
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$ROOT"
@@ -79,11 +79,10 @@ run() {
   "$@"
 }
 
-# Detect relevant changes
 HAS_CODE=0
 HAS_WEB=0
 HAS_API=0
-if echo "$STAGED_FILES" | grep -qE '\.(ts|tsx|js|jsx|mjs|cjs|json|css|md)$'; then
+if echo "$STAGED_FILES" | grep -qE '\.(ts|tsx|js|jsx|mjs|cjs|json|jsonc|css|md)$'; then
   HAS_CODE=1
 fi
 if echo "$STAGED_FILES" | grep -qE '^apps/web/'; then
@@ -93,7 +92,18 @@ if echo "$STAGED_FILES" | grep -qE '^apps/api/'; then
   HAS_API=1
 fi
 
-# 1) Lint — oxlint (project standard)
+# 1) Biome — format + lint + organize imports (project standard)
+if [ "$HAS_CODE" -eq 1 ]; then
+  if command -v bun >/dev/null 2>&1; then
+    run "biome check" bunx biome check . || fail "biome check failed (run: bunx biome check --write .)"
+  elif command -v npx >/dev/null 2>&1; then
+    run "biome check" npx --yes @biomejs/biome check . || fail "biome check failed"
+  else
+    fail "bun/npx required for biome"
+  fi
+fi
+
+# 2) oxlint — additional linting
 if [ "$HAS_CODE" -eq 1 ]; then
   if command -v bun >/dev/null 2>&1; then
     run "oxlint" bunx oxlint apps || fail "oxlint failed"
@@ -104,45 +114,20 @@ if [ "$HAS_CODE" -eq 1 ]; then
   fi
 fi
 
-# 2) Format — oxfmt (project standard)
+# 3) Typecheck — web/api when relevant or when shared config changes
 if [ "$HAS_CODE" -eq 1 ]; then
   if command -v bun >/dev/null 2>&1; then
-    run "oxfmt --check" bunx oxfmt --check . || fail "format check failed (run: bunx oxfmt .)"
-  elif command -v npx >/dev/null 2>&1; then
-    run "oxfmt --check" npx --yes oxfmt --check . || fail "format check failed (run: bunx oxfmt .)"
-  else
-    fail "bun/npx required for oxfmt"
-  fi
-fi
-
-# 3) Typecheck — web/api when relevant (or always for code changes to catch cross-app issues)
-if [ "$HAS_CODE" -eq 1 ]; then
-  if command -v bun >/dev/null 2>&1; then
-    if [ "$HAS_WEB" -eq 1 ] || [ "$HAS_API" -eq 1 ] || echo "$STAGED_FILES" | grep -qE '^(package\.json|bun\.lock|tsconfig)'; then
-      # typecheck both apps when app/shared config changes; otherwise typecheck touched app(s)
-      if [ "$HAS_WEB" -eq 1 ] || echo "$STAGED_FILES" | grep -qE '^(package\.json|bun\.lock)'; then
+    if [ "$HAS_WEB" -eq 1 ] || [ "$HAS_API" -eq 1 ] || echo "$STAGED_FILES" | grep -qE '^(package\.json|bun\.lock|biome\.json|tsconfig)'; then
+      if [ "$HAS_WEB" -eq 1 ] || echo "$STAGED_FILES" | grep -qE '^(package\.json|bun\.lock|biome\.json)'; then
         run "typecheck web (tsc --noEmit)" bash -lc 'cd apps/web && bunx tsc --noEmit' || fail "web typecheck failed"
       fi
-      if [ "$HAS_API" -eq 1 ] || echo "$STAGED_FILES" | grep -qE '^(package\.json|bun\.lock)'; then
+      if [ "$HAS_API" -eq 1 ] || echo "$STAGED_FILES" | grep -qE '^(package\.json|bun\.lock|biome\.json)'; then
         run "typecheck api (tsc --noEmit)" bash -lc 'cd apps/api && bunx tsc -p tsconfig.json --noEmit' || fail "api typecheck failed"
       fi
     fi
   else
     fail "bun required for typecheck"
   fi
-fi
-
-# 4) Biome check — only when biome is configured in the repo
-if [ -f biome.json ] || [ -f biome.jsonc ] || [ -f apps/web/biome.json ] || [ -f apps/web/biome.jsonc ] || [ -f apps/api/biome.json ] || [ -f apps/api/biome.jsonc ]; then
-  if command -v bun >/dev/null 2>&1; then
-    run "biome check" bunx @biomejs/biome check . || fail "biome check failed"
-  elif command -v npx >/dev/null 2>&1; then
-    run "biome check" npx --yes @biomejs/biome check . || fail "biome check failed"
-  else
-    fail "bun/npx required for biome check"
-  fi
-else
-  echo "[pre-commit] biome not configured; skipping biome check"
 fi
 
 echo "[pre-commit] OK"

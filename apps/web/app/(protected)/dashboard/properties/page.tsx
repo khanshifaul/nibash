@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Building2, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { buildingsApi, type Building } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import { FiArrowLeft } from "react-icons/fi";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, Plus } from "lucide-react";
-import { FiArrowLeft } from "react-icons/fi";
+import { type Building, buildingsApi } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 export default function DashboardPropertiesPage() {
   const { user, loading } = useAuth();

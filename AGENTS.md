@@ -13,7 +13,7 @@
 - Web route groups: `(public)`, `(auth)`, `(protected)` with sub-areas `owner/renter/admin`
 - Prisma schema at `apps/api/prisma/schema.prisma`, migrations in `apps/api/prisma/migrations`
 - Env validation at API boot; `.env.example` per app
-- `oxlint` + `oxfmt` for lint/format; `vitest` web / `jest` api
+- `biome` for lint/format/check; `oxlint` for additional linting; `vitest` web / `jest` api
 
 ## Scripts
 

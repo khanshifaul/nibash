@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { Search, Plus, Moon, Sun, Monitor } from "lucide-react";
-import { FiUser } from "react-icons/fi";
+import { Monitor, Moon, Plus, Search, Sun } from "lucide-react";
+import Link from "next/link";
 import { useTheme } from "next-themes";
-import { useAuth } from "@/lib/auth";
-import { SearchDialog } from "@/components/search-dialog";
+import { useEffect, useState } from "react";
+import { FiUser } from "react-icons/fi";
 import { Logo } from "@/components/logo";
+import { SearchDialog } from "@/components/search-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/lib/auth";
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();

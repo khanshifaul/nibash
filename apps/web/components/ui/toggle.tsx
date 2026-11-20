@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const toggleVariants = cva(
@@ -26,7 +26,8 @@ const toggleVariants = cva(
 );
 
 export interface ToggleProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof toggleVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof toggleVariants> {
   /** Controlled pressed state */
   pressed?: boolean;
   /** Default pressed state for uncontrolled usage */

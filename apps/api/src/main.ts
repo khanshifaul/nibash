@@ -3,9 +3,11 @@ import { RequestMethod, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+
 import cookieParser = require("cookie-parser");
-import { json, urlencoded } from "express";
+
 import type { Request, Response } from "express";
+import { json, urlencoded } from "express";
 import { AppModule } from "./app.module";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { ValidationExceptionFilter } from "./common/filters/validation-exception.filter";

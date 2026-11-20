@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const containerVariants = cva("mx-auto w-full px-4", {
@@ -21,7 +21,8 @@ const containerVariants = cva("mx-auto w-full px-4", {
 });
 
 interface ContainerProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof containerVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof containerVariants> {}
 
 /**
  * Container for max-width layouts

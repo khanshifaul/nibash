@@ -1,19 +1,19 @@
+import { randomUUID } from "node:crypto";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { randomUUID } from "crypto";
-import { DatabaseService } from "../database/database.service";
+import type { ConfigService } from "@nestjs/config";
+import type { DatabaseService } from "../database/database.service";
 import {
-  AttachApartmentImageDto,
-  AttachBuildingImageDto,
+  type AttachApartmentImageDto,
+  type AttachBuildingImageDto,
   ImageEntityDto,
-  PresignDto,
+  type PresignDto,
 } from "./dto/media.dto";
 
 @Injectable()

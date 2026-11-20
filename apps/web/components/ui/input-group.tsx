@@ -84,4 +84,4 @@ const InputAddon = React.forwardRef<
 });
 InputAddon.displayName = "InputAddon";
 
-export { InputGroup, InputAddon };
+export { InputAddon, InputGroup };

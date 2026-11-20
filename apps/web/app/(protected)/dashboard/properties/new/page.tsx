@@ -1,28 +1,28 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { apartmentsApi, buildingsApi } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { NativeSelect } from "@/components/ui/native-select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useMemo, useState } from "react";
+import { FiArrowLeft, FiCheck, FiChevronRight } from "react-icons/fi";
 import {
+  MdBolt,
   MdElevator,
   MdLocalParking,
-  MdBolt,
-  MdSecurity,
-  MdVideocam,
   MdPhoneInTalk,
   MdRoofing,
+  MdSecurity,
+  MdVideocam,
   MdWaterDrop,
 } from "react-icons/md";
-import { FiArrowLeft, FiCheck, FiChevronRight } from "react-icons/fi";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
+import { apartmentsApi, buildingsApi } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 type PropertyKind = "building" | "single_house" | "duplex" | "other";
 

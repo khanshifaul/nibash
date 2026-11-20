@@ -1,12 +1,12 @@
 "use client";
 
+import { addDays, endOfMonth, startOfMonth } from "date-fns";
 import * as React from "react";
-import { addDays, startOfMonth, endOfMonth } from "date-fns";
+import { FiArrowRight } from "react-icons/fi";
+import { cn } from "@/lib/utils";
+import { Button } from "./button";
 import { Calendar } from "./calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-import { Button } from "./button";
-import { cn } from "@/lib/utils";
-import { FiArrowRight } from "react-icons/fi";
 
 // Calendar icon
 const CalendarIcon = () => (

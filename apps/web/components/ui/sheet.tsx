@@ -1,9 +1,9 @@
 "use client";
+import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
 import { Slot } from "@/components/ui/slot";
+import { cn } from "@/lib/utils";
 
 interface SheetContextValue {
   open: boolean;
@@ -115,7 +115,8 @@ const animationClasses = {
 };
 
 interface SheetContentProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof sheetVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof sheetVariants> {}
 
 const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
   ({ side = "right", className, children, ...props }, ref) => {
@@ -252,10 +253,10 @@ SheetDescription.displayName = "SheetDescription";
 
 export {
   Sheet,
-  SheetTrigger,
   SheetContent,
-  SheetHeader,
-  SheetFooter,
-  SheetTitle,
   SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 };

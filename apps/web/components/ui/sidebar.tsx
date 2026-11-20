@@ -2,10 +2,7 @@
 
 import * as React from "react";
 import { LuPanelLeft } from "react-icons/lu";
-
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Slot } from "@/components/ui/slot";
 import {
   Sheet,
   SheetContent,
@@ -13,6 +10,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Slot } from "@/components/ui/slot";
+import { cn } from "@/lib/utils";
 
 const SidebarContext = React.createContext<{
   state: "expanded" | "collapsed";
@@ -73,7 +72,7 @@ const SidebarProvider = React.forwardRef<
 
     const toggleSidebar = React.useCallback(() => {
       return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-    }, [isMobile, setOpen, setOpenMobile]);
+    }, [isMobile, setOpen]);
 
     React.useEffect(() => {
       const checkMobile = () => {

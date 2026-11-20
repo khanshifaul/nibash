@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 type Building = {
   id: string;
@@ -40,7 +40,7 @@ export default function AdminPage() {
   }
   useEffect(() => {
     if (user) load();
-  }, [user]);
+  }, [user, load]);
 
   async function moderate(id: string, status: string, reason?: string) {
     setSaving(id);

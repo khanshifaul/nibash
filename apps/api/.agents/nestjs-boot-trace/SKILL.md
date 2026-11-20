@@ -1,4 +1,5 @@
 ---
+
 name: nestjs-boot-trace
 description: Use when a NestJS application is slow to start, when the user asks why boot takes so long or which provider or onModuleInit is expensive, or when they mention --timings, boot timings, or the boot trace. Instruments main.ts, captures one real boot, and overlays per-class construction times on the module graph.
 allowed-tools: Bash, Read, Edit, Glob, Grep, Write

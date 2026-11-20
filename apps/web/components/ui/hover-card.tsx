@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
 import { Slot } from "@/components/ui/slot";
+import { cn } from "@/lib/utils";
 
 // HoverCard Context
 interface HoverCardContextValue {
@@ -226,4 +226,4 @@ const HoverCardContent = React.forwardRef<
 );
 HoverCardContent.displayName = "HoverCardContent";
 
-export { HoverCard, HoverCardTrigger, HoverCardContent };
+export { HoverCard, HoverCardContent, HoverCardTrigger };

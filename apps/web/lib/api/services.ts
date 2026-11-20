@@ -1,5 +1,7 @@
 import { api } from "./client";
 import type {
+  Apartment,
+  ApartmentImage,
   AuthUser,
   Building,
   BuildingImage,
@@ -7,6 +9,7 @@ import type {
   CreateApartmentInput,
   CreateBuildingInput,
   CreateInquiryInput,
+  Inquiry,
   ListingCard,
   ListingDetail,
   LoginInput,
@@ -20,9 +23,6 @@ import type {
   UpdateInquiryStatusInput,
   UpdateProfileInput,
   VerifyEmailInput,
-  Apartment,
-  Inquiry,
-  ApartmentImage,
 } from "./types";
 
 /* ---------- Auth ---------- */

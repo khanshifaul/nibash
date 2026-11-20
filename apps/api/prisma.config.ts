@@ -1,5 +1,5 @@
 // prisma.config.ts — Prisma 7 config: connection URL and migration settings.
-import { resolve } from "path";
+import { resolve } from "node:path";
 import { defineConfig, env } from "prisma/config";
 
 try {

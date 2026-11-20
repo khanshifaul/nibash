@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { LuSearch } from "react-icons/lu";
-import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface CommandContextValue {
   search: string;
@@ -54,11 +54,12 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>(
           e.preventDefault();
           setSelectedIndex((prev) => Math.max(prev - 1, 0));
           break;
-        case "Enter":
+        case "Enter": {
           e.preventDefault();
           const selectedItem = document.querySelector('[data-selected="true"]') as HTMLElement;
           selectedItem?.click();
           break;
+        }
       }
     };
 
@@ -268,11 +269,11 @@ CommandShortcut.displayName = "CommandShortcut";
 export {
   Command,
   CommandDialog,
-  CommandInput,
-  CommandList,
   CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
-  CommandShortcut,
+  CommandList,
   CommandSeparator,
+  CommandShortcut,
 };

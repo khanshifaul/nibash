@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { LuUpload, LuX, LuFile, LuImage, LuFileText, LuFilm, LuMusic } from "react-icons/lu";
-import { cn } from "@/lib/utils";
+import { LuFile, LuFileText, LuFilm, LuImage, LuMusic, LuUpload, LuX } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface FileUploadProps {
   onChange?: (files: File[]) => void;
@@ -34,7 +34,7 @@ const formatFileSize = (bytes: number): string => {
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
 };
 
 export function FileUpload({
@@ -132,7 +132,7 @@ export function FileUpload({
         if (f.preview) URL.revokeObjectURL(f.preview);
       });
     };
-  }, []);
+  }, [files.forEach]);
 
   return (
     <div className={cn("space-y-4", className)}>

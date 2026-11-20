@@ -2,7 +2,7 @@ import { Controller, Get, Param, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
 import { Public } from "../common/decorators/public.decorator";
-import { SearchService } from "./search.service";
+import type { SearchService } from "./search.service";
 
 @ApiTags("Search")
 @Controller()

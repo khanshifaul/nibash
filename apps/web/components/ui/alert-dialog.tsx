@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
 import { Slot } from "@/components/ui/slot";
+import { cn } from "@/lib/utils";
 
 interface AlertDialogContextValue {
   open: boolean;
@@ -209,12 +209,12 @@ AlertDialogCancel.displayName = "AlertDialogCancel";
 
 export {
   AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 };

@@ -1,4 +1,6 @@
 // src/auth/authentication/authentication.service.ts
+
+import * as crypto from "node:crypto";
 import {
   BadRequestException,
   ConflictException,
@@ -7,13 +9,12 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
+import type { ConfigService } from "@nestjs/config";
+import type { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
-import * as crypto from "crypto";
-import { DatabaseService } from "../../database/database.service";
-import { MailService } from "../../common/mail/mail.service";
-import { JwtPayload } from "../common/interfaces/jwt-payload.interface";
+import type { MailService } from "../../common/mail/mail.service";
+import type { DatabaseService } from "../../database/database.service";
+import type { JwtPayload } from "../common/interfaces/jwt-payload.interface";
 
 export interface AuthUser {
   id: string;

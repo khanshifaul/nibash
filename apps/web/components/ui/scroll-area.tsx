@@ -52,7 +52,7 @@ const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
     const scrollbarCSS: React.CSSProperties = {
       ...style,
       // Webkit browsers (Chrome, Safari, Edge)
-      // @ts-ignore - CSS custom properties for scrollbar
+      // @ts-expect-error - CSS custom properties for scrollbar
       "--scrollbar-width": sizes.width,
       "--scrollbar-height": sizes.height,
     };

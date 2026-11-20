@@ -4,9 +4,9 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { DatabaseService } from "../database/database.service";
-import { CreateBuildingDto } from "./dto/create-building.dto";
-import { UpdateBuildingDto } from "./dto/update-building.dto";
+import type { DatabaseService } from "../database/database.service";
+import type { CreateBuildingDto } from "./dto/create-building.dto";
+import type { UpdateBuildingDto } from "./dto/update-building.dto";
 
 @Injectable()
 export class BuildingsService {

@@ -61,10 +61,8 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
 );
 RadioGroup.displayName = "RadioGroup";
 
-interface RadioGroupItemProps extends Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  "onChange"
-> {
+interface RadioGroupItemProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange"> {
   value: string;
 }
 

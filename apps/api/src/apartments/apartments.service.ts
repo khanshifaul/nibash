@@ -5,9 +5,9 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { DatabaseService } from "../database/database.service";
-import { CreateApartmentDto } from "./dto/create-apartment.dto";
-import {
+import type { DatabaseService } from "../database/database.service";
+import type { CreateApartmentDto } from "./dto/create-apartment.dto";
+import type {
   CloneApartmentDto,
   UpdateApartmentDto,
   UpdateApartmentStatusDto,

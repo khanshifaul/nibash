@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FiSun, FiMoon, FiMonitor } from "react-icons/fi";
+import { FiMonitor, FiMoon, FiSun } from "react-icons/fi";
 import { cn } from "../../lib/utils";
 
 interface ThemeSwitcherProps {

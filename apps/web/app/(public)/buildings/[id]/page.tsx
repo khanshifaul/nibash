@@ -1,27 +1,27 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { Building2, Home, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { buildingsApi, type Building } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Building2, Home } from "lucide-react";
-import Map from "@/components/ui/map";
+import { useCallback, useEffect, useState } from "react";
+import { FiArrowRight } from "react-icons/fi";
 import {
+  MdBolt,
   MdElevator,
   MdLocalParking,
-  MdBolt,
-  MdSecurity,
-  MdVideocam,
   MdPhoneInTalk,
   MdRoofing,
+  MdSecurity,
+  MdVideocam,
   MdWaterDrop,
 } from "react-icons/md";
-import { FiArrowRight } from "react-icons/fi";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Map from "@/components/ui/map";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { type Building, buildingsApi } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 export default function BuildingPage() {
   const params = useParams<{ id: string }>();

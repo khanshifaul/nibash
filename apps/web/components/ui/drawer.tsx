@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
 import { Slot } from "@/components/ui/slot";
+import { cn } from "@/lib/utils";
 
 // Drawer Context
 interface DrawerContextValue {
@@ -272,12 +272,12 @@ DrawerDescription.displayName = "DrawerDescription";
 
 export {
   Drawer,
-  DrawerTrigger,
   DrawerClose,
-  DrawerOverlay,
   DrawerContent,
-  DrawerHeader,
-  DrawerFooter,
-  DrawerTitle,
   DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerTitle,
+  DrawerTrigger,
 };

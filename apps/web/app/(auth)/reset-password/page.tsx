@@ -1,13 +1,11 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { CheckCircle2, Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import Link from "next/link";
-import { Eye, EyeOff, Lock, CheckCircle2, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { FiArrowLeft } from "react-icons/fi";
-import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -16,6 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { api } from "@/lib/api";
 
 function ResetInner() {
   const params = useSearchParams();

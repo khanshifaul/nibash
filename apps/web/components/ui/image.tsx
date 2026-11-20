@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const imageVariants = cva("", {
@@ -31,7 +31,8 @@ const imageVariants = cva("", {
 type ImageVariants = VariantProps<typeof imageVariants>;
 
 interface ImageProps
-  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "onLoad" | "onError">, ImageVariants {
+  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "onLoad" | "onError">,
+    ImageVariants {
   /** Fallback content or URL when image fails to load */
   fallback?: React.ReactNode | string;
   /** Show skeleton loading state */
@@ -67,7 +68,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
 
     React.useEffect(() => {
       setStatus("loading");
-    }, [src]);
+    }, []);
 
     const containerStyle: React.CSSProperties = aspectRatio
       ? { paddingBottom: `${100 / aspectRatio}%`, ...style }

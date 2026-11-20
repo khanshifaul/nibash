@@ -42,7 +42,8 @@ export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
   ({ className, label, description, error, required, htmlFor, children, ...props }, ref) => {
-    const id = htmlFor || React.useId();
+    const generatedId = React.useId();
+    const id = htmlFor || generatedId;
 
     // Clone child to inject id and error state if it's a valid React element
     const childWithProps = React.isValidElement(children)

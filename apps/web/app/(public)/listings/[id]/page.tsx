@@ -1,27 +1,27 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { Building2, Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { api, searchApi, type ListingDetail } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Phone, Mail, Building2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import {
+  MdBolt,
   MdElevator,
   MdLocalParking,
-  MdBolt,
+  MdRoofing,
   MdSecurity,
   MdVideocam,
-  MdRoofing,
 } from "react-icons/md";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { api, type ListingDetail, searchApi } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 const MONTH_NAMES = [
   "Jan",

@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const buttonGroupVariants = cva("inline-flex", {
@@ -36,7 +36,8 @@ const buttonGroupVariants = cva("inline-flex", {
 });
 
 interface ButtonGroupProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof buttonGroupVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof buttonGroupVariants> {}
 
 /**
  * ButtonGroup to group buttons together

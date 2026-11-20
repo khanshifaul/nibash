@@ -20,12 +20,20 @@
     "db:push": "bun --filter '@nibash/api' db:push",
     "db:seed": "bun --filter '@nibash/api' db:seed",
     "db:studio": "bun --filter '@nibash/api' db:studio",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "lint:biome": "biome lint .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "typecheck": "bun run typecheck:web && bun run typecheck:api",
+    "typecheck:web": "bun --cwd apps/web tsc --noEmit",
+    "typecheck:api": "bun --cwd apps/api tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {},
   "devDependencies": {
+    "@biomejs/biome": "^2.6.8",
     "@types/node": "^20.17.0",
-    "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
     "typescript": "^5.9.3"
   },

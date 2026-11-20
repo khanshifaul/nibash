@@ -1,12 +1,12 @@
 // src/auth/token/strategies/jwt.strategy.ts
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import type { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
 import type { Request } from "express";
-import { DatabaseService } from "../../../database/database.service";
+import { ExtractJwt, Strategy } from "passport-jwt";
 import { AUTH_COOKIE } from "../../../common/cookie.util";
-import { JwtPayload } from "../../common/interfaces/jwt-payload.interface";
+import type { DatabaseService } from "../../../database/database.service";
+import type { JwtPayload } from "../../common/interfaces/jwt-payload.interface";
 
 function cookieOrBearerExtractor(req: Request): string | null {
   const cookies = req.cookies as Record<string, string | undefined> | undefined;

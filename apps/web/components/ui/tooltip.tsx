@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
 import { Slot } from "@/components/ui/slot";
+import { cn } from "@/lib/utils";
 
 interface TooltipContextValue {
   open: boolean;
@@ -142,4 +142,4 @@ const TooltipContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTM
 );
 TooltipContent.displayName = "TooltipContent";
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };

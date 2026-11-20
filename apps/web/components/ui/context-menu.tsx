@@ -198,10 +198,10 @@ ContextMenuShortcut.displayName = "ContextMenuShortcut";
 
 export {
   ContextMenu,
-  ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuSeparator,
   ContextMenuLabel,
+  ContextMenuSeparator,
   ContextMenuShortcut,
+  ContextMenuTrigger,
 };

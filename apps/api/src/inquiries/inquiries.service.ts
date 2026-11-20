@@ -4,8 +4,8 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { DatabaseService } from "../database/database.service";
-import { CreateInquiryDto, UpdateInquiryStatusDto } from "./dto/inquiry.dto";
+import type { DatabaseService } from "../database/database.service";
+import type { CreateInquiryDto, UpdateInquiryStatusDto } from "./dto/inquiry.dto";
 
 @Injectable()
 export class InquiriesService {

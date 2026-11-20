@@ -2,9 +2,9 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/commo
 import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { User } from "../common/decorators/user.decorator";
 import { Verified } from "../common/decorators/verified.decorator";
-import { ApartmentsService } from "./apartments.service";
-import { CreateApartmentDto } from "./dto/create-apartment.dto";
-import {
+import type { ApartmentsService } from "./apartments.service";
+import type { CreateApartmentDto } from "./dto/create-apartment.dto";
+import type {
   CloneApartmentDto,
   UpdateApartmentDto,
   UpdateApartmentStatusDto,

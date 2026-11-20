@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import type { Prisma } from "../../prisma/generated/client";
-import { DatabaseService } from "../database/database.service";
+import type { DatabaseService } from "../database/database.service";
 
 export interface SearchQuery {
   q?: string;
@@ -94,18 +94,18 @@ export class SearchService {
 
     const hasSearchCriteria = Boolean(
       query.q ||
-      query.area ||
-      query.minRent !== undefined ||
-      query.maxRent !== undefined ||
-      query.bedrooms !== undefined ||
-      query.bathrooms !== undefined ||
-      query.verandas !== undefined ||
-      query.minSqft !== undefined ||
-      query.floorNumber !== undefined ||
-      query.excludeGround ||
-      query.hasElevator ||
-      query.hasParking ||
-      query.hasGenerator,
+        query.area ||
+        query.minRent !== undefined ||
+        query.maxRent !== undefined ||
+        query.bedrooms !== undefined ||
+        query.bathrooms !== undefined ||
+        query.verandas !== undefined ||
+        query.minSqft !== undefined ||
+        query.floorNumber !== undefined ||
+        query.excludeGround ||
+        query.hasElevator ||
+        query.hasParking ||
+        query.hasGenerator,
     );
 
     // Featured properties first (especially after search/filters), then by selected sort.
@@ -195,7 +195,7 @@ export class SearchService {
       },
     });
 
-    if (!apt || !apt.publishedAt || apt.building.moderationStatus !== "APPROVED") {
+    if (!apt?.publishedAt || apt.building.moderationStatus !== "APPROVED") {
       throw new NotFoundException("Listing not found");
     }
 

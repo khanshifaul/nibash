@@ -1,5 +1,5 @@
 // src/common/cookie.util.ts — auth cookie helpers.
-import { Response } from "express";
+import type { Response } from "express";
 
 export const AUTH_COOKIE = "nibash_token";
 export const REFRESH_COOKIE = "nibash_refresh";

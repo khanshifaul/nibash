@@ -83,7 +83,6 @@ const Search = React.forwardRef<HTMLInputElement, SearchProps>(
         <input
           ref={ref}
           type="search"
-          role="searchbox"
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}

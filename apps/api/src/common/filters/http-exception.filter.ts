@@ -1,6 +1,12 @@
 // src/common/filters/http-exception.filter.ts — consistent error envelope.
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from "@nestjs/common";
-import { Request, Response } from "express";
+import {
+  type ArgumentsHost,
+  Catch,
+  type ExceptionFilter,
+  HttpException,
+  Logger,
+} from "@nestjs/common";
+import type { Request, Response } from "express";
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {

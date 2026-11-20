@@ -1,14 +1,14 @@
-import {
-  PrismaClient,
-  GasType,
-  ParkingType,
-  AvailabilityStatus,
-  ModerationStatus,
-  RoomTag,
-  ListingType,
-} from "./generated/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import * as bcrypt from "bcryptjs";
+import {
+  AvailabilityStatus,
+  GasType,
+  ListingType,
+  ModerationStatus,
+  ParkingType,
+  PrismaClient,
+  RoomTag,
+} from "./generated/client";
 
 const writeUrl = process.env.DATABASE_URL;
 if (!writeUrl) throw new Error("DATABASE_URL is required");

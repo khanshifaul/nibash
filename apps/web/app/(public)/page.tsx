@@ -1,33 +1,37 @@
 "use client";
 
-import { FiCheckCircle, FiMessageSquare, FiEye } from "react-icons/fi";
-
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import useEmblaCarousel from "embla-carousel-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import useEmblaCarousel from "embla-carousel-react";
 import {
-  Building2,
-  MapPin,
-  Bed,
   Bath,
-  Maximize,
+  Bed,
+  Building2,
   Grid3X3,
   List,
+  MapPin,
+  Maximize,
+  MessageSquare,
   Shield,
   Zap,
-  MessageSquare,
 } from "lucide-react";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import {
+  FiCheckCircle,
+  FiChevronLeft,
+  FiChevronRight,
+  FiEye,
+  FiMessageSquare,
+} from "react-icons/fi";
+import { MdBolt, MdElevator, MdLocalParking } from "react-icons/md";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { searchApi, type ListingCard } from "@/lib/api";
+import { type ListingCard, searchApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { MdElevator, MdLocalParking, MdBolt } from "react-icons/md";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -353,7 +357,7 @@ function FeaturedCarousel({ items, loading }: { items: ListingCard[]; loading: b
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", () => setSnaps(emblaApi.scrollSnapList()));
     onSelect();
-  }, [emblaApi, items.length]);
+  }, [emblaApi]);
 
   const featured = items.slice(0, 8);
 
@@ -450,7 +454,7 @@ function PropertiesSection({ items, loading }: { items: ListingCard[]; loading: 
       });
     }, sectionRef);
     return () => ctx.revert();
-  }, [view, loading, items.length]);
+  }, [loading]);
 
   return (
     <section ref={sectionRef} className="bg-muted/30 py-16 sm:py-20 border-y border-border/50">

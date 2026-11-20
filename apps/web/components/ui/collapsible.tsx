@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
 import { Slot } from "@/components/ui/slot";
+import { cn } from "@/lib/utils";
 
 interface CollapsibleContextValue {
   open: boolean;
@@ -103,4 +103,4 @@ const CollapsibleContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes
 );
 CollapsibleContent.displayName = "CollapsibleContent";
 
-export { Collapsible, CollapsibleTrigger, CollapsibleContent };
+export { Collapsible, CollapsibleContent, CollapsibleTrigger };

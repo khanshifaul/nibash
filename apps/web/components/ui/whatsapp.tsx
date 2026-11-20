@@ -1,8 +1,8 @@
 "use client";
 
 import { FaWhatsapp } from "react-icons/fa";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface WhatsAppProps {
   phoneNumber?: string;

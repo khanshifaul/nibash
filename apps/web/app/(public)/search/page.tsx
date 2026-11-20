@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { Bath, Bed, Grid3X3, List, MapPin, Maximize, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Grid3X3, List, MapPin, Bed, Bath, Maximize, SlidersHorizontal } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FiChevronRight } from "react-icons/fi";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -14,11 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { searchApi, type ListingCard } from "@/lib/api";
+import { type ListingCard, searchApi } from "@/lib/api";
 
 const BEDROOM_OPTIONS = [1, 2, 3, 4, 5];
 const BATHROOM_OPTIONS = [1, 2, 3, 4];
@@ -96,6 +96,7 @@ export default function SearchPage() {
     filters.hasGenerator,
     filters.sort,
     filters.page,
+    filters,
   ]);
 
   useEffect(() => {
@@ -121,17 +122,17 @@ export default function SearchPage() {
 
   const hasActiveFilters = Boolean(
     filters.q ||
-    filters.minRent ||
-    filters.maxRent ||
-    filters.bedrooms ||
-    filters.bathrooms ||
-    filters.verandas ||
-    filters.minSqft ||
-    filters.floorNumber ||
-    filters.excludeGround ||
-    filters.hasElevator ||
-    filters.hasParking ||
-    filters.hasGenerator,
+      filters.minRent ||
+      filters.maxRent ||
+      filters.bedrooms ||
+      filters.bathrooms ||
+      filters.verandas ||
+      filters.minSqft ||
+      filters.floorNumber ||
+      filters.excludeGround ||
+      filters.hasElevator ||
+      filters.hasParking ||
+      filters.hasGenerator,
   );
 
   const formatPrice = (item: {

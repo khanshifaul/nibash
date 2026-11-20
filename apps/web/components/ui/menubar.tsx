@@ -239,11 +239,11 @@ MenubarShortcut.displayName = "MenubarShortcut";
 
 export {
   Menubar,
-  MenubarMenu,
-  MenubarTrigger,
   MenubarContent,
   MenubarItem,
-  MenubarSeparator,
   MenubarLabel,
+  MenubarMenu,
+  MenubarSeparator,
   MenubarShortcut,
+  MenubarTrigger,
 };

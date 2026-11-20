@@ -1,14 +1,13 @@
 "use client";
 
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { FaTimes, FaPaperPlane } from "react-icons/fa";
-import { cn } from "@/lib/utils";
-
-import { ScrollArea } from "@/components/ui/scroll-area";
+import * as React from "react";
+import { FaPaperPlane, FaTimes } from "react-icons/fa";
+import { LuMessageSquare, LuX } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LuMessageSquare, LuX } from "react-icons/lu";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 // --- Primitives ---
 
@@ -158,4 +157,4 @@ export function Chatbot() {
 }
 
 // Export parts if still needed by other consumers (optional, but good practice)
-export { ChatbotContainer, ChatbotHeader, ChatbotContent, ChatbotMessage, ChatbotFooter };
+export { ChatbotContainer, ChatbotContent, ChatbotFooter, ChatbotHeader, ChatbotMessage };

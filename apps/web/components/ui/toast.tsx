@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const toastVariants = cva(
@@ -21,7 +21,8 @@ const toastVariants = cva(
 );
 
 interface ToastProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof toastVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof toastVariants> {
   onClose?: () => void;
 }
 
@@ -99,4 +100,4 @@ const ToastAction = React.forwardRef<
 ));
 ToastAction.displayName = "ToastAction";
 
-export { Toast, ToastTitle, ToastDescription, ToastAction, toastVariants };
+export { Toast, ToastAction, ToastDescription, ToastTitle, toastVariants };

@@ -150,7 +150,7 @@ const SelectContent = React.forwardRef<HTMLDivElement, SelectContentProps>(
           const content = contentRef.current;
           const trigger = context.triggerRef.current;
 
-          if (content?.contains(target) || (trigger && trigger.contains(target))) {
+          if (content?.contains(target) || trigger?.contains(target)) {
             return;
           }
           context.setOpen(false);
@@ -309,4 +309,4 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
 );
 SelectItem.displayName = "SelectItem";
 
-export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem };
+export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue };

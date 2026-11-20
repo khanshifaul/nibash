@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Inbox } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { inquiriesApi, type Inquiry } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import { FiArrowLeft } from "react-icons/fi";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Inbox } from "lucide-react";
-import { FiArrowLeft } from "react-icons/fi";
+import { type Inquiry, inquiriesApi } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 const STATUSES = ["CONTACTED", "SCHEDULED", "CLOSED", "SPAM"] as const;
 
@@ -32,7 +32,7 @@ export default function DashboardInboxPage() {
   }
   useEffect(() => {
     if (user) load();
-  }, [user]);
+  }, [user, load]);
 
   async function setStatus(id: string, status: string) {
     try {

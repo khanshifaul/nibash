@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { useTheme } from "next-themes";
-import { FiSun, FiMoon, FiMonitor } from "react-icons/fi";
+import * as React from "react";
+import { FiMonitor, FiMoon, FiSun } from "react-icons/fi";
 
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 

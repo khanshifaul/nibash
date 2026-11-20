@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
 import { Slot } from "@/components/ui/slot";
+import { cn } from "@/lib/utils";
 
 interface PopoverContextValue {
   open: boolean;
@@ -117,7 +117,7 @@ const PopoverContent = React.forwardRef<
         const trigger = context.triggerRef.current;
 
         // Don't close if clicking inside content or trigger
-        if (content?.contains(target) || (trigger && trigger.contains(target))) {
+        if (content?.contains(target) || trigger?.contains(target)) {
           return;
         }
         context.onOpenChange(false);
@@ -230,4 +230,4 @@ const PopoverContent = React.forwardRef<
 });
 PopoverContent.displayName = "PopoverContent";
 
-export { Popover, PopoverTrigger, PopoverContent };
+export { Popover, PopoverContent, PopoverTrigger };

@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const spinnerVariants = cva("animate-spin", {
@@ -97,4 +97,4 @@ const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayProps>(
 );
 LoadingOverlay.displayName = "LoadingOverlay";
 
-export { LoadingSpinner, LoadingOverlay, spinnerVariants };
+export { LoadingOverlay, LoadingSpinner, spinnerVariants };
