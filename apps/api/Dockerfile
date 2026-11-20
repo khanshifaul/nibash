@@ -35,7 +35,18 @@ RUN set -e; \
   if [ -z "$PRISMA_BIN" ]; then echo "prisma binary not found"; find /app -name '*prisma*' | head -120; exit 1; fi; \
   echo "Using prisma: $PRISMA_BIN"; \
   case "$PRISMA_BIN" in *.js) bun "$PRISMA_BIN" generate ;; *) "$PRISMA_BIN" generate ;; esac
-RUN bun run build
+RUN set -e; \
+  NEST_BIN=""; \
+  for p in \
+    /app/node_modules/.bin/nest \
+    /app/apps/api/node_modules/.bin/nest \
+    ; do [ -e "$p" ] && NEST_BIN="$p" && break; done; \
+  if [ -z "$NEST_BIN" ]; then NEST_BIN=$(find /app -path '*@nestjs/cli*/bin/nest.js' 2>/dev/null | head -1 || true); fi; \
+  if [ -n "$NEST_BIN" ]; then \
+    case "$NEST_BIN" in *.js) bun "$NEST_BIN" build ;; *) "$NEST_BIN" build ;; esac; \
+  else \
+    echo "nest cli not found, trying bunx"; bunx --bun @nestjs/cli build; \
+  fi
 
 # Runtime
 FROM oven/bun:1 AS runtime
