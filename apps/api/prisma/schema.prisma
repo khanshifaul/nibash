@@ -68,13 +68,15 @@ model User {
   name                     String?   @db.VarChar(255)
   email                    String    @unique @db.VarChar(255)
   phone                    String?   @db.VarChar(32)
-  passwordHash             String    @db.VarChar(255)
+  passwordHash             String?   @db.VarChar(255)
   avatarUrl                String?   @db.Text
   isEmailVerified          Boolean   @default(false)
   emailVerificationToken   String?   @unique @db.VarChar(255)
   emailVerificationExpires DateTime?
   resetToken               String?   @unique @db.VarChar(255)
   resetTokenExpires        DateTime?
+  provider                 String?   @db.VarChar(32)
+  googleId                 String?   @unique @db.VarChar(255)
   createdAt                DateTime  @default(now())
   updatedAt                DateTime  @updatedAt
 
@@ -84,6 +86,7 @@ model User {
   refreshTokens  RefreshToken[]
 
   @@index([phone])
+  @@index([provider, googleId])
   @@map("users")
 }
 
@@ -190,7 +193,7 @@ model Apartment {
   availableFrom         DateTime?
   publishedAt           DateTime?
   createdAt             DateTime           @default(now())
-  updatedAt             DateTime           @updatedAt
+  updatedAt             DateTime         @updatedAt
 
   building  Building         @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   floor     Floor            @relation(fields: [floorId], references: [id], onDelete: Cascade)

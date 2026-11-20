@@ -42,6 +42,15 @@ export default function SignInPage() {
     }
   }
 
+  async function onGoogleSignIn() {
+    setError(null);
+    try {
+      window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000"}/auth/google`;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google sign-in failed.");
+    }
+  }
+
   return (
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-10 sm:py-14 bg-gradient-to-b from-background via-background to-muted/40">
       <div className="w-full max-w-[440px]">
@@ -55,7 +64,25 @@ export default function SignInPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="px-6 sm:px-7 pb-6">
-            <form className="space-y-4" onSubmit={onSubmit}>
+            <Button
+              onClick={onGoogleSignIn}
+              disabled={loading}
+              className="w-full h-11 text-base font-semibold mb-4 rounded-lg"
+              variant="outline"
+            >
+              Continue with Google
+            </Button>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border/50" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
+            <form className="space-y-4 mt-6" onSubmit={onSubmit}>
               {error && (
                 <div
                   role="alert"

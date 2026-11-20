@@ -23,6 +23,11 @@ export const appConfig = () => {
       accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN ?? "15m",
       refreshExpiresInDays: parseInt(process.env.JWT_REFRESH_EXPIRES_DAYS ?? "30", 10),
     },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      callbackURL: process.env.GOOGLE_CALLBACK_URL ?? "",
+    },
     storage: {
       endpoint: process.env.STORAGE_ENDPOINT ?? "",
       region: process.env.STORAGE_REGION ?? "us-east-1",

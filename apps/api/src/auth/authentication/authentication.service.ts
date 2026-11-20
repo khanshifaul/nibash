@@ -9,11 +9,11 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
-import type { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
-import type { MailService } from "../../common/mail/mail.service";
-import type { DatabaseService } from "../../database/database.service";
+import { MailService } from "../../common/mail/mail.service";
+import { DatabaseService } from "../../database/database.service";
 import type { JwtPayload } from "../common/interfaces/jwt-payload.interface";
 
 export interface AuthUser {
@@ -94,7 +94,7 @@ export class AuthenticationService {
 
   async validateUser(email: string, password: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new UnauthorizedException("Invalid email or password");
+    if (!user?.passwordHash) throw new UnauthorizedException("Invalid email or password");
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) throw new UnauthorizedException("Invalid email or password");
     return user;
@@ -228,6 +228,22 @@ export class AuthenticationService {
       },
     });
     return user;
+  }
+
+  async authenticateWithGoogle(userId: string): Promise<AuthResult> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        isEmailVerified: true,
+      },
+    });
+    if (!user) throw new UnauthorizedException("User not found");
+    const tokens = await this.issueTokens(user.id, user.email, false);
+    return { user, ...tokens };
   }
 
   private async issueTokens(

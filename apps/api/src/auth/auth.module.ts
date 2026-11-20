@@ -7,6 +7,7 @@ import { MailModule } from "../common/mail/mail.module";
 import { DatabaseModule } from "../database/database.module";
 import { AuthenticationController } from "./authentication/authentication.controller";
 import { AuthenticationService } from "./authentication/authentication.service";
+import { GoogleStrategy } from "./token/strategies/google.strategy";
 import { JwtStrategy } from "./token/strategies/jwt.strategy";
 
 @Module({
@@ -27,6 +28,6 @@ import { JwtStrategy } from "./token/strategies/jwt.strategy";
     }),
   ],
   controllers: [AuthenticationController],
-  providers: [AuthenticationService, JwtStrategy],
+  providers: [AuthenticationService, GoogleStrategy, JwtStrategy],
 })
 export class AuthModule {}

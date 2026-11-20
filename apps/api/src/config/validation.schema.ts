@@ -31,4 +31,9 @@ export const validationSchema = Joi.object({
   SMTP_USER: optionalStr(),
   SMTP_PASS: optionalStr(),
   SMTP_FROM: optionalStr(),
+
+  // Google OAuth
+  GOOGLE_CLIENT_ID: optionalStr(),
+  GOOGLE_CLIENT_SECRET: optionalStr(),
+  GOOGLE_CALLBACK_URL: optionalStr(),
 }).unknown(true);
