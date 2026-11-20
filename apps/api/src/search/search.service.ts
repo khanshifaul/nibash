@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import type { Prisma } from "../../prisma/generated/client";
-import type { DatabaseService } from "../database/database.service";
+import { DatabaseService } from "../database/database.service";
 
 export interface SearchQuery {
   q?: string;
@@ -140,7 +140,9 @@ export class SearchService {
 
     void hasSearchCriteria; // ordering rule: featured-first always acceptable before/after search
 
-    const [items, total] = await this.prisma.$transaction([
+    // Two independent read-only queries: no transaction is needed (and starting one
+    // on a pooled/serverless connection can exceed Prisma's default maxWait).
+    const [items, total] = await Promise.all([
       this.prisma.apartment.findMany({
         where: apartmentWhere,
         skip,
@@ -212,7 +214,7 @@ export class SearchService {
       bedrooms: apt.bedrooms,
       attachedBathrooms: apt.attachedBathrooms,
       bathrooms: apt.bathrooms,
-      highCommodeCount: apt.highCommodeCount,
+      highCommodeCount: apt.highCommodeCount ?? null,
       diningRooms: apt.diningRooms,
       drawingRooms: apt.drawingRooms,
       kitchens: apt.kitchens,
