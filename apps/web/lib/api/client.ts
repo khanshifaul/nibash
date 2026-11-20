@@ -27,8 +27,10 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     apiErr.errors = err.errors;
     throw apiErr;
   }
-const unwrapped = data as { data?: T } | undefined;
-return (unwrapped?.data ?? data) as T;
+  if (data && typeof data === "object" && "data" in (data as Record<string, unknown>)) {
+    return (data as { data: T }).data;
+  }
+  return data as T;
 }
 
 export const api = {

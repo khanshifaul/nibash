@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search, SlidersHorizontal, X, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ export function SearchDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>(defaultFilters);
   const [showFilters, setShowFilters] = useState(false);
   const [results, setResults] = useState<ListingCard[] | null>(null);
@@ -84,6 +86,22 @@ export function SearchDialog({
   const formatRent = (n: number | null) =>
     n == null ? "—" : `৳${(n / 100).toLocaleString()}`;
 
+  const goToSearchPage = useCallback(() => {
+    const params = new URLSearchParams();
+    if (filters.q.trim()) params.set("q", filters.q.trim());
+    if (filters.minRent != null) params.set("minRent", String(filters.minRent));
+    if (filters.maxRent != null) params.set("maxRent", String(filters.maxRent));
+    if (filters.bedrooms != null) params.set("bedrooms", String(filters.bedrooms));
+    if (filters.bathrooms != null) params.set("bathrooms", String(filters.bathrooms));
+    if (filters.hasElevator) params.set("hasElevator", "true");
+    if (filters.hasParking) params.set("hasParking", "true");
+    if (filters.hasGenerator) params.set("hasGenerator", "true");
+    if (filters.sort && filters.sort !== "newest") params.set("sort", filters.sort);
+    const qs = params.toString();
+    router.push(qs ? `/search?${qs}` : "/search");
+    onOpenChange(false);
+  }, [filters, onOpenChange, router]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-[95vw] max-h-[85vh] overflow-hidden flex flex-col p-0">
@@ -95,6 +113,12 @@ export function SearchDialog({
               <Input
                 value={filters.q}
                 onChange={(e) => setFilters((f) => ({ ...f, q: e.target.value }))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    goToSearchPage();
+                  }
+                }}
                 placeholder="Search by area, keyword..."
                 className="pl-9"
                 autoFocus
@@ -107,6 +131,9 @@ export function SearchDialog({
             >
               <SlidersHorizontal className="h-4 w-4 mr-2" />
               Filters
+            </Button>
+            <Button onClick={goToSearchPage} className="shrink-0">
+              Search
             </Button>
           </div>
 
@@ -190,6 +217,9 @@ export function SearchDialog({
             <p className="text-sm text-muted-foreground">
               {loading ? "Searching..." : `${total} ${total === 1 ? "property" : "properties"} found`}
             </p>
+            <Button variant="link" size="sm" className="h-auto p-0 text-sm" onClick={goToSearchPage}>
+              View all on search page <ChevronRight className="h-4 w-4 ml-0.5" />
+            </Button>
           </div>
 
           {loading && !results ? (
@@ -204,7 +234,7 @@ export function SearchDialog({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {results.map((item) => (
                 <Link key={item.id} href={`/listings/${item.id}`} onClick={() => onOpenChange(false)} className="block">
-                  <Card className="overflow-hidden hover:shadow-md transition-shadow h-full cursor-pointer">
+                  <Card className="relative overflow-hidden hover:shadow-md transition-shadow h-full cursor-pointer pb-10">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between gap-2">
                         <CardTitle className="text-sm line-clamp-1">{item.unitLabel}</CardTitle>
@@ -218,13 +248,13 @@ export function SearchDialog({
                     <CardContent className="pt-0 text-xs text-muted-foreground">
                       {item.bedrooms} bed • {item.bathrooms} bath • {item.verandas} veranda
                     </CardContent>
-                    <CardFooter className="pt-0 flex justify-between items-center">
-                      <div className="flex gap-1 text-[10px]">
+                    <CardFooter className="pt-0">
+                      <div className="flex gap-1 text-[10px] flex-wrap pr-24">
                         {item.building.hasElevator && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700"><MdElevator className="h-3 w-3" />Lift</span>}
                         {item.building.hasParking && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700"><MdLocalParking className="h-3 w-3" />Parking</span>}
                       </div>
-                      <span className="inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md">View details <ChevronRight className="h-3.5 w-3.5" /></span>
                     </CardFooter>
+                    <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl">View details <ChevronRight className="h-3.5 w-3.5" /></span>
                   </Card>
                 </Link>
               ))}

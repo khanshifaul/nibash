@@ -275,7 +275,7 @@ export default function SearchPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {result.map((item) => (
                   <Link key={item.id} href={`/listings/${item.id}`} className="block group">
-                    <Card className="overflow-hidden h-full rounded-xl border-border/70 hover:shadow-lg hover:border-primary/20 transition-all duration-200 cursor-pointer">
+                    <Card className="relative overflow-hidden h-full rounded-xl border-border/70 hover:shadow-lg hover:border-primary/20 transition-all duration-200 cursor-pointer pb-10">
                       <div className="relative aspect-[16/10] bg-muted overflow-hidden">
                         {item.images?.[0]?.url || item.building.coverImage?.url ? (
                           <img
@@ -312,16 +312,16 @@ export default function SearchPage() {
                           {item.sizeSqft ? <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" /> {item.sizeSqft} sqft</span> : null}
                         </div>
                       </CardContent>
-                      <CardFooter className="pt-0 flex items-end justify-between gap-2">
-                        <div className="flex gap-1 flex-wrap">
+                      <CardFooter className="pt-0">
+                        <div className="flex gap-1 flex-wrap pr-24">
                           {item.building.hasElevator && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Lift</span>}
                           {item.building.hasParking && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Parking</span>}
                           {item.building.hasGenerator && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Generator</span>}
                         </div>
-                        <span className="inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md shrink-0">
-                          View details <ChevronRight className="h-3.5 w-3.5" />
-                        </span>
                       </CardFooter>
+                      <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
+                        View details <ChevronRight className="h-3.5 w-3.5" />
+                      </span>
                     </Card>
                   </Link>
                 ))}
@@ -330,7 +330,7 @@ export default function SearchPage() {
               <div className="space-y-4">
                 {result.map((item) => (
                   <Link key={item.id} href={`/listings/${item.id}`} className="block group">
-                    <Card className="overflow-hidden rounded-xl border-border/70 hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer">
+                    <Card className="relative overflow-hidden rounded-xl border-border/70 hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer">
                       <div className="flex flex-col sm:flex-row">
                         <div className="relative sm:w-64 md:w-72 aspect-[16/10] sm:aspect-auto bg-muted shrink-0 overflow-hidden">
                           {item.images?.[0]?.url || item.building.coverImage?.url ? (
@@ -372,16 +372,16 @@ export default function SearchPage() {
                               {item.verandas ? <span>{item.verandas} veranda</span> : null}
                             </div>
                           </div>
-                          <div className="flex items-center justify-between mt-4 gap-3">
+                          <div className="flex items-center justify-between mt-4 gap-3 pb-8 sm:pb-0 pr-0 sm:pr-28">
                             <div className="flex gap-1.5 flex-wrap">
                               {item.building.hasElevator && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Lift</span>}
                               {item.building.hasParking && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Parking</span>}
                               {item.building.hasGenerator && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Generator</span>}
                             </div>
-                            <span className="inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md shrink-0">
-                              View details <ChevronRight className="h-3.5 w-3.5" />
-                            </span>
                           </div>
+                          <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
+                            View details <ChevronRight className="h-3.5 w-3.5" />
+                          </span>
                         </div>
                       </div>
                     </Card>

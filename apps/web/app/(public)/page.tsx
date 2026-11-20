@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SearchDialog } from "@/components/search-dialog";
 import { searchApi, type ListingCard } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { MdElevator, MdLocalParking, MdBolt } from "react-icons/md";
@@ -37,7 +36,7 @@ function statusLabel(status: string) {
   return status.replace(/_/g, " ");
 }
 
-function HeroSection({ onSearch }: { onSearch: () => void }) {
+function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
@@ -97,9 +96,11 @@ function HeroSection({ onSearch }: { onSearch: () => void }) {
             Explore verified apartments, compare amenities, view locations, and contact owners directly — all in one place.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button size="lg" className="text-base px-6 h-11 hero-cta shadow-lg" onClick={onSearch}>
-              Browse properties
-            </Button>
+            <Link href="/search" className="hero-cta">
+              <Button size="lg" className="text-base px-6 h-11 shadow-lg">
+                Browse properties
+              </Button>
+            </Link>
             <Link href={user ? "/owner/buildings/new" : "/sign-in"} className="hero-cta">
               <Button size="lg" variant="outline" className="text-base px-6 h-11 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm">
                 List your property
@@ -134,7 +135,7 @@ function PropertyCard({ item }: { item: ListingCard }) {
   const image = item.images?.[0]?.url || item.building.coverImage?.url;
   return (
     <Link href={`/listings/${item.id}`} className="block h-full group">
-      <Card className="overflow-hidden h-full rounded-xl border-border/70 hover:shadow-xl hover:border-primary/20 transition-all duration-300 cursor-pointer">
+      <Card className="relative overflow-hidden h-full rounded-xl border-border/70 hover:shadow-xl hover:border-primary/20 transition-all duration-300 cursor-pointer pb-10">
         <div className="relative aspect-[4/3] bg-muted overflow-hidden">
           {image ? (
             <img src={image} alt={`${item.building.name} ${item.unitLabel}`} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500" />
@@ -166,16 +167,16 @@ function PropertyCard({ item }: { item: ListingCard }) {
             {item.sizeSqft ? <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" /> {item.sizeSqft} sqft</span> : null}
           </div>
         </CardContent>
-        <CardFooter className="pt-0 flex items-end justify-between gap-2">
-          <div className="flex gap-1 flex-wrap">
+        <CardFooter className="pt-0">
+          <div className="flex gap-1 flex-wrap pr-24">
             {item.building.hasElevator && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdElevator className="h-3 w-3" />Lift</span>}
             {item.building.hasParking && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdLocalParking className="h-3 w-3" />Parking</span>}
             {item.building.hasGenerator && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdBolt className="h-3 w-3" />Generator</span>}
           </div>
-          <span className="inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md shrink-0 shadow-sm">
-            View details <ChevronRight className="h-3.5 w-3.5" />
-          </span>
         </CardFooter>
+        <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
+          View details <ChevronRight className="h-3.5 w-3.5" />
+        </span>
       </Card>
     </Link>
   );
@@ -185,7 +186,7 @@ function PropertyListCard({ item }: { item: ListingCard }) {
   const image = item.images?.[0]?.url || item.building.coverImage?.url;
   return (
     <Link href={`/listings/${item.id}`} className="listing-card block group">
-      <Card className="overflow-hidden rounded-xl border-border/70 hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer">
+      <Card className="relative overflow-hidden rounded-xl border-border/70 hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer">
         <div className="flex flex-col sm:flex-row">
           <div className="relative sm:w-64 md:w-72 aspect-[16/10] sm:aspect-auto bg-muted shrink-0 overflow-hidden">
             {image ? (
@@ -223,16 +224,16 @@ function PropertyListCard({ item }: { item: ListingCard }) {
                 {item.verandas ? <span>{item.verandas} veranda</span> : null}
               </div>
             </div>
-            <div className="flex items-center justify-between mt-4 gap-3">
+            <div className="flex items-center justify-between mt-4 gap-3 pb-8 sm:pb-0 pr-0 sm:pr-28">
               <div className="flex gap-1.5 flex-wrap">
                 {item.building.hasElevator && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdElevator className="h-3.5 w-3.5" />Lift</span>}
                 {item.building.hasParking && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdLocalParking className="h-3.5 w-3.5" />Parking</span>}
                 {item.building.hasGenerator && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdBolt className="h-3.5 w-3.5" />Generator</span>}
               </div>
-              <span className="inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md shrink-0 shadow-sm">
-                View details <ChevronRight className="h-3.5 w-3.5" />
-              </span>
             </div>
+            <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
+              View details <ChevronRight className="h-3.5 w-3.5" />
+            </span>
           </div>
         </div>
       </Card>
@@ -318,7 +319,7 @@ function FeaturedCarousel({ items, loading }: { items: ListingCard[]; loading: b
   );
 }
 
-function PropertiesSection({ items, loading, onSearch }: { items: ListingCard[]; loading: boolean; onSearch: () => void }) {
+function PropertiesSection({ items, loading }: { items: ListingCard[]; loading: boolean }) {
   const [view, setView] = useState<"grid" | "list">("grid");
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -377,7 +378,7 @@ function PropertiesSection({ items, loading, onSearch }: { items: ListingCard[];
               New properties will appear here once they are published. Check back soon or list your property to get started.
             </p>
             <div className="mt-5 flex justify-center gap-3">
-              <Button onClick={onSearch}>Search properties</Button>
+              <Link href="/search"><Button>Search properties</Button></Link>
             </div>
           </div>
         ) : (
@@ -415,9 +416,9 @@ function PropertiesSection({ items, loading, onSearch }: { items: ListingCard[];
         )}
 
         <div className="text-center mt-10">
-          <Button size="lg" variant="outline" className="h-11 px-6" onClick={onSearch}>
+          <Link href="/search"><Button size="lg" variant="outline" className="h-11 px-6">
             Browse all properties
-          </Button>
+          </Button></Link>
         </div>
       </div>
     </section>
@@ -473,7 +474,6 @@ function FeaturesSection() {
 }
 
 export default function Page() {
-  const [searchOpen, setSearchOpen] = useState(false);
   const [items, setItems] = useState<ListingCard[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -496,11 +496,10 @@ export default function Page() {
 
   return (
     <div>
-      <HeroSection onSearch={() => setSearchOpen(true)} />
+      <HeroSection />
       <FeaturedCarousel items={items} loading={loading} />
-      <PropertiesSection items={items} loading={loading} onSearch={() => setSearchOpen(true)} />
+      <PropertiesSection items={items} loading={loading} />
       <FeaturesSection />
-      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }
