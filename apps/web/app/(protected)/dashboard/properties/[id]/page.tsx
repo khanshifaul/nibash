@@ -77,10 +77,18 @@ export default function OwnerBuildingPage() {
     } finally { setSaving(false); }
   }
 
-  async function toggleStatus(apartmentId: string, current: string) {
-    const next = current === "AVAILABLE" ? "RENTED" : "AVAILABLE";
+  async function setStatus(apartmentId: string, availabilityStatus: string) {
     try {
-      await api.patch(`/apartments/${apartmentId}/status`, { availabilityStatus: next });
+      await api.patch(`/apartments/${apartmentId}/status`, { availabilityStatus });
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Update failed");
+    }
+  }
+
+  async function setListed(apartmentId: string, publish: boolean) {
+    try {
+      await apartmentsApi.update(apartmentId, { publish } as any);
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Update failed");
@@ -126,6 +134,7 @@ export default function OwnerBuildingPage() {
   const allUnits = building.floors.flatMap((f) => f.apartments);
   const availableCount = allUnits.filter((u) => u.availabilityStatus === "AVAILABLE").length;
   const rentedCount = allUnits.filter((u) => u.availabilityStatus === "RENTED").length;
+  const unlistedCount = allUnits.filter((u) => !(u as any).publishedAt).length;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
@@ -198,6 +207,11 @@ export default function OwnerBuildingPage() {
                 <div className="text-center">
                   <div className="text-2xl font-bold">{rentedCount}</div>
                   <div className="text-xs text-muted-foreground">Rented</div>
+                </div>
+                <Separator />
+                <div className="text-center">
+                  <div className="text-2xl font-bold">{unlistedCount}</div>
+                  <div className="text-xs text-muted-foreground">Unlisted</div>
                 </div>
               </div>
             </CardContent>
@@ -282,14 +296,27 @@ export default function OwnerBuildingPage() {
               ) : (
                 <div className="space-y-2">
                   {floor.apartments.map((a) => (
-                    <div key={a.id} className="flex flex-wrap items-center justify-between gap-2 border rounded p-3">
-                      <div>
-                        <div className="font-medium">Unit {a.unitLabel}</div>
-                        <div className="text-sm text-gray-600">{a.bedrooms} bed • {a.bathrooms} bath • {a.verandas} veranda • ৳{(a.rentAmount / 100).toLocaleString()}/mo • {a.availabilityStatus}</div>
+                    <div key={a.id} className="flex flex-wrap items-start justify-between gap-3 border rounded p-3">
+                      <div className="min-w-0">
+                        <div className="font-medium flex flex-wrap items-center gap-2">
+                          Unit {a.unitLabel}
+                          <Badge variant={a.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>{a.availabilityStatus}</Badge>
+                          <Badge variant={(a as any).publishedAt ? "outline" : "secondary"}>{(a as any).publishedAt ? "Listed" : "Unlisted"}</Badge>
+                        </div>
+                        <div className="text-sm text-muted-foreground mt-1">{a.bedrooms} bed • {a.bathrooms} bath • {a.verandas} veranda • ৳{(a.rentAmount / 100).toLocaleString()}/mo (rent)</div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => toggleStatus(a.id, a.availabilityStatus)}>Toggle status</Button>
-                        <Button size="sm" variant="outline" onClick={() => cloneApartment(a.id, floor.floorNumber)}>Clone</Button>
+                      <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+                        <label className="text-xs text-muted-foreground flex flex-col gap-1">
+                          Status
+                          <select className="h-8 rounded border bg-background px-2 text-sm text-foreground" value={a.availabilityStatus} onChange={(e) => void setStatus(a.id, e.target.value)}>
+                            <option value="AVAILABLE">Available (rent)</option>
+                            <option value="RENTED">Rented</option>
+                            <option value="MAINTENANCE">Maintenance</option>
+                            <option value="COMING_SOON">Coming soon</option>
+                          </select>
+                        </label>
+                        <Button size="sm" variant="outline" onClick={() => void setListed(a.id, !(a as any).publishedAt)}>{(a as any).publishedAt ? "Unlist (hide)" : "List publicly"}</Button>
+                        <Button size="sm" variant="outline" onClick={() => void cloneApartment(a.id, floor.floorNumber)}>Clone</Button>
                       </div>
                     </div>
                   ))}

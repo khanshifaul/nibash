@@ -33,7 +33,7 @@ export class ApartmentsService {
     });
     if (existing) throw new ConflictException("Unit label already exists on this floor");
 
-    const autoPublish = dto.availabilityStatus !== "COMING_SOON";
+    const autoPublish = dto.publish === false ? false : dto.publish === true ? true : dto.availabilityStatus !== "COMING_SOON";
     const apartment = await this.prisma.apartment.create({
       data: {
         buildingId,
@@ -134,7 +134,7 @@ export class ApartmentsService {
         ...(dto.depositMonths !== undefined ? { depositMonths: dto.depositMonths } : {}),
         ...(dto.availabilityStatus !== undefined ? { availabilityStatus: dto.availabilityStatus as any } : {}),
         ...(dto.availableFrom !== undefined ? { availableFrom: dto.availableFrom ? new Date(dto.availableFrom) : null } : {}),
-        ...(dto.publish === true ? { publishedAt: new Date() } : {}),
+        ...(dto.publish === true ? { publishedAt: new Date() } : dto.publish === false ? { publishedAt: null } : {}),
       },
       include: { floor: true, images: { orderBy: { sortOrder: "asc" } } },
     });

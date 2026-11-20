@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
@@ -107,4 +108,10 @@ export class CreateApartmentDto {
   @IsString()
   @IsOptional()
   availableFrom?: string;
+
+
+  @ApiProperty({ required: false, default: true, description: "Whether to list this unit publicly (requires published state in search)" })
+  @IsOptional()
+  publish?: boolean;
+
 }
