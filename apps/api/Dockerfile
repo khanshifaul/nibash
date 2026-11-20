@@ -36,21 +36,25 @@ RUN set -e; \
   echo "Using prisma: $PRISMA_BIN"; \
   case "$PRISMA_BIN" in *.js) bun "$PRISMA_BIN" generate ;; *) "$PRISMA_BIN" generate ;; esac
 RUN set -e; \
+  echo "---pwd---"; pwd; echo "---src---"; ls -la; ls -la src 2>&1 | head -10 || true; \
   NEST_BIN=""; \
   for p in \
     /app/node_modules/.bin/nest \
     /app/apps/api/node_modules/.bin/nest \
     ; do [ -e "$p" ] && NEST_BIN="$p" && break; done; \
   if [ -z "$NEST_BIN" ]; then NEST_BIN=$(find /app -path '*@nestjs/cli*/bin/nest.js' 2>/dev/null | head -1 || true); fi; \
+  echo "NEST_BIN=$NEST_BIN"; \
   if [ -n "$NEST_BIN" ]; then \
-    case "$NEST_BIN" in *.js) bun "$NEST_BIN" build || true ;; *) "$NEST_BIN" build || true ;; esac; \
+    case "$NEST_BIN" in *.js) bun "$NEST_BIN" build 2>&1 || echo "nest-build-failed" ;; *) "$NEST_BIN" build 2>&1 || echo "nest-build-failed" ;; esac; \
   else \
-    echo "nest cli not found, trying bunx"; bunx --bun @nestjs/cli build || true; \
+    echo "nest cli not found, trying bunx"; bunx --bun @nestjs/cli build 2>&1 || echo "nest-build-failed"; \
   fi; \
+  echo "---after nest---"; find dist -maxdepth 3 2>&1 | head -30 || true; \
   if [ ! -f dist/src/main.js ] && [ ! -f dist/main.js ]; then \
     echo "nest build did not produce entrypoint, falling back to tsc"; \
     TSC_BIN=$(find /app -path '*typescript*/bin/tsc' 2>/dev/null | head -1 || true); \
-    if [ -n "$TSC_BIN" ]; then bun "$TSC_BIN" -p tsconfig.build.json; else bunx --bun tsc -p tsconfig.build.json; fi; \
+    echo "TSC_BIN=$TSC_BIN"; \
+    if [ -n "$TSC_BIN" ]; then bun "$TSC_BIN" --project tsconfig.build.json; else bunx --bun tsc --project tsconfig.build.json; fi; \
   fi; \
   echo "---dist---"; find dist -maxdepth 4 | head -80 || true
 
