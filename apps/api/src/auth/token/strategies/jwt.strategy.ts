@@ -1,11 +1,11 @@
 // src/auth/token/strategies/jwt.strategy.ts
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import type { Request } from "express";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { AUTH_COOKIE } from "../../../common/cookie.util";
-import type { DatabaseService } from "../../../database/database.service";
+import { DatabaseService } from "../../../database/database.service";
 import type { JwtPayload } from "../../common/interfaces/jwt-payload.interface";
 
 function cookieOrBearerExtractor(req: Request): string | null {
@@ -18,8 +18,8 @@ function cookieOrBearerExtractor(req: Request): string | null {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
   constructor(
-    configService: ConfigService,
     private readonly prisma: DatabaseService,
+    configService: ConfigService,
   ) {
     const secret =
       configService.get<string>("jwt.secret") ?? configService.get<string>("JWT_SECRET");

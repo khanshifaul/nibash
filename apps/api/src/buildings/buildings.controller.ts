@@ -4,7 +4,7 @@ import type { Request } from "express";
 import { Public } from "../common/decorators/public.decorator";
 import { User } from "../common/decorators/user.decorator";
 import { Verified } from "../common/decorators/verified.decorator";
-import type { BuildingsService } from "./buildings.service";
+import { BuildingsService } from "./buildings.service";
 import type { CreateBuildingDto } from "./dto/create-building.dto";
 import type { UpdateBuildingDto } from "./dto/update-building.dto";
 

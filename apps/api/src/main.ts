@@ -1,4 +1,5 @@
 // src/main.ts — bootstrap with config, security, Swagger, CORS.
+import "reflect-metadata";
 import { RequestMethod, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
@@ -60,7 +61,6 @@ async function bootstrap() {
     .setDescription(
       "Multi-building apartment rental platform API: auth, buildings/floors/apartments, media, search, inquiries.",
     )
-    .setVersion("0.1.0")
     .addCookieAuth("nibash_token")
     .addBearerAuth()
     .build();

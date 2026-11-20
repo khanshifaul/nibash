@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swa
 import { User } from "../common/decorators/user.decorator";
 import { Verified } from "../common/decorators/verified.decorator";
 import type { CreateInquiryDto, UpdateInquiryStatusDto } from "./dto/inquiry.dto";
-import type { InquiriesService } from "./inquiries.service";
+import { InquiriesService } from "./inquiries.service";
 
 @ApiTags("Inquiries")
 @Controller("inquiries")

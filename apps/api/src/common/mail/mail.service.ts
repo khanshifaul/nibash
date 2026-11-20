@@ -1,6 +1,6 @@
 // src/common/mail/mail.service.ts — email sender (Resend preferred, SMTP/dev fallback).
 import { Injectable, Logger } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import * as nodemailer from "nodemailer";
 import { Resend } from "resend";
 
@@ -10,9 +10,7 @@ export class MailService {
   private readonly resend: Resend | null;
 
   constructor(private readonly configService: ConfigService) {
-    const apiKey =
-      this.configService.get<string>("RESEND_API_KEY") ||
-      this.configService.get<string>("resend.apiKey");
+    const apiKey = this.configService.get<string>("RESEND_API_KEY");
     this.resend = apiKey ? new Resend(apiKey) : null;
   }
 
@@ -70,7 +68,7 @@ export class MailService {
 
     const transporter = nodemailer.createTransport({
       host,
-      port: this.configService.get<number>("SMTP_PORT") ?? 587,
+      port: Number(this.configService.get<string | number>("SMTP_PORT") ?? 587),
       secure: false,
       auth: {
         user: this.configService.get<string>("SMTP_USER"),

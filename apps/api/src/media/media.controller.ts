@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swa
 import { User } from "../common/decorators/user.decorator";
 import { Verified } from "../common/decorators/verified.decorator";
 import type { AttachApartmentImageDto, AttachBuildingImageDto, PresignDto } from "./dto/media.dto";
-import type { MediaService } from "./media.service";
+import { MediaService } from "./media.service";
 
 @ApiTags("Media")
 @Controller()

@@ -7,8 +7,8 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
-import type { DatabaseService } from "../database/database.service";
+import { ConfigService } from "@nestjs/config";
+import { DatabaseService } from "../database/database.service";
 import {
   type AttachApartmentImageDto,
   type AttachBuildingImageDto,
