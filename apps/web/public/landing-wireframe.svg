@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1400" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .box { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.5; }
+      .accent { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.5; }
+      .dark { fill: #1e293b; stroke: #334155; stroke-width: 1.5; }
+      .label { fill: #334155; font-size: 14px; font-weight: 600; }
+      .sub { fill: #64748b; font-size: 11px; }
+      .small { fill: #64748b; font-size: 10px; }
+      .white { fill: #fff; font-size: 12px; }
+      .card { fill: #fff; stroke: #e2e8f0; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <!-- Header -->
+  <rect x="20" y="20" width="860" height="60" rx="8" class="box"/>
+  <text x="40" y="55" class="label">nibash</text>
+  <text x="120" y="55" class="sub">Search</text>
+  <text x="170" y="55" class="sub">Listings</text>
+  <text x="720" y="55" class="sub">Sign in</text>
+  <rect x="780" y="35" width="80" height="30" rx="6" fill="#0f172a"/>
+  <text x="795" y="55" class="white">Sign up</text>
+  <text x="840" y="15" class="small">STICKY HEADER (GSAP fade-in on scroll)</text>
+
+  <!-- Hero -->
+  <rect x="20" y="100" width="860" height="220" rx="12" class="accent"/>
+  <text x="60" y="160" font-size="28" font-weight="700" fill="#0f172a">Find your next home</text>
+  <text x="60" y="190" class="sub">Search verified apartments across buildings — compare, inquire, move in.</text>
+  <rect x="60" y="210" width="120" height="36" rx="8" fill="#2563eb"/>
+  <text x="85" y="233" class="white">Browse listings</text>
+  <rect x="195" y="210" width="120" height="36" rx="8" fill="#fff" stroke="#cbd5e1"/>
+  <text x="215" y="233" font-size="12" fill="#334155">List property</text>
+  <rect x="520" y="130" width="320" height="160" rx="12" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="620" y="215" class="sub">Hero illustration / motion graphic</text>
+  <text x="840" y="95" class="small">HERO (GSAP stagger + Framer Motion)</text>
+
+  <!-- Carousel -->
+  <rect x="20" y="340" width="860" height="180" rx="12" class="box"/>
+  <text x="40" y="370" class="label">Featured listings carousel</text>
+  <rect x="40" y="385" width="250" height="110" rx="8" class="card"/>
+  <rect x="305" y="385" width="250" height="110" rx="8" class="card"/>
+  <rect x="570" y="385" width="250" height="110" rx="8" class="card"/>
+  <text x="120" y="445" class="sub">Slide 1</text>
+  <text x="385" y="445" class="sub">Slide 2</text>
+  <text x="650" y="445" class="sub">Slide 3</text>
+  <circle cx="430" y="510" r="4" fill="#2563eb"/>
+  <circle cx="445" y="510" r="4" fill="#cbd5e1"/>
+  <circle cx="460" y="510" r="4" fill="#cbd5e1"/>
+  <text x="840" y="335" class="small">CAROUSEL (Embla + Framer Motion)</text>
+
+  <!-- Listings section -->
+  <rect x="20" y="540" width="860" height="380" rx="12" class="box"/>
+  <text x="40" y="570" class="label">Available apartments</text>
+  <rect x="680" y="550" width="80" height="28" rx="6" fill="#e2e8f0"/>
+  <text x="700" y="568" class="small">Grid</text>
+  <rect x="770" y="550" width="80" height="28" rx="6" fill="#fff" stroke="#cbd5e1"/>
+  <text x="795" y="568" class="small">List</text>
+
+  <!-- Grid cards -->
+  <rect x="40" y="590" width="250" height="140" rx="8" class="card"/>
+  <rect x="40" y="590" width="250" height="70" rx="8" fill="#e2e8f0"/>
+  <text x="55" y="680" font-size="12" font-weight="600" fill="#334155">2BR Apartment</text>
+  <text x="55" y="698" class="small">Dhanmondi • ৳25,000/mo</text>
+  <text x="55" y="716" class="small">2 bed • 2 bath • Lift</text>
+
+  <rect x="305" y="590" width="250" height="140" rx="8" class="card"/>
+  <rect x="305" y="590" width="250" height="70" rx="8" fill="#e2e8f0"/>
+  <text x="320" y="680" font-size="12" font-weight="600" fill="#334155">3BR Apartment</text>
+  <text x="320" y="698" class="small">Gulshan • ৳45,000/mo</text>
+  <text x="320" y="716" class="small">3 bed • 3 bath • Parking</text>
+
+  <rect x="570" y="590" width="250" height="140" rx="8" class="card"/>
+  <rect x="570" y="590" width="250" height="70" rx="8" fill="#e2e8f0"/>
+  <text x="585" y="680" font-size="12" font-weight="600" fill="#334155">1BR Studio</text>
+  <text x="585" y="698" class="small">Banani • ৳18,000/mo</text>
+  <text x="585" y="716" class="small">1 bed • 1 bath • Gen</text>
+
+  <!-- List view hint -->
+  <rect x="40" y="745" width="780" height="50" rx="8" class="card"/>
+  <rect x="50" y="755" width="60" height="30" rx="4" fill="#e2e8f0"/>
+  <text x="120" y="775" class="sub">List view: horizontal card with image, details, CTA</text>
+
+  <rect x="40" y="805" width="780" height="50" rx="8" class="card"/>
+  <rect x="50" y="815" width="60" height="30" rx="4" fill="#e2e8f0"/>
+  <text x="120" y="835" class="sub">List view: horizontal card with image, details, CTA</text>
+
+  <text x="840" y="535" class="small">GRID/LIST TOGGLE + CARDS</text>
+
+  <!-- Features -->
+  <rect x="20" y="940" width="860" height="140" rx="12" class="box"/>
+  <text x="40" y="970" class="label">Why nibash</text>
+  <rect x="40" y="985" width="260" height="70" rx="8" class="card"/>
+  <text x="60" y="1015" font-size="12" font-weight="600" fill="#334155">Verified listings</text>
+  <text x="60" y="1035" class="small">Moderated buildings & units</text>
+  <rect x="320" y="985" width="260" height="70" rx="8" class="card"/>
+  <text x="340" y="1015" font-size="12" font-weight="600" fill="#334155">Easy management</text>
+  <text x="340" y="1035" class="small">Add buildings, floors, units fast</text>
+  <rect x="600" y="985" width="260" height="70" rx="8" class="card"/>
+  <text x="620" y="1015" font-size="12" font-weight="600" fill="#334155">Direct inquiries</text>
+  <text x="620" y="1035" class="small">Connect renters with owners</text>
+  <text x="840" y="935" class="small">FEATURES (scroll reveal)</text>
+
+  <!-- Footer -->
+  <rect x="20" y="1100" width="860" height="180" rx="12" class="dark"/>
+  <text x="40" y="1140" font-size="16" font-weight="700" fill="#fff">nibash</text>
+  <text x="40" y="1165" font-size="11" fill="#94a3b8">Apartments across buildings</text>
+  <text x="300" y="1140" font-size="12" font-weight="600" fill="#e2e8f0">Product</text>
+  <text x="300" y="1165" font-size="11" fill="#94a3b8">Search</text>
+  <text x="300" y="1185" font-size="11" fill="#94a3b8">Listings</text>
+  <text x="450" y="1140" font-size="12" font-weight="600" fill="#e2e8f0">Owners</text>
+  <text x="450" y="1165" font-size="11" fill="#94a3b8">Dashboard</text>
+  <text x="450" y="1185" font-size="11" fill="#94a3b8">Add building</text>
+  <text x="600" y="1140" font-size="12" font-weight="600" fill="#e2e8f0">Account</text>
+  <text x="600" y="1165" font-size="11" fill="#94a3b8">Sign in</text>
+  <text x="600" y="1185" font-size="11" fill="#94a3b8">Sign up</text>
+  <line x1="40" y1="1220" x2="860" y2="1220" stroke="#334155"/>
+  <text x="40" y="1250" font-size="11" fill="#64748b">© 2026 nibash. All rights reserved.</text>
+  <text x="840" y="1095" class="small">FOOTER</text>
+
+  <!-- Annotations -->
+  <text x="20" y="1320" font-size="12" font-weight="600" fill="#334155">Tech: Next.js 16 + Tailwind 4 + GSAP (@gsap/react) + Framer Motion + Embla Carousel</text>
+  <text x="20" y="1345" font-size="11" fill="#64748b">• Header: sticky, blur backdrop, scroll-aware (GSAP)</text>
+  <text x="20" y="1365" font-size="11" fill="#64748b">• Hero: staggered text reveal (GSAP), CTA hover (Framer Motion)</text>
+  <text x="20" y="1385" font-size="11" fill="#64748b">• Carousel: auto-play featured listings (Embla), slide transitions (Framer Motion)</text>
+</svg>

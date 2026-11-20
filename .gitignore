@@ -1,0 +1,26 @@
+node_modules/
+dist/
+build/
+.next/
+*.log
+.env
+.env.local
+*.tsbuildinfo
+coverage/
+.vscode/
+.idea/
+
+# Secrets / local deploy references
+.deploy-collected.env
+.deploy*.env
+*.deploy-collected*
+.env.*
+!.env.example
+!.env*.example
+apps/*/.env
+apps/*/.env.local
+apps/*/.env.*.local
+
+# Audit reports / local artifacts
+.unlighthouse/
+landing-*.png

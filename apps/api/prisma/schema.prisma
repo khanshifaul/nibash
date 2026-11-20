@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client"
+  output   = "generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ModerationStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  COMING_SOON
+}
+
+enum GasType {
+  LINE
+  CYLINDER
+  LPG_CENTRAL
+  NONE
+}
+
+enum ParkingType {
+  NONE
+  BIKE
+  CAR
+  CAR_AND_BIKE
+  PAID
+}
+
+enum RoomTag {
+  COVER
+  MASTER_BEDROOM
+  BEDROOM
+  DINING
+  DRAWING
+  KITCHEN
+  WASHROOM
+  VERANDA
+  OTHER
+}
+
+enum InquiryStatus {
+  PENDING
+  CONTACTED
+  SCHEDULED
+  CLOSED
+  SPAM
+}
+
+model User {
+  id                       String    @id @default(cuid())
+  name                     String?   @db.VarChar(255)
+  email                    String    @unique @db.VarChar(255)
+  phone                    String?   @db.VarChar(32)
+  passwordHash             String    @db.VarChar(255)
+  avatarUrl                String?   @db.Text
+  isEmailVerified          Boolean   @default(false)
+  emailVerificationToken   String?   @unique @db.VarChar(255)
+  emailVerificationExpires DateTime?
+  resetToken               String?   @unique @db.VarChar(255)
+  resetTokenExpires        DateTime?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  buildings      Building[]
+  inquiries      Inquiry[]      @relation("RenterInquiries")
+  favorites      Favorite[]
+  refreshTokens  RefreshToken[]
+
+  @@index([phone])
+  @@map("users")
+}
+
+model Building {
+  id                 String           @id @default(cuid())
+  ownerId            String
+  name               String           @db.VarChar(200)
+  slug               String           @unique @db.VarChar(200)
+  areaZone           String           @db.VarChar(100)
+  roadBlock          String?          @db.VarChar(100)
+  addressLine        String?          @db.Text
+  contactPhone       String?          @db.VarChar(32)
+  lat                Float
+  lng                Float
+  totalFloors        Int              @default(1)
+  hasElevator        Boolean          @default(false)
+  elevatorCount      Int?             @db.SmallInt
+  hasParking         Boolean          @default(false)
+  parkingType        ParkingType      @default(NONE)
+  hasGenerator       Boolean          @default(false)
+  generatorScope     String?          @db.VarChar(50)
+  hasSecurityGuard   Boolean          @default(false)
+  hasCctv            Boolean          @default(false)
+  hasIntercom        Boolean          @default(false)
+  hasRooftop         Boolean          @default(false)
+  hasSubmersiblePump Boolean          @default(false)
+  moderationStatus   ModerationStatus @default(APPROVED)
+  isFeatured         Boolean          @default(false)
+  publishedAt        DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  owner      User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  floors     Floor[]
+  apartments Apartment[]
+  images     BuildingImage[]
+  inquiries  Inquiry[]
+
+  @@index([ownerId])
+  @@index([moderationStatus])
+  @@index([areaZone])
+  @@map("buildings")
+}
+
+model Floor {
+  id          String   @id @default(cuid())
+  buildingId  String
+  floorNumber Int
+  label       String?  @db.VarChar(50)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  building   Building    @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  apartments Apartment[]
+
+  @@unique([buildingId, floorNumber])
+  @@index([buildingId])
+  @@map("floors")
+}
+
+model BuildingImage {
+  id         String   @id @default(cuid())
+  buildingId String
+  storageKey String   @db.Text
+  url        String   @db.Text
+  caption    String?  @db.VarChar(200)
+  sortOrder  Int      @default(0)
+  isCover    Boolean  @default(false)
+  width      Int?
+  height     Int?
+  createdAt  DateTime @default(now())
+
+  building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@index([buildingId])
+  @@map("building_images")
+}
+
+model Apartment {
+  id                    String             @id @default(cuid())
+  buildingId            String
+  floorId               String
+  unitLabel             String             @db.VarChar(50)
+  facing                String?            @db.VarChar(20)
+  sizeSqft              Int?
+  bedrooms              Int                @default(0)
+  attachedBathrooms     Int                @default(0)
+  bathrooms             Int                @default(0)
+  highCommodeCount      Int?               @db.SmallInt
+  diningRooms           Int                @default(0)
+  drawingRooms          Int                @default(0)
+  kitchens              Int                @default(0)
+  verandas              Int                @default(0)
+  gasType               GasType            @default(NONE)
+  utilityBillingType    String?            @db.VarChar(50)
+  preferredTenantTypes  String[]           @default([])
+  rentAmount            Int
+  serviceCharge         Int                @default(0)
+  securityDepositAmount Int                @default(0)
+  depositMonths         Int?
+  availabilityStatus    AvailabilityStatus @default(AVAILABLE)
+  availableFrom         DateTime?
+  publishedAt           DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  building  Building         @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  floor     Floor            @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  images    ApartmentImage[]
+  inquiries Inquiry[]
+  favorites Favorite[]
+
+  @@unique([floorId, unitLabel])
+  @@index([buildingId])
+  @@index([floorId])
+  @@index([availabilityStatus])
+  @@index([rentAmount])
+  @@index([bedrooms, bathrooms, verandas])
+  @@map("apartments")
+}
+
+model ApartmentImage {
+  id          String   @id @default(cuid())
+  apartmentId String
+  storageKey  String   @db.Text
+  url         String   @db.Text
+  roomTag     RoomTag
+  sortOrder   Int      @default(0)
+  width       Int?
+  height      Int?
+  createdAt   DateTime @default(now())
+
+  apartment Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@index([apartmentId])
+  @@map("apartment_images")
+}
+
+model Inquiry {
+  id               String        @id @default(cuid())
+  apartmentId      String
+  buildingId       String
+  renterId         String
+  message          String?       @db.Text
+  requestedVisitAt DateTime?
+  status           InquiryStatus @default(PENDING)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  apartment Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  building  Building  @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  renter    User      @relation("RenterInquiries", fields: [renterId], references: [id], onDelete: Cascade)
+
+  @@index([apartmentId])
+  @@index([buildingId])
+  @@index([renterId])
+  @@index([status])
+  @@map("inquiries")
+}
+
+model Favorite {
+  userId      String
+  apartmentId String
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apartment Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, apartmentId])
+  @@map("favorites")
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique @db.VarChar(255)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}

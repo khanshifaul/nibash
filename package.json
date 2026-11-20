@@ -1,0 +1,30 @@
+{
+  "name": "nibash",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-building apartment rental listing platform",
+  "workspaces": ["apps/*"],
+  "engines": { "node": ">=20.0.0" },
+  "scripts": {
+    "dev": "bun run --parallel --filter '@nibash/{web,api}' dev",
+    "dev:web": "bun --filter '@nibash/web' dev",
+    "dev:api": "bun --filter '@nibash/api' dev",
+    "build": "bun --filter '@nibash/{web,api}' build",
+    "build:web": "bun --filter '@nibash/web' build",
+    "build:api": "bun --filter '@nibash/api' build",
+    "start": "bun run --parallel --filter '@nibash/{web,api}' start",
+    "lint": "oxlint apps",
+    "test": "bun --filter '@nibash/{web,api}' test",
+    "db:migrate": "bun --filter '@nibash/api' db:migrate",
+    "db:push": "bun --filter '@nibash/api' db:push",
+    "db:seed": "bun --filter '@nibash/api' db:seed",
+    "db:studio": "bun --filter '@nibash/api' db:studio"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {}
+}

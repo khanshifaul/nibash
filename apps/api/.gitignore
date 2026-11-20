@@ -1,0 +1,7 @@
+src/
+test/
+dist/
+prisma/generated/
+*.tsbuildinfo
+.env
+.env.local
