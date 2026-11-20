@@ -61,10 +61,11 @@ export function SiteHeader() {
           {/* Search trigger */}
           <button
             onClick={() => setSearchOpen(true)}
-            className="flex-1 max-w-md flex items-center gap-2 h-9 px-3 rounded-md border bg-muted/40 text-sm text-muted-foreground hover:bg-muted/60 transition-colors text-left"
+            className="h-9 w-9 sm:w-auto sm:flex-1 sm:max-w-md flex items-center justify-center sm:justify-start gap-2 sm:px-3 rounded-md border bg-muted/40 text-sm text-muted-foreground hover:bg-muted/60 transition-colors text-left shrink-0 sm:shrink cursor-pointer"
+            aria-label="Search properties"
           >
             <Search className="h-4 w-4 shrink-0" />
-            <span className="truncate">Search properties, areas...</span>
+            <span className="hidden sm:inline truncate">Search properties, areas...</span>
           </button>
 
           <nav className="flex items-center gap-2 text-sm shrink-0">
