@@ -6,9 +6,6 @@
   "workspaces": [
     "apps/*"
   ],
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "scripts": {
     "dev": "bun run --parallel --filter '@nibash/{web,api}' dev",
     "dev:web": "bun --filter '@nibash/web' dev",
@@ -25,11 +22,14 @@
     "db:studio": "bun --filter '@nibash/api' db:studio",
     "prepare": "git config core.hooksPath .githooks || true"
   },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.17.0",
     "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
     "typescript": "^5.9.3"
   },
-  "dependencies": {}
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }

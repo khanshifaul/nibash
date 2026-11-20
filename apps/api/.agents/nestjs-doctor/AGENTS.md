@@ -103,22 +103,22 @@ Construction times need a real boot, which a scan never performs. Use the
 
 ## Flags
 
-| Flag | Purpose |
-| ---- | ------- |
-| `--scope changed` | Report only what the change introduced |
-| `--base <ref>` | The branch or commit to compare against |
-| `--staged` | Report on the files in the git index |
-| `--verbose` | Show the file and line behind every finding |
-| `--json` | The full result, for tooling |
-| `--score` | The number alone |
-| `--report` | Write an interactive HTML report |
-| `--format report-json` | Write the document behind that report as versioned JSON |
-| `--output <path>` | Where to write it, instead of the project root |
-| `--timings <path>` | Overlay real boot times on the report |
-| `--sources <mode>` | Report source text: all (default), touched, none |
+| Flag                     | Purpose                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------ |
+| `--scope changed`        | Report only what the change introduced                                               |
+| `--base <ref>`           | The branch or commit to compare against                                              |
+| `--staged`               | Report on the files in the git index                                                 |
+| `--verbose`              | Show the file and line behind every finding                                          |
+| `--json`                 | The full result, for tooling                                                         |
+| `--score`                | The number alone                                                                     |
+| `--report`               | Write an interactive HTML report                                                     |
+| `--format report-json`   | Write the document behind that report as versioned JSON                              |
+| `--output <path>`        | Where to write it, instead of the project root                                       |
+| `--timings <path>`       | Overlay real boot times on the report                                                |
+| `--sources <mode>`       | Report source text: all (default), touched, none                                     |
 | `--share-sections <csv>` | Write a shareable JSON slice: score, endpoints, schema, modules, findings:<category> |
-| `--share-code` | With `--share-sections`, include code around each shared finding |
-| `--min-score <n>` | Fail below a score |
-| `--blocking <level>` | Fail on `error`, `warning`, or never with `none` |
-| `--config <path>` | Use a specific config file |
-| `--list-rules` | Print every built-in rule and exit |
+| `--share-code`           | With `--share-sections`, include code around each shared finding                     |
+| `--min-score <n>`        | Fail below a score                                                                   |
+| `--blocking <level>`     | Fail on `error`, `warning`, or never with `none`                                     |
+| `--config <path>`        | Use a specific config file                                                           |
+| `--list-rules`           | Print every built-in rule and exit                                                   |

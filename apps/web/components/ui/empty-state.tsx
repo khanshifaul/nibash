@@ -31,9 +31,7 @@ export function EmptyState({
         </div>
       )}
       <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-      <p className="text-muted-foreground text-sm max-w-sm mt-2 mb-6">
-        {description}
-      </p>
+      <p className="text-muted-foreground text-sm max-w-sm mt-2 mb-6">{description}</p>
       {action && <div>{action}</div>}
     </div>
   );

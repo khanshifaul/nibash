@@ -8,7 +8,14 @@ import { FiArrowLeft } from "react-icons/fi";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 function ResetInner() {
   const params = useSearchParams();
@@ -53,8 +60,15 @@ function ResetInner() {
         <Card className="w-full max-w-[440px] shadow-xl border-border/70 rounded-2xl">
           <CardContent className="pt-8 pb-8 text-center space-y-3">
             <p className="text-destructive font-semibold">Invalid reset link</p>
-            <p className="text-sm text-muted-foreground">This password reset link is missing or invalid.</p>
-            <Link href="/forgot-password" className="inline-block text-primary hover:underline text-sm font-medium">Request a new reset link</Link>
+            <p className="text-sm text-muted-foreground">
+              This password reset link is missing or invalid.
+            </p>
+            <Link
+              href="/forgot-password"
+              className="inline-block text-primary hover:underline text-sm font-medium"
+            >
+              Request a new reset link
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -66,8 +80,12 @@ function ResetInner() {
       <div className="w-full max-w-[440px]">
         <Card className="shadow-xl shadow-black/5 border-border/70 rounded-2xl overflow-hidden">
           <CardHeader className="space-y-1.5 pb-3 px-6 sm:px-7 pt-7 sm:pt-8 text-center">
-            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight">Set a new password</CardTitle>
-            <CardDescription className="text-sm sm:text-base">Choose a strong password for your account</CardDescription>
+            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Set a new password
+            </CardTitle>
+            <CardDescription className="text-sm sm:text-base">
+              Choose a strong password for your account
+            </CardDescription>
           </CardHeader>
           <CardContent className="px-6 sm:px-7 pb-6">
             {done ? (
@@ -76,20 +94,29 @@ function ResetInner() {
                   <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-green-900 dark:text-green-200 font-semibold">Password reset successful</p>
-                  <p className="text-sm text-green-800/90 dark:text-green-300/90 mt-1">Redirecting you to sign in…</p>
+                  <p className="text-sm text-green-900 dark:text-green-200 font-semibold">
+                    Password reset successful
+                  </p>
+                  <p className="text-sm text-green-800/90 dark:text-green-300/90 mt-1">
+                    Redirecting you to sign in…
+                  </p>
                 </div>
               </div>
             ) : (
               <form className="space-y-4" onSubmit={onSubmit}>
                 {error && (
-                  <div role="alert" className="rounded-lg border border-destructive/25 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
+                  <div
+                    role="alert"
+                    className="rounded-lg border border-destructive/25 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive"
+                  >
                     {error}
                   </div>
                 )}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="password" required>New password</Label>
+                  <Label htmlFor="password" required>
+                    New password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <input
@@ -115,7 +142,9 @@ function ResetInner() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="confirmPassword" required>Confirm new password</Label>
+                  <Label htmlFor="confirmPassword" required>
+                    Confirm new password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <input
@@ -138,17 +167,32 @@ function ResetInner() {
                       {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {passwordsMismatch && <p className="text-xs text-destructive">Passwords do not match.</p>}
+                  {passwordsMismatch && (
+                    <p className="text-xs text-destructive">Passwords do not match.</p>
+                  )}
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full h-11 text-base font-semibold mt-2 rounded-lg">
-                  {loading ? (<><Loader2 className="h-4 w-4 animate-spin" /> Resetting...</>) : "Reset password"}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-11 text-base font-semibold mt-2 rounded-lg"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Resetting...
+                    </>
+                  ) : (
+                    "Reset password"
+                  )}
                 </Button>
               </form>
             )}
           </CardContent>
           <CardFooter className="px-6 sm:px-7 pb-6 pt-0 flex flex-col">
-            <Link href="/sign-in" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 mx-auto">
+            <Link
+              href="/sign-in"
+              className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 mx-auto"
+            >
               <FiArrowLeft className="h-4 w-4" /> Back to sign in
             </Link>
           </CardFooter>
@@ -160,7 +204,11 @@ function ResetInner() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100vh-200px)] flex items-center justify-center">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-[calc(100vh-200px)] flex items-center justify-center">Loading...</div>
+      }
+    >
       <ResetInner />
     </Suspense>
   );

@@ -1,19 +1,11 @@
 // src/database/database.service.ts — Prisma 7 with pg adapter (schoolos pattern).
-import {
-  Injectable,
-  Logger,
-  OnModuleDestroy,
-  OnModuleInit,
-} from "@nestjs/common";
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaClient } from "../../prisma/generated/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 @Injectable()
-export class DatabaseService
-  extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
-{
+export class DatabaseService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(DatabaseService.name);
 
   constructor(configService: ConfigService) {

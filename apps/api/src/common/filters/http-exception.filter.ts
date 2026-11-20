@@ -1,11 +1,5 @@
 // src/common/filters/http-exception.filter.ts — consistent error envelope.
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  Logger,
-} from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from "@nestjs/common";
 import { Request, Response } from "express";
 
 @Catch()
@@ -35,10 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     const err = exception as Error;
-    this.logger.error(
-      `Unhandled: ${request.method} ${request.url} - ${err?.message}`,
-      err?.stack,
-    );
+    this.logger.error(`Unhandled: ${request.method} ${request.url} - ${err?.message}`, err?.stack);
     return response.status(500).json({
       success: false,
       statusCode: 500,

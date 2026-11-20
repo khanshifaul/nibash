@@ -13,22 +13,22 @@ type Category = "security" | "performance" | "correctness" | "architecture";
 
 // --- Rule metadata (all fields required) ---
 interface RuleMeta {
-  id: string;           // kebab-case, e.g. "require-logger-in-services"
-  description: string;  // short one-liner
-  help: string;         // actionable fix suggestion
+  id: string; // kebab-case, e.g. "require-logger-in-services"
+  description: string; // short one-liner
+  help: string; // actionable fix suggestion
   severity: Severity;
   category: Category;
-  scope?: "file" | "project";  // defaults to "file" if omitted
+  scope?: "file" | "project"; // defaults to "file" if omitted
 }
 
 // --- Diagnostic report fields ---
 // Call context.report() with these fields:
 interface ReportPayload {
-  filePath: string;   // absolute or relative path to the offending file
-  message: string;    // what's wrong
-  help: string;       // how to fix it
-  line: number;       // 1-based line number
-  column: number;     // 1-based column number
+  filePath: string; // absolute or relative path to the offending file
+  message: string; // what's wrong
+  help: string; // how to fix it
+  line: number; // 1-based line number
+  column: number; // 1-based column number
 }
 
 // --- File-scoped rule ---
@@ -51,11 +51,31 @@ interface ProjectRule {
     files: string[];
     config: Record<string, unknown>;
     moduleGraph: {
-      modules: Map<string, { name: string; filePath: string; classDeclaration: any; imports: string[]; providers: string[]; controllers: string[]; exports: string[] }>;
+      modules: Map<
+        string,
+        {
+          name: string;
+          filePath: string;
+          classDeclaration: any;
+          imports: string[];
+          providers: string[];
+          controllers: string[];
+          exports: string[];
+        }
+      >;
       edges: Map<string, Set<string>>;
       providerToModule: Map<string, { name: string; filePath: string; classDeclaration: any }>;
     };
-    providers: Map<string, { name: string; filePath: string; classDeclaration: any; dependencies: string[]; publicMethodCount: number }>;
+    providers: Map<
+      string,
+      {
+        name: string;
+        filePath: string;
+        classDeclaration: any;
+        dependencies: string[];
+        publicMethodCount: number;
+      }
+    >;
     report(diagnostic: ReportPayload): void;
   }): void;
 }

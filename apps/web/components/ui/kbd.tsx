@@ -33,9 +33,7 @@ const Kbd = React.forwardRef<HTMLElement, KbdProps>(
               >
                 {key}
               </kbd>
-              {index < keys.length - 1 && (
-                <span className="text-muted-foreground text-xs">+</span>
-              )}
+              {index < keys.length - 1 && <span className="text-muted-foreground text-xs">+</span>}
             </React.Fragment>
           ))}
         </span>

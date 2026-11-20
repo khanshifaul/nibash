@@ -11,32 +11,64 @@ export function SiteFooter() {
               <Logo />
             </Link>
             <p className="text-sm text-muted-foreground mt-3">
-              Find verified apartments across buildings. Compare details, inquire, and move in with confidence.
+              Find verified apartments across buildings. Compare details, inquire, and move in with
+              confidence.
             </p>
           </div>
 
           <div>
             <h3 className="font-semibold text-sm mb-3">Product</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/search" className="hover:text-foreground transition-colors">Search properties</Link></li>
-              <li><Link href="/search" className="hover:text-foreground transition-colors">Featured properties</Link></li>
+              <li>
+                <Link href="/search" className="hover:text-foreground transition-colors">
+                  Search properties
+                </Link>
+              </li>
+              <li>
+                <Link href="/search" className="hover:text-foreground transition-colors">
+                  Featured properties
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold text-sm mb-3">For owners</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link></li>
-              <li><Link href="/dashboard/properties/new" className="hover:text-foreground transition-colors">Add property</Link></li>
-              <li><Link href="/dashboard/inbox" className="hover:text-foreground transition-colors">Inbox</Link></li>
+              <li>
+                <Link href="/dashboard" className="hover:text-foreground transition-colors">
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard/properties/new"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Add property
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/inbox" className="hover:text-foreground transition-colors">
+                  Inbox
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold text-sm mb-3">Account</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/sign-in" className="hover:text-foreground transition-colors">Sign in</Link></li>
-              <li><Link href="/dashboard/profile" className="hover:text-foreground transition-colors">Profile</Link></li>
+              <li>
+                <Link href="/sign-in" className="hover:text-foreground transition-colors">
+                  Sign in
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/profile" className="hover:text-foreground transition-colors">
+                  Profile
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

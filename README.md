@@ -38,6 +38,7 @@ bun run dev
 ```
 
 Apps:
+
 - web: http://localhost:3004
 - api: http://localhost:4000 (Swagger at /docs)
 

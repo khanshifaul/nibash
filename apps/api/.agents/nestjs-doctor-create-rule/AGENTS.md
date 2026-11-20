@@ -36,6 +36,7 @@ Project rules receive the entire `Project` and cross-file analysis data:
 - `context.config` — full `NestjsDoctorConfig` object
 
 **Caveats**:
+
 - `providers` only includes `@Injectable()` classes — value/factory/alias providers are not indexed
 - Project rule diagnostics do NOT get automatic `sourceLines` — include them yourself if needed
 
@@ -54,16 +55,16 @@ Before asking for details, evaluate the user's request against the capabilities 
 1. **Determine detection scope**: Single-file pattern -> file rule. Cross-file analysis -> project rule.
 2. **Map the core operation to available APIs**. Ask yourself: can ts-morph or the module graph answer this question?
 
-   | Request | Feasible? | Why |
-   |---------|-----------|-----|
-   | "Check that every @Controller has @ApiTags()" | YES | `cls.getDecorator("Controller")` + `cls.getDecorator("ApiTags")` |
-   | "Check service X is only used in module Y" | YES | `moduleGraph.providerToModule.get("X")` |
-   | "Detect providers with too many dependencies" | YES | `provider.dependencies.length` threshold check |
-   | "Ban a specific npm import" | YES | `imp.getModuleSpecifierValue() === "banned-pkg"` |
-   | "Check runtime types match" | NO | Static analysis only — no runtime access |
-   | "Check database query results" | NO | No runtime or I/O during analysis |
-   | "Check code is formatted" | NO | Use a linter/formatter instead |
-   | "Check that an async handler awaits a call" | PARTIAL | Can detect `async` keyword and check for `AwaitExpression` nodes, but cannot trace all control-flow paths |
+   | Request                                       | Feasible? | Why                                                                                                       |
+   | --------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
+   | "Check that every @Controller has @ApiTags()" | YES       | `cls.getDecorator("Controller")` + `cls.getDecorator("ApiTags")`                                          |
+   | "Check service X is only used in module Y"    | YES       | `moduleGraph.providerToModule.get("X")`                                                                   |
+   | "Detect providers with too many dependencies" | YES       | `provider.dependencies.length` threshold check                                                            |
+   | "Ban a specific npm import"                   | YES       | `imp.getModuleSpecifierValue() === "banned-pkg"`                                                          |
+   | "Check runtime types match"                   | NO        | Static analysis only — no runtime access                                                                  |
+   | "Check database query results"                | NO        | No runtime or I/O during analysis                                                                         |
+   | "Check code is formatted"                     | NO        | Use a linter/formatter instead                                                                            |
+   | "Check that an async handler awaits a call"   | PARTIAL   | Can detect `async` keyword and check for `AwaitExpression` nodes, but cannot trace all control-flow paths |
 
 3. **Check for the async pitfall** — if the detection logic needs to read files from disk asynchronously, make HTTP calls, or do any I/O that requires `await`, the rule CANNOT work because `check()` must be synchronous. Synchronous `fs.readFileSync()` or `fs.existsSync()` is fine.
 
@@ -106,11 +107,11 @@ mkdir -p <customRulesDir>
 
 Read the reference that matches what you are about to write:
 
-| Reference | Read it for |
-| --------- | ----------- |
+| Reference                                        | Read it for                                                                                                 |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | [references/rule-api.md](references/rule-api.md) | The rule object's shape, every `meta` field, what validation rejects, and putting several rules in one file |
-| [references/examples.md](references/examples.md) | A complete file-scoped rule and a complete project-scoped rule |
-| [references/ts-morph.md](references/ts-morph.md) | Finding decorators, classes, imports, and call expressions in the AST |
+| [references/examples.md](references/examples.md) | A complete file-scoped rule and a complete project-scoped rule                                              |
+| [references/ts-morph.md](references/ts-morph.md) | Finding decorators, classes, imports, and call expressions in the AST                                       |
 
 Write a `.ts` file to the custom rules directory. The filename should match the rule ID (e.g., `require-logger-in-services.ts`).
 
@@ -151,6 +152,7 @@ npx nestjs-doctor $ARGUMENTS --json 2>&1
 ```
 
 Check the output for:
+
 - The custom rule appearing in diagnostics with `custom/` prefix
 - No validation warnings about the rule file
 - The scan completing successfully
@@ -161,15 +163,15 @@ If there are warnings, fix the rule file and re-run.
 
 If the user isn't sure what to check, suggest these common custom rules:
 
-| Rule idea | Scope | Category | Detection logic |
-|-----------|-------|----------|-----------------|
-| Require a `Logger` in every service | file | correctness | `cls.getDecorator("Injectable") && !ctor.getParameters().some(p => p.getTypeNode()?.getText()?.includes("Logger"))` |
-| Ban specific npm imports (e.g., `moment`) | file | performance | `imp.getModuleSpecifierValue() === "moment"` |
-| Require `@ApiTags()` on all controllers | file | architecture | `cls.getDecorator("Controller") && !cls.getDecorator("ApiTags")` |
-| Require `@ApiOperation()` on HTTP handlers | file | architecture | `method.getDecorators().some(d => httpDecorators.has(d.getName())) && !method.getDecorator("ApiOperation")` |
-| Enforce max constructor dependencies | file | architecture | `ctor.getParameters().length > MAX` on `@Injectable()` classes |
-| Ban direct DB queries outside repositories | file | architecture | Check `getDescendantsOfKind(SyntaxKind.CallExpression)` for ORM calls in non-`*Repository` classes |
-| Enforce naming conventions | file | architecture | `cls.getDecorator("Injectable") && !name.endsWith("Service") && !name.endsWith("Repository")` |
-| Require services have test files | project | correctness | `require("fs").existsSync(provider.filePath.replace(".ts", ".spec.ts"))` |
-| Detect providers in multiple modules | project | architecture | Count each provider name across `moduleGraph.modules.values()` entries' `providers[]` — flag if > 1 |
-| Require DTO validation pipes on POST/PUT | file | correctness | Check `@Post()`/`@Put()` handler params for `@Body()` + `@UsePipes(ValidationPipe)` or global pipe |
+| Rule idea                                  | Scope   | Category     | Detection logic                                                                                                     |
+| ------------------------------------------ | ------- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Require a `Logger` in every service        | file    | correctness  | `cls.getDecorator("Injectable") && !ctor.getParameters().some(p => p.getTypeNode()?.getText()?.includes("Logger"))` |
+| Ban specific npm imports (e.g., `moment`)  | file    | performance  | `imp.getModuleSpecifierValue() === "moment"`                                                                        |
+| Require `@ApiTags()` on all controllers    | file    | architecture | `cls.getDecorator("Controller") && !cls.getDecorator("ApiTags")`                                                    |
+| Require `@ApiOperation()` on HTTP handlers | file    | architecture | `method.getDecorators().some(d => httpDecorators.has(d.getName())) && !method.getDecorator("ApiOperation")`         |
+| Enforce max constructor dependencies       | file    | architecture | `ctor.getParameters().length > MAX` on `@Injectable()` classes                                                      |
+| Ban direct DB queries outside repositories | file    | architecture | Check `getDescendantsOfKind(SyntaxKind.CallExpression)` for ORM calls in non-`*Repository` classes                  |
+| Enforce naming conventions                 | file    | architecture | `cls.getDecorator("Injectable") && !name.endsWith("Service") && !name.endsWith("Repository")`                       |
+| Require services have test files           | project | correctness  | `require("fs").existsSync(provider.filePath.replace(".ts", ".spec.ts"))`                                            |
+| Detect providers in multiple modules       | project | architecture | Count each provider name across `moduleGraph.modules.values()` entries' `providers[]` — flag if > 1                 |
+| Require DTO validation pipes on POST/PUT   | file    | correctness  | Check `@Post()`/`@Put()` handler params for `@Body()` + `@UsePipes(ValidationPipe)` or global pipe                  |

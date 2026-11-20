@@ -1,10 +1,4 @@
-import {
-  ArgumentsHost,
-  BadRequestException,
-  Catch,
-  ExceptionFilter,
-  Logger,
-} from "@nestjs/common";
+import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, Logger } from "@nestjs/common";
 import { Request, Response } from "express";
 
 @Catch(BadRequestException)

@@ -24,7 +24,9 @@ function VerifyEmailInner() {
         await api.post("/auth/verify-email", { token });
         await refresh();
         setStatus("success");
-        setMessage("Your email has been verified. You can now list properties and view contact info.");
+        setMessage(
+          "Your email has been verified. You can now list properties and view contact info.",
+        );
       } catch (err) {
         setStatus("error");
         setMessage(err instanceof Error ? err.message : "Verification failed");
@@ -38,7 +40,9 @@ function VerifyEmailInner() {
       {status === "loading" && <p>Verifying...</p>}
       {status === "success" && <p className="text-green-700 mb-4">{message}</p>}
       {status === "error" && <p className="text-red-600 mb-4">{message}</p>}
-      <Link href="/dashboard" className="underline">Go to dashboard</Link>
+      <Link href="/dashboard" className="underline">
+        Go to dashboard
+      </Link>
     </div>
   );
 }

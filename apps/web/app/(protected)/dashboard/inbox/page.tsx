@@ -19,17 +19,28 @@ export default function DashboardInboxPage() {
   const [items, setItems] = useState<Inquiry[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => { if (!loading && !user) router.push("/sign-in"); }, [loading, user, router]);
+  useEffect(() => {
+    if (!loading && !user) router.push("/sign-in");
+  }, [loading, user, router]);
 
   async function load() {
-    try { setItems(await inquiriesApi.listForOwner()); }
-    catch (e) { setError(e instanceof Error ? e.message : "Failed to load inbox"); }
+    try {
+      setItems(await inquiriesApi.listForOwner());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load inbox");
+    }
   }
-  useEffect(() => { if (user) load(); }, [user]);
+  useEffect(() => {
+    if (user) load();
+  }, [user]);
 
   async function setStatus(id: string, status: string) {
-    try { await inquiriesApi.updateStatus(id, { status }); await load(); }
-    catch (e) { setError(e instanceof Error ? e.message : "Update failed"); }
+    try {
+      await inquiriesApi.updateStatus(id, { status });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Update failed");
+    }
   }
 
   if (loading || !user) return <div className="max-w-6xl mx-auto px-4 py-10">Loading…</div>;
@@ -37,9 +48,13 @@ export default function DashboardInboxPage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 sm:py-10">
       <div className="mb-8">
-        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+          <FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Dashboard
+        </Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-2">Owner inbox</h1>
-        <p className="text-muted-foreground mt-1">Inquiries from renters interested in your properties.</p>
+        <p className="text-muted-foreground mt-1">
+          Inquiries from renters interested in your properties.
+        </p>
       </div>
 
       {error && <p className="text-destructive text-sm mb-4">{error}</p>}
@@ -49,7 +64,9 @@ export default function DashboardInboxPage() {
           <CardContent className="py-12 text-center">
             <Inbox className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
             <h2 className="font-semibold text-lg">No inquiries yet</h2>
-            <p className="text-muted-foreground text-sm mt-1">When renters contact you about your properties, their messages will appear here.</p>
+            <p className="text-muted-foreground text-sm mt-1">
+              When renters contact you about your properties, their messages will appear here.
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -60,17 +77,38 @@ export default function DashboardInboxPage() {
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="font-semibold">{q.building.name} — Unit {q.apartment.unitLabel}</h2>
-                      {q.apartment.floor && <span className="text-sm text-muted-foreground">Floor {q.apartment.floor.floorNumber}</span>}
-                      <Badge variant={q.status === "PENDING" ? "default" : "secondary"}>{q.status}</Badge>
+                      <h2 className="font-semibold">
+                        {q.building.name} — Unit {q.apartment.unitLabel}
+                      </h2>
+                      {q.apartment.floor && (
+                        <span className="text-sm text-muted-foreground">
+                          Floor {q.apartment.floor.floorNumber}
+                        </span>
+                      )}
+                      <Badge variant={q.status === "PENDING" ? "default" : "secondary"}>
+                        {q.status}
+                      </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">From: {q.renter.name || "Renter"} • {q.renter.email}{q.renter.phone ? ` • ${q.renter.phone}` : ""}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      From: {q.renter.name || "Renter"} • {q.renter.email}
+                      {q.renter.phone ? ` • ${q.renter.phone}` : ""}
+                    </p>
                     {q.message && <p className="text-sm mt-2 whitespace-pre-wrap">{q.message}</p>}
-                    <p className="text-xs text-muted-foreground mt-2">{new Date(q.createdAt).toLocaleString()}</p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {new Date(q.createdAt).toLocaleString()}
+                    </p>
                   </div>
                   <div className="flex flex-wrap gap-2 shrink-0">
                     {STATUSES.map((s) => (
-                      <Button key={s} size="sm" variant={q.status === s ? "default" : "outline"} onClick={() => setStatus(q.id, s)} className="text-xs h-8">{s}</Button>
+                      <Button
+                        key={s}
+                        size="sm"
+                        variant={q.status === s ? "default" : "outline"}
+                        onClick={() => setStatus(q.id, s)}
+                        className="text-xs h-8"
+                      >
+                        {s}
+                      </Button>
                     ))}
                   </div>
                 </div>

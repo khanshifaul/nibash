@@ -7,14 +7,20 @@ import {
 } from "@nestjs/common";
 import { DatabaseService } from "../database/database.service";
 import { CreateApartmentDto } from "./dto/create-apartment.dto";
-import { CloneApartmentDto, UpdateApartmentDto, UpdateApartmentStatusDto } from "./dto/update-apartment.dto";
+import {
+  CloneApartmentDto,
+  UpdateApartmentDto,
+  UpdateApartmentStatusDto,
+} from "./dto/update-apartment.dto";
 
 @Injectable()
 export class ApartmentsService {
   constructor(private readonly prisma: DatabaseService) {}
 
   async create(buildingId: string, ownerId: string, dto: CreateApartmentDto) {
-    const building = await this.prisma.building.findUnique({ where: { id: buildingId } });
+    const building = await this.prisma.building.findUnique({
+      where: { id: buildingId },
+    });
     if (!building) throw new NotFoundException("Building not found");
     if (building.ownerId !== ownerId) throw new ForbiddenException();
 
@@ -23,17 +29,26 @@ export class ApartmentsService {
     }
 
     const floor = await this.prisma.floor.upsert({
-      where: { buildingId_floorNumber: { buildingId, floorNumber: dto.floorNumber } },
+      where: {
+        buildingId_floorNumber: { buildingId, floorNumber: dto.floorNumber },
+      },
       update: {},
       create: { buildingId, floorNumber: dto.floorNumber },
     });
 
     const existing = await this.prisma.apartment.findUnique({
-      where: { floorId_unitLabel: { floorId: floor.id, unitLabel: dto.unitLabel } },
+      where: {
+        floorId_unitLabel: { floorId: floor.id, unitLabel: dto.unitLabel },
+      },
     });
     if (existing) throw new ConflictException("Unit label already exists on this floor");
 
-    const autoPublish = dto.publish === false ? false : dto.publish === true ? true : dto.availabilityStatus !== "COMING_SOON";
+    const autoPublish =
+      dto.publish === false
+        ? false
+        : dto.publish === true
+          ? true
+          : dto.availabilityStatus !== "COMING_SOON";
     const apartment = await this.prisma.apartment.create({
       data: {
         buildingId,
@@ -95,10 +110,17 @@ export class ApartmentsService {
     let floorId = apt.floorId;
     if (dto.floorNumber !== undefined && dto.floorNumber !== null) {
       if (dto.floorNumber < 0 || dto.floorNumber > apt.building.totalFloors) {
-        throw new BadRequestException(`floorNumber must be between 0 and ${apt.building.totalFloors}`);
+        throw new BadRequestException(
+          `floorNumber must be between 0 and ${apt.building.totalFloors}`,
+        );
       }
       const floor = await this.prisma.floor.upsert({
-        where: { buildingId_floorNumber: { buildingId: apt.buildingId, floorNumber: dto.floorNumber } },
+        where: {
+          buildingId_floorNumber: {
+            buildingId: apt.buildingId,
+            floorNumber: dto.floorNumber,
+          },
+        },
         update: {},
         create: { buildingId: apt.buildingId, floorNumber: dto.floorNumber },
       });
@@ -120,7 +142,9 @@ export class ApartmentsService {
         ...(dto.facing !== undefined ? { facing: dto.facing } : {}),
         ...(dto.sizeSqft !== undefined ? { sizeSqft: dto.sizeSqft } : {}),
         ...(dto.bedrooms !== undefined ? { bedrooms: dto.bedrooms } : {}),
-        ...(dto.attachedBathrooms !== undefined ? { attachedBathrooms: dto.attachedBathrooms } : {}),
+        ...(dto.attachedBathrooms !== undefined
+          ? { attachedBathrooms: dto.attachedBathrooms }
+          : {}),
         ...(dto.bathrooms !== undefined ? { bathrooms: dto.bathrooms } : {}),
         ...(dto.highCommodeCount !== undefined ? { highCommodeCount: dto.highCommodeCount } : {}),
         ...(dto.diningRooms !== undefined ? { diningRooms: dto.diningRooms } : {}),
@@ -128,17 +152,33 @@ export class ApartmentsService {
         ...(dto.kitchens !== undefined ? { kitchens: dto.kitchens } : {}),
         ...(dto.verandas !== undefined ? { verandas: dto.verandas } : {}),
         ...(dto.gasType !== undefined ? { gasType: dto.gasType as any } : {}),
-        ...(dto.utilityBillingType !== undefined ? { utilityBillingType: dto.utilityBillingType } : {}),
-        ...(dto.preferredTenantTypes !== undefined ? { preferredTenantTypes: dto.preferredTenantTypes } : {}),
+        ...(dto.utilityBillingType !== undefined
+          ? { utilityBillingType: dto.utilityBillingType }
+          : {}),
+        ...(dto.preferredTenantTypes !== undefined
+          ? { preferredTenantTypes: dto.preferredTenantTypes }
+          : {}),
         ...(dto.listingType !== undefined ? { listingType: dto.listingType as any } : {}),
         ...(dto.rentAmount !== undefined ? { rentAmount: dto.rentAmount } : {}),
         ...(dto.salePrice !== undefined ? { salePrice: dto.salePrice } : {}),
         ...(dto.serviceCharge !== undefined ? { serviceCharge: dto.serviceCharge } : {}),
-        ...(dto.securityDepositAmount !== undefined ? { securityDepositAmount: dto.securityDepositAmount } : {}),
+        ...(dto.securityDepositAmount !== undefined
+          ? { securityDepositAmount: dto.securityDepositAmount }
+          : {}),
         ...(dto.depositMonths !== undefined ? { depositMonths: dto.depositMonths } : {}),
-        ...(dto.availabilityStatus !== undefined ? { availabilityStatus: dto.availabilityStatus as any } : {}),
-        ...(dto.availableFrom !== undefined ? { availableFrom: dto.availableFrom ? new Date(dto.availableFrom) : null } : {}),
-        ...(dto.publish === true ? { publishedAt: new Date() } : dto.publish === false ? { publishedAt: null } : {}),
+        ...(dto.availabilityStatus !== undefined
+          ? { availabilityStatus: dto.availabilityStatus as any }
+          : {}),
+        ...(dto.availableFrom !== undefined
+          ? {
+              availableFrom: dto.availableFrom ? new Date(dto.availableFrom) : null,
+            }
+          : {}),
+        ...(dto.publish === true
+          ? { publishedAt: new Date() }
+          : dto.publish === false
+            ? { publishedAt: null }
+            : {}),
       },
       include: { floor: true, images: { orderBy: { sortOrder: "asc" } } },
     });
@@ -166,17 +206,29 @@ export class ApartmentsService {
     if (source.building.ownerId !== ownerId) throw new ForbiddenException();
 
     if (dto.floorNumber < 0 || dto.floorNumber > source.building.totalFloors) {
-      throw new BadRequestException(`floorNumber must be between 0 and ${source.building.totalFloors}`);
+      throw new BadRequestException(
+        `floorNumber must be between 0 and ${source.building.totalFloors}`,
+      );
     }
 
     const targetFloor = await this.prisma.floor.upsert({
-      where: { buildingId_floorNumber: { buildingId: source.buildingId, floorNumber: dto.floorNumber } },
+      where: {
+        buildingId_floorNumber: {
+          buildingId: source.buildingId,
+          floorNumber: dto.floorNumber,
+        },
+      },
       update: {},
       create: { buildingId: source.buildingId, floorNumber: dto.floorNumber },
     });
 
     const conflict = await this.prisma.apartment.findUnique({
-      where: { floorId_unitLabel: { floorId: targetFloor.id, unitLabel: dto.unitLabel } },
+      where: {
+        floorId_unitLabel: {
+          floorId: targetFloor.id,
+          unitLabel: dto.unitLabel,
+        },
+      },
     });
     if (conflict) throw new ConflictException("Unit label already exists on target floor");
 

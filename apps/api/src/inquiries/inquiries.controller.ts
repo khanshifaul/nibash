@@ -14,7 +14,9 @@ export class InquiriesController {
   @ApiBearerAuth()
   @ApiCookieAuth("nibash_token")
   @Verified()
-  @ApiOperation({ summary: "Create inquiry/visit request (logged-in verified user)" })
+  @ApiOperation({
+    summary: "Create inquiry/visit request (logged-in verified user)",
+  })
   create(@User("id") userId: string, @Body() dto: CreateInquiryDto) {
     return this.inquiriesService.create(userId, dto);
   }

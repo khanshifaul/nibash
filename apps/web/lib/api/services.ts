@@ -29,9 +29,15 @@ import type {
 
 export const authApi = {
   register: (body: RegisterInput) =>
-    api.post<{ success: boolean; message: string; data: { user: AuthUser; accessToken: string } }>("/auth/register", body),
+    api.post<{ success: boolean; message: string; data: { user: AuthUser; accessToken: string } }>(
+      "/auth/register",
+      body,
+    ),
   login: (body: LoginInput) =>
-    api.post<{ success: boolean; message: string; data: { user: AuthUser; accessToken: string } }>("/auth/login", body),
+    api.post<{ success: boolean; message: string; data: { user: AuthUser; accessToken: string } }>(
+      "/auth/login",
+      body,
+    ),
   verifyEmail: (body: VerifyEmailInput) => api.post("/auth/verify-email", body),
   resendVerification: (body: { email: string }) => api.post("/auth/resend-verification", body),
   forgotPassword: (body: { email: string }) => api.post("/auth/forgot-password", body),
@@ -39,8 +45,7 @@ export const authApi = {
     api.post("/auth/reset-password", body),
   refresh: () => api.post<{ accessToken: string }>("/auth/refresh"),
   me: () => api.get<AuthUser>("/auth/me"),
-  updateProfile: (body: UpdateProfileInput) =>
-    api.patch<AuthUser>("/auth/me", body),
+  updateProfile: (body: UpdateProfileInput) => api.patch<AuthUser>("/auth/me", body),
   logout: () => api.post<{ success: boolean }>("/auth/logout"),
 };
 
@@ -76,12 +81,24 @@ export const apartmentsApi = {
 
 export const mediaApi = {
   presign: (body: PresignInput) => api.post<PresignResult>("/media/presign", body),
-  attachBuilding: (buildingId: string, body: { storageKey: string; url: string; caption?: string; sortOrder?: number; isCover?: boolean }) =>
-    api.post<BuildingImage>(`/buildings/${buildingId}/images`, body),
-  attachApartment: (apartmentId: string, body: { storageKey: string; url: string; roomTag: string; sortOrder?: number }) =>
-    api.post<ApartmentImage>(`/apartments/${apartmentId}/images`, body),
-  deleteBuildingImage: (imageId: string) => api.delete<{ deleted: boolean }>(`/building-images/${imageId}`),
-  deleteApartmentImage: (imageId: string) => api.delete<{ deleted: boolean }>(`/apartment-images/${imageId}`),
+  attachBuilding: (
+    buildingId: string,
+    body: {
+      storageKey: string;
+      url: string;
+      caption?: string;
+      sortOrder?: number;
+      isCover?: boolean;
+    },
+  ) => api.post<BuildingImage>(`/buildings/${buildingId}/images`, body),
+  attachApartment: (
+    apartmentId: string,
+    body: { storageKey: string; url: string; roomTag: string; sortOrder?: number },
+  ) => api.post<ApartmentImage>(`/apartments/${apartmentId}/images`, body),
+  deleteBuildingImage: (imageId: string) =>
+    api.delete<{ deleted: boolean }>(`/building-images/${imageId}`),
+  deleteApartmentImage: (imageId: string) =>
+    api.delete<{ deleted: boolean }>(`/apartment-images/${imageId}`),
 };
 
 /* ---------- Search ---------- */
@@ -115,11 +132,15 @@ export const searchApi = {
     if (params.bathrooms !== undefined) searchParams.set("bathrooms", String(params.bathrooms));
     if (params.verandas !== undefined) searchParams.set("verandas", String(params.verandas));
     if (params.minSqft !== undefined) searchParams.set("minSqft", String(params.minSqft));
-    if (params.floorNumber !== undefined) searchParams.set("floorNumber", String(params.floorNumber));
-    if (params.excludeGround !== undefined) searchParams.set("excludeGround", String(params.excludeGround));
-    if (params.hasElevator !== undefined) searchParams.set("hasElevator", String(params.hasElevator));
+    if (params.floorNumber !== undefined)
+      searchParams.set("floorNumber", String(params.floorNumber));
+    if (params.excludeGround !== undefined)
+      searchParams.set("excludeGround", String(params.excludeGround));
+    if (params.hasElevator !== undefined)
+      searchParams.set("hasElevator", String(params.hasElevator));
     if (params.hasParking !== undefined) searchParams.set("hasParking", String(params.hasParking));
-    if (params.hasGenerator !== undefined) searchParams.set("hasGenerator", String(params.hasGenerator));
+    if (params.hasGenerator !== undefined)
+      searchParams.set("hasGenerator", String(params.hasGenerator));
     if (params.page !== undefined) searchParams.set("page", String(params.page));
     if (params.limit !== undefined) searchParams.set("limit", String(params.limit));
     if (params.listingType !== undefined) searchParams.set("listingType", params.listingType);

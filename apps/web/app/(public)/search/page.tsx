@@ -7,7 +7,13 @@ import { Grid3X3, List, MapPin, Bed, Bath, Maximize, SlidersHorizontal } from "l
 import { FiChevronRight } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,10 +81,21 @@ export default function SearchPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     mounted,
-    filters.q, filters.area, filters.minRent, filters.maxRent, filters.bedrooms,
-    filters.bathrooms, filters.verandas, filters.minSqft, filters.floorNumber,
-    filters.excludeGround, filters.hasElevator, filters.hasParking, filters.hasGenerator,
-    filters.sort, filters.page,
+    filters.q,
+    filters.area,
+    filters.minRent,
+    filters.maxRent,
+    filters.bedrooms,
+    filters.bathrooms,
+    filters.verandas,
+    filters.minSqft,
+    filters.floorNumber,
+    filters.excludeGround,
+    filters.hasElevator,
+    filters.hasParking,
+    filters.hasGenerator,
+    filters.sort,
+    filters.page,
   ]);
 
   useEffect(() => {
@@ -103,15 +120,29 @@ export default function SearchPage() {
   const clearFilters = () => router.push(pathname);
 
   const hasActiveFilters = Boolean(
-    filters.q || filters.minRent || filters.maxRent || filters.bedrooms || filters.bathrooms ||
-    filters.verandas || filters.minSqft || filters.floorNumber || filters.excludeGround ||
-    filters.hasElevator || filters.hasParking || filters.hasGenerator
+    filters.q ||
+    filters.minRent ||
+    filters.maxRent ||
+    filters.bedrooms ||
+    filters.bathrooms ||
+    filters.verandas ||
+    filters.minSqft ||
+    filters.floorNumber ||
+    filters.excludeGround ||
+    filters.hasElevator ||
+    filters.hasParking ||
+    filters.hasGenerator,
   );
 
-
-  const formatPrice = (item: { listingType?: string; rentAmount: number; salePrice?: number | null }) =>
+  const formatPrice = (item: {
+    listingType?: string;
+    rentAmount: number;
+    salePrice?: number | null;
+  }) =>
     item.listingType === "SALE"
-      ? (item.salePrice == null ? "—" : `৳${item.salePrice.toLocaleString()}`)
+      ? item.salePrice == null
+        ? "—"
+        : `৳${item.salePrice.toLocaleString()}`
       : `৳${item.rentAmount.toLocaleString()}/mo`;
 
   return (
@@ -120,9 +151,12 @@ export default function SearchPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Find your property</h1>
           <p className="text-muted-foreground mt-1">
-            {loading ? "Searching properties..." : (
+            {loading ? (
+              "Searching properties..."
+            ) : (
               <>
-                <span className="font-medium text-foreground">{total}</span> {total === 1 ? "property" : "properties"}
+                <span className="font-medium text-foreground">{total}</span>{" "}
+                {total === 1 ? "property" : "properties"}
                 {hasActiveFilters ? " match your filters" : " available"}
               </>
             )}
@@ -145,7 +179,10 @@ export default function SearchPage() {
                 <SlidersHorizontal className="h-4 w-4" /> Filters
               </h2>
               {hasActiveFilters && (
-                <button onClick={clearFilters} className="text-xs text-primary hover:underline font-medium cursor-pointer">
+                <button
+                  onClick={clearFilters}
+                  className="text-xs text-primary hover:underline font-medium cursor-pointer"
+                >
                   Clear all
                 </button>
               )}
@@ -185,21 +222,39 @@ export default function SearchPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Bedrooms</label>
-                  <Select value={filters.bedrooms ? String(filters.bedrooms) : "any"} onValueChange={(v) => setParam("bedrooms", v === "any" ? "" : v)}>
-                    <SelectTrigger className="h-9" aria-label="Minimum bedrooms"><SelectValue placeholder="Any" /></SelectTrigger>
+                  <Select
+                    value={filters.bedrooms ? String(filters.bedrooms) : "any"}
+                    onValueChange={(v) => setParam("bedrooms", v === "any" ? "" : v)}
+                  >
+                    <SelectTrigger className="h-9" aria-label="Minimum bedrooms">
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Any</SelectItem>
-                      {BEDROOM_OPTIONS.map((b) => <SelectItem key={b} value={String(b)}>{b}+</SelectItem>)}
+                      {BEDROOM_OPTIONS.map((b) => (
+                        <SelectItem key={b} value={String(b)}>
+                          {b}+
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Bathrooms</label>
-                  <Select value={filters.bathrooms ? String(filters.bathrooms) : "any"} onValueChange={(v) => setParam("bathrooms", v === "any" ? "" : v)}>
-                    <SelectTrigger className="h-9" aria-label="Minimum bathrooms"><SelectValue placeholder="Any" /></SelectTrigger>
+                  <Select
+                    value={filters.bathrooms ? String(filters.bathrooms) : "any"}
+                    onValueChange={(v) => setParam("bathrooms", v === "any" ? "" : v)}
+                  >
+                    <SelectTrigger className="h-9" aria-label="Minimum bathrooms">
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Any</SelectItem>
-                      {BATHROOM_OPTIONS.map((b) => <SelectItem key={b} value={String(b)}>{b}+</SelectItem>)}
+                      {BATHROOM_OPTIONS.map((b) => (
+                        <SelectItem key={b} value={String(b)}>
+                          {b}+
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -211,10 +266,20 @@ export default function SearchPage() {
                   {[
                     { key: "hasElevator", label: "Lift / Elevator", checked: filters.hasElevator },
                     { key: "hasParking", label: "Parking", checked: filters.hasParking },
-                    { key: "hasGenerator", label: "Generator backup", checked: filters.hasGenerator },
+                    {
+                      key: "hasGenerator",
+                      label: "Generator backup",
+                      checked: filters.hasGenerator,
+                    },
                   ].map((opt) => (
-                    <label key={opt.key} className="flex items-center gap-2.5 text-sm cursor-pointer select-none">
-                      <Checkbox checked={opt.checked} onCheckedChange={(v) => setParam(opt.key, Boolean(v))} />
+                    <label
+                      key={opt.key}
+                      className="flex items-center gap-2.5 text-sm cursor-pointer select-none"
+                    >
+                      <Checkbox
+                        checked={opt.checked}
+                        onCheckedChange={(v) => setParam(opt.key, Boolean(v))}
+                      />
                       {opt.label}
                     </label>
                   ))}
@@ -232,9 +297,15 @@ export default function SearchPage() {
             </p>
             <div className="flex items-center gap-2">
               <Select value={filters.sort} onValueChange={(v) => setParam("sort", v)}>
-                <SelectTrigger className="h-9 w-[170px]" aria-label="Sort properties"><SelectValue placeholder="Sort" /></SelectTrigger>
+                <SelectTrigger className="h-9 w-[170px]" aria-label="Sort properties">
+                  <SelectValue placeholder="Sort" />
+                </SelectTrigger>
                 <SelectContent>
-                  {SORT_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                  {SORT_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <div className="flex items-center gap-1 border rounded-lg p-1 bg-background">
@@ -257,8 +328,19 @@ export default function SearchPage() {
           </div>
 
           {loading && !result ? (
-            <div className={view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5" : "space-y-4"}>
-              {[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className={view === "grid" ? "h-72 rounded-xl" : "h-40 rounded-xl"} />)}
+            <div
+              className={
+                view === "grid"
+                  ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                  : "space-y-4"
+              }
+            >
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Skeleton
+                  key={i}
+                  className={view === "grid" ? "h-72 rounded-xl" : "h-40 rounded-xl"}
+                />
+              ))}
             </div>
           ) : result && result.length === 0 ? (
             <div className="rounded-xl border bg-muted/30 p-12 text-center">
@@ -270,7 +352,9 @@ export default function SearchPage() {
                     : "There are no published properties right now. Check back soon."}
                 </p>
                 {hasActiveFilters && (
-                  <Button variant="outline" className="mt-4" onClick={clearFilters}>Clear filters</Button>
+                  <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                    Clear filters
+                  </Button>
                 )}
               </div>
             </div>
@@ -289,12 +373,31 @@ export default function SearchPage() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/60">
-                            <span className="text-4xl font-bold text-muted-foreground/30">{item.unitLabel}</span>
+                            <span className="text-4xl font-bold text-muted-foreground/30">
+                              {item.unitLabel}
+                            </span>
                           </div>
                         )}
                         <div className="absolute top-3 left-3 flex gap-1 flex-wrap">
-                          <Badge variant="outline" className="bg-background/90 shadow-sm">{item.listingType === "SALE" ? "For sale" : "For rent"}</Badge>
-                          <Badge className="shadow-sm" variant={item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>{item.availabilityStatus === "AVAILABLE" ? "Available" : item.availabilityStatus === "COMING_SOON" ? "Coming soon" : item.availabilityStatus === "SOLD" ? "Sold" : item.availabilityStatus === "RENTED" ? "Rented" : item.availabilityStatus.replace("_", " ")}</Badge>
+                          <Badge variant="outline" className="bg-background/90 shadow-sm">
+                            {item.listingType === "SALE" ? "For sale" : "For rent"}
+                          </Badge>
+                          <Badge
+                            className="shadow-sm"
+                            variant={
+                              item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"
+                            }
+                          >
+                            {item.availabilityStatus === "AVAILABLE"
+                              ? "Available"
+                              : item.availabilityStatus === "COMING_SOON"
+                                ? "Coming soon"
+                                : item.availabilityStatus === "SOLD"
+                                  ? "Sold"
+                                  : item.availabilityStatus === "RENTED"
+                                    ? "Rented"
+                                    : item.availabilityStatus.replace("_", " ")}
+                          </Badge>
                         </div>
                       </div>
                       <CardHeader className="pb-2 pt-4">
@@ -303,25 +406,45 @@ export default function SearchPage() {
                         </CardTitle>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <MapPin className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate">{item.building.areaZone}{item.floorNumber != null ? ` · Floor ${item.floorNumber}` : ""}</span>
+                          <span className="truncate">
+                            {item.building.areaZone}
+                            {item.floorNumber != null ? ` · Floor ${item.floorNumber}` : ""}
+                          </span>
                         </div>
                       </CardHeader>
                       <CardContent className="pb-3 pt-0">
-                        <div className="text-lg font-bold tracking-tight">
-                          {formatPrice(item)}
-                          
-                        </div>
+                        <div className="text-lg font-bold tracking-tight">{formatPrice(item)}</div>
                         <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1"><Bed className="h-3.5 w-3.5" /> {item.bedrooms}</span>
-                          <span className="flex items-center gap-1"><Bath className="h-3.5 w-3.5" /> {item.bathrooms}</span>
-                          {item.sizeSqft ? <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" /> {item.sizeSqft} sqft</span> : null}
+                          <span className="flex items-center gap-1">
+                            <Bed className="h-3.5 w-3.5" /> {item.bedrooms}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Bath className="h-3.5 w-3.5" /> {item.bathrooms}
+                          </span>
+                          {item.sizeSqft ? (
+                            <span className="flex items-center gap-1">
+                              <Maximize className="h-3.5 w-3.5" /> {item.sizeSqft} sqft
+                            </span>
+                          ) : null}
                         </div>
                       </CardContent>
                       <CardFooter className="pt-0">
                         <div className="flex gap-1 flex-wrap pr-24">
-                          {item.building.hasElevator && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Lift</span>}
-                          {item.building.hasParking && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Parking</span>}
-                          {item.building.hasGenerator && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Generator</span>}
+                          {item.building.hasElevator && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                              Lift
+                            </span>
+                          )}
+                          {item.building.hasParking && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                              Parking
+                            </span>
+                          )}
+                          {item.building.hasGenerator && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                              Generator
+                            </span>
+                          )}
                         </div>
                       </CardFooter>
                       <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
@@ -346,11 +469,20 @@ export default function SearchPage() {
                             />
                           ) : (
                             <div className="w-full h-full min-h-[160px] flex items-center justify-center bg-gradient-to-br from-muted to-muted/60">
-                              <span className="text-4xl font-bold text-muted-foreground/30">{item.unitLabel}</span>
+                              <span className="text-4xl font-bold text-muted-foreground/30">
+                                {item.unitLabel}
+                              </span>
                             </div>
                           )}
-                          <Badge className="absolute top-3 left-3 shadow-sm" variant={item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>
-                            {item.availabilityStatus === "AVAILABLE" ? "Available" : item.availabilityStatus.replace("_", " ")}
+                          <Badge
+                            className="absolute top-3 left-3 shadow-sm"
+                            variant={
+                              item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"
+                            }
+                          >
+                            {item.availabilityStatus === "AVAILABLE"
+                              ? "Available"
+                              : item.availabilityStatus.replace("_", " ")}
                           </Badge>
                         </div>
                         <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between min-w-0">
@@ -362,26 +494,51 @@ export default function SearchPage() {
                                 </h3>
                                 <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                                   <MapPin className="h-3.5 w-3.5 shrink-0" />
-                                  <span className="truncate">{item.building.areaZone}{item.floorNumber != null ? ` · Floor ${item.floorNumber}` : ""}</span>
+                                  <span className="truncate">
+                                    {item.building.areaZone}
+                                    {item.floorNumber != null ? ` · Floor ${item.floorNumber}` : ""}
+                                  </span>
                                 </div>
                               </div>
                               <div className="text-right shrink-0">
-                                <div className="text-xl font-bold tracking-tight">{formatPrice(item)}</div>
+                                <div className="text-xl font-bold tracking-tight">
+                                  {formatPrice(item)}
+                                </div>
                                 <div className="text-xs text-muted-foreground">per month</div>
                               </div>
                             </div>
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1.5"><Bed className="h-4 w-4" /> {item.bedrooms} bed</span>
-                              <span className="flex items-center gap-1.5"><Bath className="h-4 w-4" /> {item.bathrooms} bath</span>
-                              {item.sizeSqft ? <span className="flex items-center gap-1.5"><Maximize className="h-4 w-4" /> {item.sizeSqft} sqft</span> : null}
+                              <span className="flex items-center gap-1.5">
+                                <Bed className="h-4 w-4" /> {item.bedrooms} bed
+                              </span>
+                              <span className="flex items-center gap-1.5">
+                                <Bath className="h-4 w-4" /> {item.bathrooms} bath
+                              </span>
+                              {item.sizeSqft ? (
+                                <span className="flex items-center gap-1.5">
+                                  <Maximize className="h-4 w-4" /> {item.sizeSqft} sqft
+                                </span>
+                              ) : null}
                               {item.verandas ? <span>{item.verandas} veranda</span> : null}
                             </div>
                           </div>
                           <div className="flex items-center justify-between mt-4 gap-3 pb-8 sm:pb-0 pr-0 sm:pr-28">
                             <div className="flex gap-1.5 flex-wrap">
-                              {item.building.hasElevator && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Lift</span>}
-                              {item.building.hasParking && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Parking</span>}
-                              {item.building.hasGenerator && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Generator</span>}
+                              {item.building.hasElevator && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                                  Lift
+                                </span>
+                              )}
+                              {item.building.hasParking && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                                  Parking
+                                </span>
+                              )}
+                              {item.building.hasGenerator && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                                  Generator
+                                </span>
+                              )}
                             </div>
                           </div>
                           <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">

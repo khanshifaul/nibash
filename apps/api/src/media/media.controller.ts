@@ -14,7 +14,9 @@ export class MediaController {
   @ApiBearerAuth()
   @ApiCookieAuth("nibash_token")
   @Verified()
-  @ApiOperation({ summary: "Get presigned upload URL for building/apartment image (S3-compatible)" })
+  @ApiOperation({
+    summary: "Get presigned upload URL for building/apartment image (S3-compatible)",
+  })
   presign(@User("id") userId: string, @Body() dto: PresignDto) {
     return this.mediaService.presign(userId, dto);
   }

@@ -45,7 +45,10 @@ export class CreateBuildingDto {
   @IsOptional()
   addressLine?: string;
 
-  @ApiProperty({ required: false, description: "Contact phone for this building/listing" })
+  @ApiProperty({
+    required: false,
+    description: "Contact phone for this building/listing",
+  })
   @IsString()
   @IsOptional()
   contactPhone?: string;

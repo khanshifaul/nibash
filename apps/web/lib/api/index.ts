@@ -1,6 +1,13 @@
 export { api } from "./client";
 export type { ApiError } from "./client";
-export { authApi, buildingsApi, apartmentsApi, mediaApi, searchApi, inquiriesApi } from "./services";
+export {
+  authApi,
+  buildingsApi,
+  apartmentsApi,
+  mediaApi,
+  searchApi,
+  inquiriesApi,
+} from "./services";
 export type {
   AuthUser,
   RegisterInput,

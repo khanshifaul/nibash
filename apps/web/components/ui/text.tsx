@@ -49,11 +49,7 @@ interface TextProps extends TextVariants {
 const Text = React.forwardRef<HTMLElement, TextProps>(
   ({ as: Component = "p", className, variant, ...props }, ref) => {
     return (
-      <Component
-        ref={ref as any}
-        className={cn(textVariants({ variant }), className)}
-        {...props}
-      />
+      <Component ref={ref as any} className={cn(textVariants({ variant }), className)} {...props} />
     );
   },
 );

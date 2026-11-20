@@ -21,9 +21,7 @@ const containerVariants = cva("mx-auto w-full px-4", {
 });
 
 interface ContainerProps
-  extends
-    React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof containerVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof containerVariants> {}
 
 /**
  * Container for max-width layouts
@@ -33,13 +31,7 @@ interface ContainerProps
  */
 const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
   ({ className, size, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(containerVariants({ size }), className)}
-        {...props}
-      />
-    );
+    return <div ref={ref} className={cn(containerVariants({ size }), className)} {...props} />;
   },
 );
 Container.displayName = "Container";

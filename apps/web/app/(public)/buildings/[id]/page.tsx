@@ -11,7 +11,16 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, Building2, Home } from "lucide-react";
 import Map from "@/components/ui/map";
-import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdPhoneInTalk, MdRoofing, MdWaterDrop } from "react-icons/md";
+import {
+  MdElevator,
+  MdLocalParking,
+  MdBolt,
+  MdSecurity,
+  MdVideocam,
+  MdPhoneInTalk,
+  MdRoofing,
+  MdWaterDrop,
+} from "react-icons/md";
 import { FiArrowRight } from "react-icons/fi";
 
 export default function BuildingPage() {
@@ -58,7 +67,9 @@ export default function BuildingPage() {
       <main className="max-w-6xl mx-auto px-4 py-8 text-center">
         <h2 className="text-xl font-semibold">{error || "Building not found"}</h2>
         <p className="text-muted-foreground mt-2">
-          <Link href="/search" className="underline">Browse properties</Link>
+          <Link href="/search" className="underline">
+            Browse properties
+          </Link>
         </p>
       </main>
     );
@@ -104,7 +115,9 @@ export default function BuildingPage() {
               )}
             </div>
             <p className="text-muted-foreground">
-              {building.owner?.name ? `Managed by ${building.owner.name}` : "Owner contact not public"}
+              {building.owner?.name
+                ? `Managed by ${building.owner.name}`
+                : "Owner contact not public"}
             </p>
 
             <Separator />
@@ -112,25 +125,62 @@ export default function BuildingPage() {
             <h3 className="text-lg font-semibold mb-2">Amenities</h3>
             <div className="flex flex-wrap gap-2">
               {building.hasElevator && (
-                <Badge variant="secondary" className="gap-1.5"><MdElevator className="h-3.5 w-3.5" /> Lift ({building.elevatorCount ?? 1})</Badge>
+                <Badge variant="secondary" className="gap-1.5">
+                  <MdElevator className="h-3.5 w-3.5" /> Lift ({building.elevatorCount ?? 1})
+                </Badge>
               )}
               {building.hasParking && (
-                <Badge variant="secondary" className="gap-1.5"><MdLocalParking className="h-3.5 w-3.5" /> Parking ({building.parkingType})</Badge>
+                <Badge variant="secondary" className="gap-1.5">
+                  <MdLocalParking className="h-3.5 w-3.5" /> Parking ({building.parkingType})
+                </Badge>
               )}
-              {building.hasGenerator && <Badge variant="secondary" className="gap-1.5"><MdBolt className="h-3.5 w-3.5" /> Generator</Badge>}
-              {building.hasSecurityGuard && <Badge variant="secondary" className="gap-1.5"><MdSecurity className="h-3.5 w-3.5" /> Security guard</Badge>}
-              {building.hasCctv && <Badge variant="secondary" className="gap-1.5"><MdVideocam className="h-3.5 w-3.5" /> CCTV</Badge>}
-              {building.hasIntercom && <Badge variant="secondary" className="gap-1.5"><MdPhoneInTalk className="h-3.5 w-3.5" /> Intercom</Badge>}
-              {building.hasRooftop && <Badge variant="secondary" className="gap-1.5"><MdRoofing className="h-3.5 w-3.5" /> Rooftop access</Badge>}
-              {building.hasSubmersiblePump && <Badge variant="secondary" className="gap-1.5"><MdWaterDrop className="h-3.5 w-3.5" /> Submersible pump</Badge>}
-              {!building.hasElevator && !building.hasParking && !building.hasGenerator && !building.hasSecurityGuard && !building.hasCctv && !building.hasIntercom && !building.hasRooftop && !building.hasSubmersiblePump && (
-                <span className="text-xs text-muted-foreground">No amenities listed</span>
+              {building.hasGenerator && (
+                <Badge variant="secondary" className="gap-1.5">
+                  <MdBolt className="h-3.5 w-3.5" /> Generator
+                </Badge>
               )}
+              {building.hasSecurityGuard && (
+                <Badge variant="secondary" className="gap-1.5">
+                  <MdSecurity className="h-3.5 w-3.5" /> Security guard
+                </Badge>
+              )}
+              {building.hasCctv && (
+                <Badge variant="secondary" className="gap-1.5">
+                  <MdVideocam className="h-3.5 w-3.5" /> CCTV
+                </Badge>
+              )}
+              {building.hasIntercom && (
+                <Badge variant="secondary" className="gap-1.5">
+                  <MdPhoneInTalk className="h-3.5 w-3.5" /> Intercom
+                </Badge>
+              )}
+              {building.hasRooftop && (
+                <Badge variant="secondary" className="gap-1.5">
+                  <MdRoofing className="h-3.5 w-3.5" /> Rooftop access
+                </Badge>
+              )}
+              {building.hasSubmersiblePump && (
+                <Badge variant="secondary" className="gap-1.5">
+                  <MdWaterDrop className="h-3.5 w-3.5" /> Submersible pump
+                </Badge>
+              )}
+              {!building.hasElevator &&
+                !building.hasParking &&
+                !building.hasGenerator &&
+                !building.hasSecurityGuard &&
+                !building.hasCctv &&
+                !building.hasIntercom &&
+                !building.hasRooftop &&
+                !building.hasSubmersiblePump && (
+                  <span className="text-xs text-muted-foreground">No amenities listed</span>
+                )}
             </div>
 
             <Separator />
 
-            <h3 className="text-lg font-semibold mb-2">Units ({availableUnits.length} available)</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Units ({availableUnits.length} available)
+            </h3>
             {availableUnits.length === 0 ? (
               <p className="text-muted-foreground">No available units right now.</p>
             ) : (
@@ -146,7 +196,10 @@ export default function BuildingPage() {
                           </div>
                         </div>
                         <div className="text-sm font-bold">
-                          {u.listingType === "SALE" ? `৳${((u.salePrice ?? 0) / 100).toLocaleString()}` : `৳${(u.rentAmount / 100).toLocaleString()}/mo`} {" "}({u.listingType === "SALE" ? "sale" : "rent"})
+                          {u.listingType === "SALE"
+                            ? `৳${((u.salePrice ?? 0) / 100).toLocaleString()}`
+                            : `৳${(u.rentAmount / 100).toLocaleString()}/mo`}{" "}
+                          ({u.listingType === "SALE" ? "sale" : "rent"})
                         </div>
                       </div>
                       <Link
@@ -186,18 +239,20 @@ export default function BuildingPage() {
               <CardTitle className="text-sm font-medium">Contact</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {user ? building.contactPhone ? (
-                <>
-                  <div className="flex items-center gap-3">
-                    <Home className="h-5 w-5 text-muted-foreground" />
-                    <div className="text-sm">{building.contactPhone}</div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Owner: {building.owner?.name ?? "—"}
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground">No contact phone listed.</p>
+              {user ? (
+                building.contactPhone ? (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <Home className="h-5 w-5 text-muted-foreground" />
+                      <div className="text-sm">{building.contactPhone}</div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Owner: {building.owner?.name ?? "—"}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No contact phone listed.</p>
+                )
               ) : (
                 <>
                   <p className="text-sm text-muted-foreground">

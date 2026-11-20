@@ -22,10 +22,19 @@ export default function EditBuildingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    name: "", areaZone: "", roadBlock: "", addressLine: "", lat: "", lng: "",
+    name: "",
+    areaZone: "",
+    roadBlock: "",
+    addressLine: "",
+    lat: "",
+    lng: "",
     totalFloors: "",
-    hasElevator: false, hasParking: false, hasGenerator: false,
-    hasSecurityGuard: false, hasCctv: false, hasRooftop: false,
+    hasElevator: false,
+    hasParking: false,
+    hasGenerator: false,
+    hasSecurityGuard: false,
+    hasCctv: false,
+    hasRooftop: false,
   });
 
   const load = useCallback(async () => {
@@ -33,12 +42,19 @@ export default function EditBuildingPage() {
       const data = await buildingsApi.findOne(id);
       setBuilding(data);
       setForm({
-        name: data.name, areaZone: data.areaZone, roadBlock: data.roadBlock ?? "",
-        addressLine: data.addressLine ?? "", lat: String(data.lat), lng: String(data.lng),
+        name: data.name,
+        areaZone: data.areaZone,
+        roadBlock: data.roadBlock ?? "",
+        addressLine: data.addressLine ?? "",
+        lat: String(data.lat),
+        lng: String(data.lng),
         totalFloors: String(data.totalFloors),
-        hasElevator: data.hasElevator, hasParking: data.hasParking,
-        hasGenerator: data.hasGenerator, hasSecurityGuard: data.hasSecurityGuard,
-        hasCctv: data.hasCctv, hasRooftop: data.hasRooftop,
+        hasElevator: data.hasElevator,
+        hasParking: data.hasParking,
+        hasGenerator: data.hasGenerator,
+        hasSecurityGuard: data.hasSecurityGuard,
+        hasCctv: data.hasCctv,
+        hasRooftop: data.hasRooftop,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load building");
@@ -47,23 +63,36 @@ export default function EditBuildingPage() {
     }
   }, [id]);
 
-  useEffect(() => { if (user && id) load(); }, [user, id, load]);
+  useEffect(() => {
+    if (user && id) load();
+  }, [user, id, load]);
 
   const update = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true); setError(null);
+    setSaving(true);
+    setError(null);
     try {
       await buildingsApi.update(id, {
-        name: form.name, areaZone: form.areaZone, roadBlock: form.roadBlock || undefined,
-        addressLine: form.addressLine || undefined, lat: Number(form.lat), lng: Number(form.lng),
-        totalFloors: Number(form.totalFloors), hasElevator: form.hasElevator, hasParking: form.hasParking,
-        hasGenerator: form.hasGenerator, hasSecurityGuard: form.hasSecurityGuard,
-        hasCctv: form.hasCctv, hasRooftop: form.hasRooftop,
+        name: form.name,
+        areaZone: form.areaZone,
+        roadBlock: form.roadBlock || undefined,
+        addressLine: form.addressLine || undefined,
+        lat: Number(form.lat),
+        lng: Number(form.lng),
+        totalFloors: Number(form.totalFloors),
+        hasElevator: form.hasElevator,
+        hasParking: form.hasParking,
+        hasGenerator: form.hasGenerator,
+        hasSecurityGuard: form.hasSecurityGuard,
+        hasCctv: form.hasCctv,
+        hasRooftop: form.hasRooftop,
       });
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Update failed");
-    } finally { setSaving(false); }
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading || !user || !building) return <div className="p-8">Loading...</div>;
@@ -71,7 +100,12 @@ export default function EditBuildingPage() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <Link href={`/dashboard/properties/${id}`} className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Back to property</Link>
+        <Link
+          href={`/dashboard/properties/${id}`}
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          <FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Back to property
+        </Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Edit property</h1>
       </div>
 
@@ -223,7 +257,11 @@ export default function EditBuildingPage() {
         <Separator />
 
         <div className="flex items-center gap-2">
-          <Button type="submit" disabled={saving} className="bg-black text-white px-4 py-2 rounded disabled:opacity-50">
+          <Button
+            type="submit"
+            disabled={saving}
+            className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+          >
             {saving ? "Saving…" : "Save changes"}
           </Button>
           <Button

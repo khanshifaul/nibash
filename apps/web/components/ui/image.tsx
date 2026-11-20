@@ -31,9 +31,7 @@ const imageVariants = cva("", {
 type ImageVariants = VariantProps<typeof imageVariants>;
 
 interface ImageProps
-  extends
-    Omit<React.ImgHTMLAttributes<HTMLImageElement>, "onLoad" | "onError">,
-    ImageVariants {
+  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "onLoad" | "onError">, ImageVariants {
   /** Fallback content or URL when image fails to load */
   fallback?: React.ReactNode | string;
   /** Show skeleton loading state */
@@ -65,9 +63,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     },
     ref,
   ) => {
-    const [status, setStatus] = React.useState<"loading" | "loaded" | "error">(
-      "loading",
-    );
+    const [status, setStatus] = React.useState<"loading" | "loaded" | "error">("loading");
 
     React.useEffect(() => {
       setStatus("loading");
@@ -113,17 +109,12 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     return (
       <div
         className={cn("relative overflow-hidden", aspectRatio && "w-full")}
-        style={
-          aspectRatio ? { paddingBottom: `${100 / aspectRatio}%` } : undefined
-        }
+        style={aspectRatio ? { paddingBottom: `${100 / aspectRatio}%` } : undefined}
       >
         {/* Skeleton */}
         {status === "loading" && showSkeleton && (
           <div
-            className={cn(
-              "absolute inset-0 animate-pulse bg-muted",
-              imageVariants({ rounded }),
-            )}
+            className={cn("absolute inset-0 animate-pulse bg-muted", imageVariants({ rounded }))}
           />
         )}
 
@@ -135,8 +126,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
             imageVariants({ rounded, objectFit }),
             aspectRatio && "absolute inset-0 h-full w-full",
             status === "loading" && "opacity-0",
-            status === "loaded" &&
-              "opacity-100 transition-opacity duration-300",
+            status === "loaded" && "opacity-100 transition-opacity duration-300",
             className,
           )}
           onLoad={() => setStatus("loaded")}

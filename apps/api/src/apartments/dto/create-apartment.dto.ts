@@ -1,14 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-  MaxLength,
-  Min,
-} from "class-validator";
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, MaxLength, Min } from "class-validator";
 
 export enum GasTypeDto {
   LINE = "LINE",
@@ -31,7 +23,9 @@ export enum AvailabilityStatusDto {
 }
 
 export class CreateApartmentDto {
-  @ApiProperty({ description: "Floor number within the building (floor will be created if needed)" })
+  @ApiProperty({
+    description: "Floor number within the building (floor will be created if needed)",
+  })
   @Type(() => Number)
   @IsInt()
   @Min(0)
@@ -53,14 +47,53 @@ export class CreateApartmentDto {
   @IsOptional()
   sizeSqft?: number;
 
-  @ApiProperty({ default: 0 }) @Type(() => Number) @IsInt() @Min(0) @IsOptional() bedrooms?: number;
-  @ApiProperty({ default: 0 }) @Type(() => Number) @IsInt() @Min(0) @IsOptional() attachedBathrooms?: number;
-  @ApiProperty({ default: 0 }) @Type(() => Number) @IsInt() @Min(0) @IsOptional() bathrooms?: number;
-  @ApiProperty({ required: false }) @Type(() => Number) @IsInt() @IsOptional() highCommodeCount?: number;
-  @ApiProperty({ default: 0 }) @Type(() => Number) @IsInt() @Min(0) @IsOptional() diningRooms?: number;
-  @ApiProperty({ default: 0 }) @Type(() => Number) @IsInt() @Min(0) @IsOptional() drawingRooms?: number;
-  @ApiProperty({ default: 0 }) @Type(() => Number) @IsInt() @Min(0) @IsOptional() kitchens?: number;
-  @ApiProperty({ default: 0 }) @Type(() => Number) @IsInt() @Min(0) @IsOptional() verandas?: number;
+  @ApiProperty({ default: 0 })
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  bedrooms?: number;
+  @ApiProperty({ default: 0 })
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  attachedBathrooms?: number;
+  @ApiProperty({ default: 0 })
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  bathrooms?: number;
+  @ApiProperty({ required: false })
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  highCommodeCount?: number;
+  @ApiProperty({ default: 0 })
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  diningRooms?: number;
+  @ApiProperty({ default: 0 })
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  drawingRooms?: number;
+  @ApiProperty({ default: 0 })
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  kitchens?: number;
+  @ApiProperty({ default: 0 })
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  verandas?: number;
 
   @ApiProperty({ enum: GasTypeDto, default: "NONE" })
   @IsEnum(GasTypeDto)
@@ -83,14 +116,20 @@ export class CreateApartmentDto {
   @IsOptional()
   listingType?: ListingTypeDto;
 
-  @ApiProperty({ required: false, description: "Monthly rent in minor units (paisa). Required/used for RENT listings." })
+  @ApiProperty({
+    required: false,
+    description: "Monthly rent in minor units (paisa). Required/used for RENT listings.",
+  })
   @Type(() => Number)
   @IsInt()
   @Min(0)
   @IsOptional()
   rentAmount?: number;
 
-  @ApiProperty({ required: false, description: "Sale price in minor units (paisa). Required/used for SALE listings." })
+  @ApiProperty({
+    required: false,
+    description: "Sale price in minor units (paisa). Required/used for SALE listings.",
+  })
   @Type(() => Number)
   @IsInt()
   @Min(0)
@@ -122,14 +161,19 @@ export class CreateApartmentDto {
   @IsOptional()
   availabilityStatus?: AvailabilityStatusDto;
 
-  @ApiProperty({ required: false, description: "ISO date string when coming soon / available from" })
+  @ApiProperty({
+    required: false,
+    description: "ISO date string when coming soon / available from",
+  })
   @IsString()
   @IsOptional()
   availableFrom?: string;
 
-
-  @ApiProperty({ required: false, default: true, description: "Whether to list this unit publicly (requires published state in search)" })
+  @ApiProperty({
+    required: false,
+    default: true,
+    description: "Whether to list this unit publicly (requires published state in search)",
+  })
   @IsOptional()
   publish?: boolean;
-
 }

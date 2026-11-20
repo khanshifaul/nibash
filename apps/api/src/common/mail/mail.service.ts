@@ -10,7 +10,9 @@ export class MailService {
   private readonly resend: Resend | null;
 
   constructor(private readonly configService: ConfigService) {
-    const apiKey = this.configService.get<string>("RESEND_API_KEY") || this.configService.get<string>("resend.apiKey");
+    const apiKey =
+      this.configService.get<string>("RESEND_API_KEY") ||
+      this.configService.get<string>("resend.apiKey");
     this.resend = apiKey ? new Resend(apiKey) : null;
   }
 
@@ -75,7 +77,13 @@ export class MailService {
         pass: this.configService.get<string>("SMTP_PASS"),
       },
     });
-    await transporter.sendMail({ from, to, subject, text, ...(html ? { html } : {}) });
+    await transporter.sendMail({
+      from,
+      to,
+      subject,
+      text,
+      ...(html ? { html } : {}),
+    });
     this.logger.log(`Email sent via SMTP to ${to}: ${subject}`);
   }
 

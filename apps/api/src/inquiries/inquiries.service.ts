@@ -41,7 +41,13 @@ export class InquiriesService {
       where: { building: { ownerId } },
       orderBy: { createdAt: "desc" },
       include: {
-        apartment: { select: { id: true, unitLabel: true, floor: { select: { floorNumber: true } } } },
+        apartment: {
+          select: {
+            id: true,
+            unitLabel: true,
+            floor: { select: { floorNumber: true } },
+          },
+        },
         building: { select: { id: true, name: true } },
         renter: { select: { id: true, name: true, email: true, phone: true } },
       },

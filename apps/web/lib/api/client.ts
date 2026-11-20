@@ -20,8 +20,9 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
   if (!res.ok) {
     const err = (data ?? {}) as ApiError;
-    const message =
-      Array.isArray(err.message) ? err.message.join(", ") : err.message ?? `Request failed (${res.status})`;
+    const message = Array.isArray(err.message)
+      ? err.message.join(", ")
+      : (err.message ?? `Request failed (${res.status})`);
     const apiErr = new Error(message) as Error & { statusCode?: number; errors?: unknown };
     apiErr.statusCode = res.status;
     apiErr.errors = err.errors;

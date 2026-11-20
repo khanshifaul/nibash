@@ -3,10 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-interface SearchProps extends Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  "onChange"
-> {
+interface SearchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   /** Callback when search value changes */
   onSearch?: (value: string) => void;
   /** Debounce delay in ms */
@@ -29,15 +26,7 @@ interface SearchProps extends Omit<
  */
 const Search = React.forwardRef<HTMLInputElement, SearchProps>(
   (
-    {
-      className,
-      onSearch,
-      debounceMs = 0,
-      showClear = true,
-      loading,
-      defaultValue = "",
-      ...props
-    },
+    { className, onSearch, debounceMs = 0, showClear = true, loading, defaultValue = "", ...props },
     ref,
   ) => {
     const [value, setValue] = React.useState(String(defaultValue));
@@ -144,11 +133,7 @@ const Search = React.forwardRef<HTMLInputElement, SearchProps>(
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           ) : null}

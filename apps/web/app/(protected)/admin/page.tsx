@@ -9,9 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 type Building = {
-  id: string; name: string; areaZone: string; slug: string;
-  moderationStatus: string; owner: { name: string | null };
-  totalFloors: number; createdAt: string;
+  id: string;
+  name: string;
+  areaZone: string;
+  slug: string;
+  moderationStatus: string;
+  owner: { name: string | null };
+  totalFloors: number;
+  createdAt: string;
 };
 
 export default function AdminPage() {
@@ -21,7 +26,9 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
 
-  useEffect(() => { if (!loading && !user) router.push("/sign-in"); }, [loading, user, router]);
+  useEffect(() => {
+    if (!loading && !user) router.push("/sign-in");
+  }, [loading, user, router]);
 
   async function load() {
     try {
@@ -31,7 +38,9 @@ export default function AdminPage() {
       setError(e instanceof Error ? e.message : "Failed to load buildings");
     }
   }
-  useEffect(() => { if (user) load(); }, [user]);
+  useEffect(() => {
+    if (user) load();
+  }, [user]);
 
   async function moderate(id: string, status: string, reason?: string) {
     setSaving(id);
@@ -50,7 +59,9 @@ export default function AdminPage() {
     <main className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Moderation queue</h1>
-        <Link href="/dashboard" className="underline text-sm">Dashboard</Link>
+        <Link href="/dashboard" className="underline text-sm">
+          Dashboard
+        </Link>
       </div>
       {error && <p className="text-red-600 mb-4">{error}</p>}
       {items.length === 0 ? (
@@ -62,11 +73,19 @@ export default function AdminPage() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="font-semibold">{b.name}</div>
-                  <div className="text-sm text-gray-600">{b.areaZone} • {b.totalFloors} floors • by {b.owner?.name ?? "—"}</div>
+                  <div className="text-sm text-gray-600">
+                    {b.areaZone} • {b.totalFloors} floors • by {b.owner?.name ?? "—"}
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Badge
-                    variant={b.moderationStatus === "APPROVED" ? "default" : b.moderationStatus === "REJECTED" ? "destructive" : "secondary"}
+                    variant={
+                      b.moderationStatus === "APPROVED"
+                        ? "default"
+                        : b.moderationStatus === "REJECTED"
+                          ? "destructive"
+                          : "secondary"
+                    }
                     className="text-xs"
                   >
                     {b.moderationStatus}

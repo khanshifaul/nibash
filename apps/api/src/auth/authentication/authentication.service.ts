@@ -45,7 +45,12 @@ export class AuthenticationService {
     private readonly mailService: MailService,
   ) {}
 
-  async register(email: string, password: string, name?: string, phone?: string): Promise<AuthResult> {
+  async register(
+    email: string,
+    password: string,
+    name?: string,
+    phone?: string,
+  ): Promise<AuthResult> {
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) {
       throw new ConflictException("An account with this email already exists");
@@ -64,7 +69,13 @@ export class AuthenticationService {
         emailVerificationToken: hash,
         emailVerificationExpires: expires,
       },
-      select: { id: true, email: true, name: true, phone: true, isEmailVerified: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        isEmailVerified: true,
+      },
     });
 
     await this.sendVerificationEmail(user.email, token);
@@ -191,7 +202,13 @@ export class AuthenticationService {
   async getProfile(userId: string): Promise<AuthUser> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, name: true, phone: true, isEmailVerified: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        isEmailVerified: true,
+      },
     });
     if (!user) throw new NotFoundException("User not found");
     return user;
@@ -201,15 +218,27 @@ export class AuthenticationService {
     const user = await this.prisma.user.update({
       where: { id: userId },
       data: { name: data.name, phone: data.phone },
-      select: { id: true, email: true, name: true, phone: true, isEmailVerified: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        isEmailVerified: true,
+      },
     });
     return user;
   }
 
-  private async issueTokens(userId: string, email: string, rememberMe: boolean): Promise<AuthTokens> {
-    const accessToken = await this.jwtService.signAsync(
-      { sub: userId, email, type: "access" } satisfies JwtPayload,
-    );
+  private async issueTokens(
+    userId: string,
+    email: string,
+    rememberMe: boolean,
+  ): Promise<AuthTokens> {
+    const accessToken = await this.jwtService.signAsync({
+      sub: userId,
+      email,
+      type: "access",
+    } satisfies JwtPayload);
 
     const refreshRaw = crypto.randomBytes(48).toString("hex");
     const refreshHash = this.hashToken(refreshRaw);
@@ -231,9 +260,17 @@ export class AuthenticationService {
     await this.mailService.sendVerificationEmail(email, verifyUrl);
   }
 
-  private generateToken(ttlMs: number): { token: string; hash: string; expires: Date } {
+  private generateToken(ttlMs: number): {
+    token: string;
+    hash: string;
+    expires: Date;
+  } {
     const token = crypto.randomBytes(32).toString("hex");
-    return { token, hash: this.hashToken(token), expires: new Date(Date.now() + ttlMs) };
+    return {
+      token,
+      hash: this.hashToken(token),
+      expires: new Date(Date.now() + ttlMs),
+    };
   }
 
   private hashToken(token: string): string {

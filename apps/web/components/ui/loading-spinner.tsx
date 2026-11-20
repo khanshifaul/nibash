@@ -52,14 +52,7 @@ const LoadingSpinner = React.forwardRef<SVGSVGElement, LoadingSpinnerProps>(
       role="status"
       aria-label={label}
     >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path
         className="opacity-75"
         fill="currentColor"
@@ -88,17 +81,12 @@ interface LoadingOverlayProps extends SpinnerVariants {
  * </LoadingOverlay>
  */
 const LoadingOverlay = React.forwardRef<HTMLDivElement, LoadingOverlayProps>(
-  (
-    { className, children, loading = true, text, size = "lg", variant },
-    ref,
-  ) => {
+  ({ className, children, loading = true, text, size = "lg", variant }, ref) => {
     if (!loading) return <>{children}</>;
 
     return (
       <div ref={ref} className={cn("relative", className)}>
-        {children && (
-          <div className="opacity-50 pointer-events-none">{children}</div>
-        )}
+        {children && <div className="opacity-50 pointer-events-none">{children}</div>}
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80">
           <LoadingSpinner size={size} variant={variant} />
           {text && <p className="mt-2 text-sm text-muted-foreground">{text}</p>}

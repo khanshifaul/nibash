@@ -53,9 +53,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
     );
 
     React.useEffect(() => {
-      const newValues = value
-        .split("")
-        .concat(Array(length - value.length).fill(""));
+      const newValues = value.split("").concat(Array(length - value.length).fill(""));
       setValues(newValues.slice(0, length));
     }, [value, length]);
 
@@ -90,10 +88,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
       }
     };
 
-    const handleKeyDown = (
-      index: number,
-      e: React.KeyboardEvent<HTMLInputElement>,
-    ) => {
+    const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Backspace") {
         if (!values[index] && index > 0) {
           focusInput(index - 1);
@@ -113,9 +108,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
 
       if (type === "number" && !/^\d+$/.test(pastedData)) return;
 
-      const newValues = pastedData
-        .split("")
-        .concat(Array(length - pastedData.length).fill(""));
+      const newValues = pastedData.split("").concat(Array(length - pastedData.length).fill(""));
       setValues(newValues.slice(0, length));
 
       const newOtp = newValues.slice(0, length).join("");

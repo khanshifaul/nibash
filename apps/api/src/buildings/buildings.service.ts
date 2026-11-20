@@ -17,7 +17,9 @@ export class BuildingsService {
     const owner = await this.prisma.user.findUnique({ where: { id: ownerId } });
     if (!owner) throw new NotFoundException("User not found");
     if (!owner.phone && !dto.contactPhone) {
-      throw new BadRequestException("Phone number is required for listing. Update your profile or provide a contact phone.");
+      throw new BadRequestException(
+        "Phone number is required for listing. Update your profile or provide a contact phone.",
+      );
     }
 
     const slug = await this.generateUniqueSlug(dto.name);
@@ -60,7 +62,11 @@ export class BuildingsService {
         images: { orderBy: { sortOrder: "asc" } },
         floors: {
           orderBy: { floorNumber: "asc" },
-          include: { apartments: { include: { images: { orderBy: { sortOrder: "asc" } } } } },
+          include: {
+            apartments: {
+              include: { images: { orderBy: { sortOrder: "asc" } } },
+            },
+          },
         },
         _count: { select: { floors: true } },
       },
@@ -100,7 +106,10 @@ export class BuildingsService {
           orderBy: { floorNumber: "asc" },
           include: {
             apartments: {
-              where: { availabilityStatus: { in: ["AVAILABLE", "COMING_SOON"] }, publishedAt: { not: null } },
+              where: {
+                availabilityStatus: { in: ["AVAILABLE", "COMING_SOON"] },
+                publishedAt: { not: null },
+              },
               orderBy: { unitLabel: "asc" },
               include: { images: { orderBy: { sortOrder: "asc" } } },
             },
@@ -146,7 +155,9 @@ export class BuildingsService {
         ...(dto.hasCctv !== undefined ? { hasCctv: dto.hasCctv } : {}),
         ...(dto.hasIntercom !== undefined ? { hasIntercom: dto.hasIntercom } : {}),
         ...(dto.hasRooftop !== undefined ? { hasRooftop: dto.hasRooftop } : {}),
-        ...(dto.hasSubmersiblePump !== undefined ? { hasSubmersiblePump: dto.hasSubmersiblePump } : {}),
+        ...(dto.hasSubmersiblePump !== undefined
+          ? { hasSubmersiblePump: dto.hasSubmersiblePump }
+          : {}),
       },
       include: { images: true, floors: { orderBy: { floorNumber: "asc" } } },
     });
@@ -161,7 +172,9 @@ export class BuildingsService {
   }
 
   async ensureFloor(buildingId: string, ownerId: string, floorNumber: number) {
-    const building = await this.prisma.building.findUnique({ where: { id: buildingId } });
+    const building = await this.prisma.building.findUnique({
+      where: { id: buildingId },
+    });
     if (!building) throw new NotFoundException("Building not found");
     if (building.ownerId !== ownerId) throw new ForbiddenException();
     if (floorNumber < 0 || floorNumber > building.totalFloors) {
@@ -175,11 +188,12 @@ export class BuildingsService {
   }
 
   private async generateUniqueSlug(name: string): Promise<string> {
-    const base = name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "building";
+    const base =
+      name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "") || "building";
     let slug = base;
     let i = 1;
     while (await this.prisma.building.findUnique({ where: { slug } })) {

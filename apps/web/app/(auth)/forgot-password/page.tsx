@@ -8,7 +8,14 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -35,7 +42,9 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-[440px]">
         <Card className="shadow-xl shadow-black/5 border-border/70 rounded-2xl overflow-hidden">
           <CardHeader className="space-y-1.5 pb-3 px-6 sm:px-7 pt-7 sm:pt-8 text-center">
-            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight">Forgot password?</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Forgot password?
+            </CardTitle>
             <CardDescription className="text-sm sm:text-base">
               Enter your email and we&apos;ll send you a reset link
             </CardDescription>
@@ -47,21 +56,29 @@ export default function ForgotPasswordPage() {
                   <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-green-900 dark:text-green-200 font-semibold">Check your email</p>
+                  <p className="text-sm text-green-900 dark:text-green-200 font-semibold">
+                    Check your email
+                  </p>
                   <p className="text-sm text-green-800/90 dark:text-green-300/90 mt-1">
-                    If an account exists for <strong>{email}</strong>, we&apos;ve sent a password reset link.
+                    If an account exists for <strong>{email}</strong>, we&apos;ve sent a password
+                    reset link.
                   </p>
                 </div>
               </div>
             ) : (
               <form className="space-y-4" onSubmit={onSubmit}>
                 {error && (
-                  <div role="alert" className="rounded-lg border border-destructive/25 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
+                  <div
+                    role="alert"
+                    className="rounded-lg border border-destructive/25 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive"
+                  >
                     {error}
                   </div>
                 )}
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" required>Email address</Label>
+                  <Label htmlFor="email" required>
+                    Email address
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <Input
@@ -76,14 +93,27 @@ export default function ForgotPasswordPage() {
                     />
                   </div>
                 </div>
-                <Button type="submit" disabled={loading} className="w-full h-11 text-base font-semibold rounded-lg">
-                  {loading ? (<><Loader2 className="h-4 w-4 animate-spin" /> Sending...</>) : "Send reset link"}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-11 text-base font-semibold rounded-lg"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Sending...
+                    </>
+                  ) : (
+                    "Send reset link"
+                  )}
                 </Button>
               </form>
             )}
           </CardContent>
           <CardFooter className="px-6 sm:px-7 pb-6 pt-0 flex flex-col">
-            <Link href="/sign-in" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 mx-auto">
+            <Link
+              href="/sign-in"
+              className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 mx-auto"
+            >
               <FiArrowLeft className="h-4 w-4" /> Back to sign in
             </Link>
           </CardFooter>

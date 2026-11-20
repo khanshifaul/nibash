@@ -34,17 +34,7 @@ const sizeClasses = {
  * <StarRating value={4.5} readonly />
  */
 const StarRating = React.forwardRef<HTMLDivElement, StarRatingProps>(
-  (
-    {
-      value = 0,
-      max = 5,
-      onValueChange,
-      readonly = false,
-      size = "default",
-      className,
-    },
-    ref,
-  ) => {
+  ({ value = 0, max = 5, onValueChange, readonly = false, size = "default", className }, ref) => {
     const [hoverValue, setHoverValue] = React.useState<number | null>(null);
 
     const displayValue = hoverValue !== null ? hoverValue : value;
@@ -81,29 +71,26 @@ const StarRating = React.forwardRef<HTMLDivElement, StarRatingProps>(
         {Array.from({ length: max }).map((_, index) => {
           const starValue = index + 1;
           const isFilled = displayValue >= starValue;
-          const isHalfFilled =
-            !isFilled && displayValue > index && displayValue < starValue;
+          const isHalfFilled = !isFilled && displayValue > index && displayValue < starValue;
 
           return (
             <button
               key={index}
               type="button"
               role="radio"
-              aria-checked={value ===  starValue}
+              aria-checked={value === starValue}
               aria-label={`${starValue} star${starValue > 1 ? "s" : ""}`}
               disabled={readonly}
               tabIndex={
                 readonly
                   ? -1
-                  : starValue === Math.ceil(value) ||
-                      (value === 0 && starValue === 1)
+                  : starValue === Math.ceil(value) || (value === 0 && starValue === 1)
                     ? 0
                     : -1
               }
               className={cn(
                 "relative focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded",
-                !readonly &&
-                  "cursor-pointer hover:scale-110 transition-transform",
+                !readonly && "cursor-pointer hover:scale-110 transition-transform",
               )}
               onClick={() => handleClick(starValue)}
               onMouseEnter={() => !readonly && setHoverValue(starValue)}
@@ -123,11 +110,7 @@ const StarRating = React.forwardRef<HTMLDivElement, StarRatingProps>(
                 className={cn(
                   sizeClasses[size],
                   "absolute inset-0 text-yellow-400 transition-opacity",
-                  isFilled
-                    ? "opacity-100"
-                    : isHalfFilled
-                      ? "opacity-50"
-                      : "opacity-0",
+                  isFilled ? "opacity-100" : isHalfFilled ? "opacity-50" : "opacity-0",
                 )}
                 fill="currentColor"
                 viewBox="0 0 24 24"

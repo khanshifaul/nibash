@@ -8,14 +8,9 @@ interface RadioGroupContextValue {
   name: string;
 }
 
-const RadioGroupContext = React.createContext<RadioGroupContextValue | null>(
-  null,
-);
+const RadioGroupContext = React.createContext<RadioGroupContextValue | null>(null);
 
-interface RadioGroupProps extends Omit<
-  React.HTMLAttributes<HTMLDivElement>,
-  "onChange"
-> {
+interface RadioGroupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
   value?: string;
   onValueChange?: (value: string) => void;
   defaultValue?: string;
@@ -50,23 +45,14 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
     },
     ref,
   ) => {
-    const [uncontrolledValue, setUncontrolledValue] =
-      React.useState(defaultValue);
+    const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
 
-    const value =
-      controlledValue !== undefined ? controlledValue : uncontrolledValue;
+    const value = controlledValue !== undefined ? controlledValue : uncontrolledValue;
     const setValue = onValueChange || setUncontrolledValue;
 
     return (
-      <RadioGroupContext.Provider
-        value={{ value, onValueChange: setValue, name }}
-      >
-        <div
-          ref={ref}
-          role="radiogroup"
-          className={cn("grid gap-2", className)}
-          {...props}
-        >
+      <RadioGroupContext.Provider value={{ value, onValueChange: setValue, name }}>
+        <div ref={ref} role="radiogroup" className={cn("grid gap-2", className)} {...props}>
           {children}
         </div>
       </RadioGroupContext.Provider>
@@ -85,8 +71,7 @@ interface RadioGroupItemProps extends Omit<
 const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
   ({ className, value, ...props }, ref) => {
     const context = React.useContext(RadioGroupContext);
-    if (!context)
-      throw new Error("RadioGroupItem must be used within RadioGroup");
+    if (!context) throw new Error("RadioGroupItem must be used within RadioGroup");
 
     const isSelected = context.value === value;
 

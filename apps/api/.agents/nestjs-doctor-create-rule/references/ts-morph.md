@@ -15,22 +15,30 @@ for (const cls of context.sourceFile.getClasses()) {
   const hasInjectable = cls.getDecorator("Injectable") !== undefined;
 
   // Check if class implements an interface
-  const implementsOnModuleInit = cls.getImplements()
-    .some(i => i.getText() === "OnModuleInit");
+  const implementsOnModuleInit = cls.getImplements().some((i) => i.getText() === "OnModuleInit");
 
   // Get constructor parameters (injected dependencies)
   const ctor = cls.getConstructors()[0];
   if (ctor) {
     for (const param of ctor.getParameters()) {
-      const paramType = param.getType().getText();          // may include import() path
+      const paramType = param.getType().getText(); // may include import() path
       const annotationType = param.getTypeNode()?.getText(); // literal annotation text
     }
   }
 
   // Iterate methods and check for HTTP handler decorators
-  const httpDecorators = new Set(["Get", "Post", "Put", "Patch", "Delete", "Head", "Options", "All"]);
+  const httpDecorators = new Set([
+    "Get",
+    "Post",
+    "Put",
+    "Patch",
+    "Delete",
+    "Head",
+    "Options",
+    "All",
+  ]);
   for (const method of cls.getMethods()) {
-    const isHandler = method.getDecorators().some(d => httpDecorators.has(d.getName()));
+    const isHandler = method.getDecorators().some((d) => httpDecorators.has(d.getName()));
     const line = method.getStartLineNumber();
   }
 }

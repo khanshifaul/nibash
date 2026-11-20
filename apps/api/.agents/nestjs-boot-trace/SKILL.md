@@ -49,8 +49,16 @@ const app = await NestFactory.create(AppModule, {
         try {
           instance[hook] = async function (...args: unknown[]) {
             const start = performance.now();
-            try { return await original.apply(this, args); }
-            finally { hookTimings.push({ className: this.constructor.name, hook, ms: performance.now() - start, startMs: start - t0 }); }
+            try {
+              return await original.apply(this, args);
+            } finally {
+              hookTimings.push({
+                className: this.constructor.name,
+                hook,
+                ms: performance.now() - start,
+                startMs: start - t0,
+              });
+            }
           };
         } catch {} // frozen instances stay untimed
       }

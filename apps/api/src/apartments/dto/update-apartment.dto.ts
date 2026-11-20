@@ -11,17 +11,23 @@ export class UpdateApartmentDto extends PartialType(CreateApartmentDto) {
 }
 
 export class CloneApartmentDto {
-  @ApiProperty({ description: "Target floor number (defaults to next floor suggestion)" })
+  @ApiProperty({
+    description: "Target floor number (defaults to next floor suggestion)",
+  })
   @Type(() => Number)
   @IsInt()
   @Min(0)
   floorNumber!: number;
 
-  @ApiProperty({ description: "New unit label (must be unique on target floor)" })
+  @ApiProperty({
+    description: "New unit label (must be unique on target floor)",
+  })
   unitLabel!: string;
 }
 
 export class UpdateApartmentStatusDto {
-  @ApiProperty({ enum: ["AVAILABLE", "RENTED", "MAINTENANCE", "COMING_SOON", "SOLD"] })
+  @ApiProperty({
+    enum: ["AVAILABLE", "RENTED", "MAINTENANCE", "COMING_SOON", "SOLD"],
+  })
   availabilityStatus!: "AVAILABLE" | "RENTED" | "MAINTENANCE" | "COMING_SOON" | "SOLD";
 }

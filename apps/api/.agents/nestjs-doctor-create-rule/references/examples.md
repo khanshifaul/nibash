@@ -58,17 +58,13 @@ const MAX_PUBLIC_METHODS = 15;
 export const noGodServices = {
   meta: {
     id: "no-god-services",
-    description:
-      "Services with too many dependencies or public methods are doing too much",
+    description: "Services with too many dependencies or public methods are doing too much",
     help: "Split the service into smaller, focused services following the Single Responsibility Principle.",
     severity: "warning" as const,
     category: "architecture" as const,
     scope: "project" as const,
   },
-  check(context: {
-    providers: Map<string, any>;
-    report: Function;
-  }) {
+  check(context: { providers: Map<string, any>; report: Function }) {
     for (const [name, provider] of context.providers) {
       const depCount = provider.dependencies.length;
       const methodCount = provider.publicMethodCount;

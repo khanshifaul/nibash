@@ -11,7 +11,11 @@ export class RegisterDto {
   @IsOptional()
   name?: string;
 
-  @ApiProperty({ example: "+8801700000000", required: false, description: "Phone number (needed for listing/contact)" })
+  @ApiProperty({
+    example: "+8801700000000",
+    required: false,
+    description: "Phone number (needed for listing/contact)",
+  })
   @IsString()
   @IsOptional()
   phone?: string;

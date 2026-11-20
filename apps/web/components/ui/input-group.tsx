@@ -13,8 +13,7 @@ const InputGroup = React.forwardRef<
       className={cn(
         "flex w-full items-center rounded-md",
         "focus-within:ring-1 focus-within:ring-ring",
-        error &&
-          "focus-within:ring-destructive focus-within:border-destructive",
+        error && "focus-within:ring-destructive focus-within:border-destructive",
         // First child: rounded-l only, remove right border if not last
         "[&>*:first-child]:rounded-r-none",
         // Last child: rounded-r only, remove left border if not first

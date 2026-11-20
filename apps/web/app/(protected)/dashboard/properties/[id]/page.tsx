@@ -11,8 +11,22 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdRoofing } from "react-icons/md";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  MdElevator,
+  MdLocalParking,
+  MdBolt,
+  MdSecurity,
+  MdVideocam,
+  MdRoofing,
+} from "react-icons/md";
 import { FiArrowLeft } from "react-icons/fi";
 
 export default function OwnerBuildingPage() {
@@ -25,8 +39,18 @@ export default function OwnerBuildingPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [apt, setApt] = useState({
-    floorNumber: "1", unitLabel: "", bedrooms: "2", bathrooms: "2", verandas: "1",
-    diningRooms: "1", drawingRooms: "1", kitchens: "1", listingType: "RENT" as "RENT" | "SALE", rentAmount: "2000000", salePrice: "", serviceCharge: "0",
+    floorNumber: "1",
+    unitLabel: "",
+    bedrooms: "2",
+    bathrooms: "2",
+    verandas: "1",
+    diningRooms: "1",
+    drawingRooms: "1",
+    kitchens: "1",
+    listingType: "RENT" as "RENT" | "SALE",
+    rentAmount: "2000000",
+    salePrice: "",
+    serviceCharge: "0",
     securityDepositAmount: "0",
   });
   const [saving, setSaving] = useState(false);
@@ -50,11 +74,14 @@ export default function OwnerBuildingPage() {
     }
   }, [id]);
 
-  useEffect(() => { if (user && id) load(); }, [user, id, load]);
+  useEffect(() => {
+    if (user && id) load();
+  }, [user, id, load]);
 
   async function addApartment(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true); setError(null);
+    setSaving(true);
+    setError(null);
     try {
       await apartmentsApi.create(id, {
         floorNumber: Number(apt.floorNumber),
@@ -76,7 +103,9 @@ export default function OwnerBuildingPage() {
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add apartment");
-    } finally { setSaving(false); }
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function setStatus(apartmentId: string, availabilityStatus: string) {
@@ -142,14 +171,26 @@ export default function OwnerBuildingPage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href="/dashboard/properties" className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> My properties</Link>
+        <Link
+          href="/dashboard/properties"
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          <FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> My properties
+        </Link>
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mt-4">
           <div>
             <h1 className="text-2xl font-bold">{building.name}</h1>
-            <p className="text-gray-600">{building.areaZone} • {building.totalFloors} floors • {allUnits.length} units</p>
+            <p className="text-gray-600">
+              {building.areaZone} • {building.totalFloors} floors • {allUnits.length} units
+            </p>
           </div>
           <div className="flex gap-2">
-            <Link href={`/dashboard/properties/${id}/edit`} className="text-sm font-medium hover:underline">Edit building</Link>
+            <Link
+              href={`/dashboard/properties/${id}/edit`}
+              className="text-sm font-medium hover:underline"
+            >
+              Edit building
+            </Link>
             <Button onClick={() => setImageDialog(true)} variant="outline" size="sm">
               Add cover photo
             </Button>
@@ -187,12 +228,42 @@ export default function OwnerBuildingPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex flex-wrap gap-2">
-                {building.hasElevator && <Badge variant="secondary" className="gap-1.5"><MdElevator className="h-3.5 w-3.5" />Lift ({building.elevatorCount ?? 1})</Badge>}
-                {building.hasParking && <Badge variant="secondary" className="gap-1.5"><MdLocalParking className="h-3.5 w-3.5" />Parking ({building.parkingType})</Badge>}
-                {building.hasGenerator && <Badge variant="secondary" className="gap-1.5"><MdBolt className="h-3.5 w-3.5" />Generator</Badge>}
-                {building.hasSecurityGuard && <Badge variant="secondary" className="gap-1.5"><MdSecurity className="h-3.5 w-3.5" />Security guard</Badge>}
-                {building.hasCctv && <Badge variant="secondary" className="gap-1.5"><MdVideocam className="h-3.5 w-3.5" />CCTV</Badge>}
-                {building.hasRooftop && <Badge variant="secondary" className="gap-1.5"><MdRoofing className="h-3.5 w-3.5" />Rooftop</Badge>}
+                {building.hasElevator && (
+                  <Badge variant="secondary" className="gap-1.5">
+                    <MdElevator className="h-3.5 w-3.5" />
+                    Lift ({building.elevatorCount ?? 1})
+                  </Badge>
+                )}
+                {building.hasParking && (
+                  <Badge variant="secondary" className="gap-1.5">
+                    <MdLocalParking className="h-3.5 w-3.5" />
+                    Parking ({building.parkingType})
+                  </Badge>
+                )}
+                {building.hasGenerator && (
+                  <Badge variant="secondary" className="gap-1.5">
+                    <MdBolt className="h-3.5 w-3.5" />
+                    Generator
+                  </Badge>
+                )}
+                {building.hasSecurityGuard && (
+                  <Badge variant="secondary" className="gap-1.5">
+                    <MdSecurity className="h-3.5 w-3.5" />
+                    Security guard
+                  </Badge>
+                )}
+                {building.hasCctv && (
+                  <Badge variant="secondary" className="gap-1.5">
+                    <MdVideocam className="h-3.5 w-3.5" />
+                    CCTV
+                  </Badge>
+                )}
+                {building.hasRooftop && (
+                  <Badge variant="secondary" className="gap-1.5">
+                    <MdRoofing className="h-3.5 w-3.5" />
+                    Rooftop
+                  </Badge>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -243,68 +314,190 @@ export default function OwnerBuildingPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="apt-floor">Floor</Label>
-              <Input id="apt-floor" type="text" inputMode="numeric" placeholder={`0–${building.totalFloors}`} value={apt.floorNumber} onChange={(e) => setApt({ ...apt, floorNumber: e.target.value.replace(/[^0-9]/g, "") })} required />
+              <Input
+                id="apt-floor"
+                type="text"
+                inputMode="numeric"
+                placeholder={`0–${building.totalFloors}`}
+                value={apt.floorNumber}
+                onChange={(e) =>
+                  setApt({ ...apt, floorNumber: e.target.value.replace(/[^0-9]/g, "") })
+                }
+                required
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-unit">Unit label</Label>
-              <Input id="apt-unit" type="text" placeholder="e.g. A-1" value={apt.unitLabel} onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })} required />
+              <Input
+                id="apt-unit"
+                type="text"
+                placeholder="e.g. A-1"
+                value={apt.unitLabel}
+                onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })}
+                required
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-bedrooms">Bedrooms</Label>
-              <Input id="apt-bedrooms" type="text" inputMode="numeric" placeholder="e.g. 3" value={apt.bedrooms} onChange={(e) => setApt({ ...apt, bedrooms: e.target.value.replace(/[^0-9]/g, "") })} />
+              <Input
+                id="apt-bedrooms"
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 3"
+                value={apt.bedrooms}
+                onChange={(e) =>
+                  setApt({ ...apt, bedrooms: e.target.value.replace(/[^0-9]/g, "") })
+                }
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-bathrooms">Bathrooms</Label>
-              <Input id="apt-bathrooms" type="text" inputMode="numeric" placeholder="e.g. 2" value={apt.bathrooms} onChange={(e) => setApt({ ...apt, bathrooms: e.target.value.replace(/[^0-9]/g, "") })} />
+              <Input
+                id="apt-bathrooms"
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 2"
+                value={apt.bathrooms}
+                onChange={(e) =>
+                  setApt({ ...apt, bathrooms: e.target.value.replace(/[^0-9]/g, "") })
+                }
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-verandas">Verandas</Label>
-              <Input id="apt-verandas" type="text" inputMode="numeric" placeholder="e.g. 2" value={apt.verandas} onChange={(e) => setApt({ ...apt, verandas: e.target.value.replace(/[^0-9]/g, "") })} />
+              <Input
+                id="apt-verandas"
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 2"
+                value={apt.verandas}
+                onChange={(e) =>
+                  setApt({ ...apt, verandas: e.target.value.replace(/[^0-9]/g, "") })
+                }
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-dining">Dining rooms</Label>
-              <Input id="apt-dining" type="text" inputMode="numeric" placeholder="e.g. 1" value={apt.diningRooms} onChange={(e) => setApt({ ...apt, diningRooms: e.target.value.replace(/[^0-9]/g, "") })} />
+              <Input
+                id="apt-dining"
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 1"
+                value={apt.diningRooms}
+                onChange={(e) =>
+                  setApt({ ...apt, diningRooms: e.target.value.replace(/[^0-9]/g, "") })
+                }
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-drawing">Drawing rooms</Label>
-              <Input id="apt-drawing" type="text" inputMode="numeric" placeholder="e.g. 1" value={apt.drawingRooms} onChange={(e) => setApt({ ...apt, drawingRooms: e.target.value.replace(/[^0-9]/g, "") })} />
+              <Input
+                id="apt-drawing"
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 1"
+                value={apt.drawingRooms}
+                onChange={(e) =>
+                  setApt({ ...apt, drawingRooms: e.target.value.replace(/[^0-9]/g, "") })
+                }
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-kitchens">Kitchens</Label>
-              <Input id="apt-kitchens" type="text" inputMode="numeric" placeholder="e.g. 1" value={apt.kitchens} onChange={(e) => setApt({ ...apt, kitchens: e.target.value.replace(/[^0-9]/g, "") })} />
+              <Input
+                id="apt-kitchens"
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 1"
+                value={apt.kitchens}
+                onChange={(e) =>
+                  setApt({ ...apt, kitchens: e.target.value.replace(/[^0-9]/g, "") })
+                }
+              />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="apt-listing-type">Listing type</Label>
-              <select id="apt-listing-type" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={apt.listingType} onChange={(e) => setApt({ ...apt, listingType: e.target.value as "RENT" | "SALE" })}>
+              <select
+                id="apt-listing-type"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={apt.listingType}
+                onChange={(e) => setApt({ ...apt, listingType: e.target.value as "RENT" | "SALE" })}
+              >
                 <option value="RENT">For rent</option>
                 <option value="SALE">For sale</option>
               </select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="apt-rent">{apt.listingType === "SALE" ? "Sale price (BDT, minor units)" : "Monthly rent (BDT, minor units)"}</Label>
+              <Label htmlFor="apt-rent">
+                {apt.listingType === "SALE"
+                  ? "Sale price (BDT, minor units)"
+                  : "Monthly rent (BDT, minor units)"}
+              </Label>
               {apt.listingType === "SALE" ? (
-                <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 1250000000" value={apt.salePrice} onChange={(e) => setApt({ ...apt, salePrice: e.target.value.replace(/[^0-9]/g, "") })} required />
+                <Input
+                  id="apt-rent"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="e.g. 1250000000"
+                  value={apt.salePrice}
+                  onChange={(e) =>
+                    setApt({ ...apt, salePrice: e.target.value.replace(/[^0-9]/g, "") })
+                  }
+                  required
+                />
               ) : (
-                <Input id="apt-rent" type="text" inputMode="numeric" placeholder="e.g. 2500000" value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })} required />
+                <Input
+                  id="apt-rent"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="e.g. 2500000"
+                  value={apt.rentAmount}
+                  onChange={(e) =>
+                    setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })
+                  }
+                  required
+                />
               )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-service">Service charge (minor units)</Label>
-              <Input id="apt-service" type="text" inputMode="numeric" placeholder="e.g. 0" value={apt.serviceCharge} onChange={(e) => setApt({ ...apt, serviceCharge: e.target.value.replace(/[^0-9]/g, "") })} />
+              <Input
+                id="apt-service"
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 0"
+                value={apt.serviceCharge}
+                onChange={(e) =>
+                  setApt({ ...apt, serviceCharge: e.target.value.replace(/[^0-9]/g, "") })
+                }
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="apt-deposit">Security deposit (minor units)</Label>
-              <Input id="apt-deposit" type="text" inputMode="numeric" placeholder="e.g. 0" value={apt.securityDepositAmount} onChange={(e) => setApt({ ...apt, securityDepositAmount: e.target.value.replace(/[^0-9]/g, "") })} />
+              <Input
+                id="apt-deposit"
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 0"
+                value={apt.securityDepositAmount}
+                onChange={(e) =>
+                  setApt({ ...apt, securityDepositAmount: e.target.value.replace(/[^0-9]/g, "") })
+                }
+              />
             </div>
           </div>
-          <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save apartment"}</Button>
+          <Button type="submit" disabled={saving}>
+            {saving ? "Saving..." : "Save apartment"}
+          </Button>
         </form>
       )}
 
       {building.floors.length === 0 ? (
-        <p className="text-gray-600">No floors/apartments yet. Add an apartment to create floors in the hierarchy.</p>
+        <p className="text-gray-600">
+          No floors/apartments yet. Add an apartment to create floors in the hierarchy.
+        </p>
       ) : (
         <div className="space-y-4">
           {building.floors.map((floor) => (
@@ -315,19 +508,37 @@ export default function OwnerBuildingPage() {
               ) : (
                 <div className="space-y-2">
                   {floor.apartments.map((a) => (
-                    <div key={a.id} className="flex flex-wrap items-start justify-between gap-3 border rounded p-3">
+                    <div
+                      key={a.id}
+                      className="flex flex-wrap items-start justify-between gap-3 border rounded p-3"
+                    >
                       <div className="min-w-0">
                         <div className="font-medium flex flex-wrap items-center gap-2">
                           Unit {a.unitLabel}
-                          <Badge variant={a.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>{a.availabilityStatus}</Badge>
-                          <Badge variant={(a as any).publishedAt ? "outline" : "secondary"}>{(a as any).publishedAt ? "Listed" : "Unlisted"}</Badge>
+                          <Badge
+                            variant={a.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}
+                          >
+                            {a.availabilityStatus}
+                          </Badge>
+                          <Badge variant={(a as any).publishedAt ? "outline" : "secondary"}>
+                            {(a as any).publishedAt ? "Listed" : "Unlisted"}
+                          </Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground mt-1">{a.bedrooms} bed • {a.bathrooms} bath • {a.verandas} veranda • {a.listingType === "SALE" ? `৳${((a.salePrice ?? 0) / 100).toLocaleString()} (sale)` : `৳${(a.rentAmount / 100).toLocaleString()}/mo (rent)`}</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {a.bedrooms} bed • {a.bathrooms} bath • {a.verandas} veranda •{" "}
+                          {a.listingType === "SALE"
+                            ? `৳${((a.salePrice ?? 0) / 100).toLocaleString()} (sale)`
+                            : `৳${(a.rentAmount / 100).toLocaleString()}/mo (rent)`}
+                        </div>
                       </div>
                       <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                         <label className="text-xs text-muted-foreground flex flex-col gap-1">
                           Status
-                          <select className="h-8 rounded border bg-background px-2 text-sm text-foreground" value={a.availabilityStatus} onChange={(e) => void setStatus(a.id, e.target.value)}>
+                          <select
+                            className="h-8 rounded border bg-background px-2 text-sm text-foreground"
+                            value={a.availabilityStatus}
+                            onChange={(e) => void setStatus(a.id, e.target.value)}
+                          >
                             <option value="AVAILABLE">Available</option>
                             <option value="RENTED">Rented</option>
                             <option value="MAINTENANCE">Maintenance</option>
@@ -335,8 +546,20 @@ export default function OwnerBuildingPage() {
                             <option value="SOLD">Sold</option>
                           </select>
                         </label>
-                        <Button size="sm" variant="outline" onClick={() => void setListed(a.id, !(a as any).publishedAt)}>{(a as any).publishedAt ? "Unlist (hide)" : "List publicly"}</Button>
-                        <Button size="sm" variant="outline" onClick={() => void cloneApartment(a.id, floor.floorNumber)}>Clone</Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void setListed(a.id, !(a as any).publishedAt)}
+                        >
+                          {(a as any).publishedAt ? "Unlist (hide)" : "List publicly"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void cloneApartment(a.id, floor.floorNumber)}
+                        >
+                          Clone
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -352,17 +575,29 @@ export default function OwnerBuildingPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add cover photo</DialogTitle>
-            <DialogDescription>Paste the public URL of an uploaded building image.</DialogDescription>
+            <DialogDescription>
+              Paste the public URL of an uploaded building image.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <Input value={newImageUrl} onChange={(e) => setNewImageUrl(e.target.value)} placeholder="https://..." />
-            <Input value={newImageCaption} onChange={(e) => setNewImageCaption(e.target.value)} placeholder="Caption (optional)" />
+            <Input
+              value={newImageUrl}
+              onChange={(e) => setNewImageUrl(e.target.value)}
+              placeholder="https://..."
+            />
+            <Input
+              value={newImageCaption}
+              onChange={(e) => setNewImageCaption(e.target.value)}
+              placeholder="Caption (optional)"
+            />
             <Button onClick={attachCoverImage} disabled={uploadingImage} className="w-full">
               {uploadingImage ? "Attaching…" : "Attach cover photo"}
             </Button>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setImageDialog(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setImageDialog(false)}>
+              Cancel
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

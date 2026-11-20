@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-} from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
 import { Public } from "../common/decorators/public.decorator";
@@ -26,7 +17,9 @@ export class BuildingsController {
   @ApiBearerAuth()
   @ApiCookieAuth("nibash_token")
   @Verified()
-  @ApiOperation({ summary: "Create a building (verified user, auto-published)" })
+  @ApiOperation({
+    summary: "Create a building (verified user, auto-published)",
+  })
   create(@User("id") userId: string, @Body() dto: CreateBuildingDto) {
     return this.buildingsService.create(userId, dto);
   }
@@ -49,7 +42,9 @@ export class BuildingsController {
 
   @Public()
   @Get("public/:idOrSlug")
-  @ApiOperation({ summary: "Public building view (contact gated to verified viewers)" })
+  @ApiOperation({
+    summary: "Public building view (contact gated to verified viewers)",
+  })
   findPublic(@Param("idOrSlug") idOrSlug: string, @Req() req: Request) {
     const user = req.user as { isEmailVerified?: boolean } | undefined;
     const viewerVerified = !!user?.isEmailVerified;
@@ -61,11 +56,7 @@ export class BuildingsController {
   @ApiCookieAuth("nibash_token")
   @Verified()
   @ApiOperation({ summary: "Update my building" })
-  update(
-    @Param("id") id: string,
-    @User("id") userId: string,
-    @Body() dto: UpdateBuildingDto,
-  ) {
+  update(@Param("id") id: string, @User("id") userId: string, @Body() dto: UpdateBuildingDto) {
     return this.buildingsService.update(id, userId, dto);
   }
 
@@ -81,7 +72,9 @@ export class BuildingsController {
   @ApiBearerAuth()
   @ApiCookieAuth("nibash_token")
   @Verified()
-  @ApiOperation({ summary: "Ensure/create a floor in building (hierarchy: building > floor)" })
+  @ApiOperation({
+    summary: "Ensure/create a floor in building (hierarchy: building > floor)",
+  })
   ensureFloor(
     @Param("id") id: string,
     @User("id") userId: string,

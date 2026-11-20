@@ -8,7 +8,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import useEmblaCarousel from "embla-carousel-react";
-import { Building2, MapPin, Bed, Bath, Maximize, Grid3X3, List, Shield, Zap, MessageSquare } from "lucide-react";
+import {
+  Building2,
+  MapPin,
+  Bed,
+  Bath,
+  Maximize,
+  Grid3X3,
+  List,
+  Shield,
+  Zap,
+  MessageSquare,
+} from "lucide-react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,13 +67,23 @@ function HeroSection() {
     const ctx = gsap.context(() => {
       gsap.from(".hero-title", { y: 30, opacity: 0, duration: 0.8, ease: "power3.out" });
       gsap.from(".hero-sub", { y: 20, opacity: 0, duration: 0.8, delay: 0.15, ease: "power3.out" });
-      gsap.from(".hero-cta", { y: 16, opacity: 0, duration: 0.6, delay: 0.3, stagger: 0.1, ease: "power3.out" });
+      gsap.from(".hero-cta", {
+        y: 16,
+        opacity: 0,
+        duration: 0.6,
+        delay: 0.3,
+        stagger: 0.1,
+        ease: "power3.out",
+      });
     }, heroRef);
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={heroRef} className="relative h-[52vh] max-h-[560px] min-h-[380px] overflow-hidden">
+    <section
+      ref={heroRef}
+      className="relative h-[52vh] max-h-[560px] min-h-[380px] overflow-hidden"
+    >
       <div className="absolute inset-0" ref={emblaRef}>
         <div className="flex h-full">
           {HERO_IMAGES.map((src, i) => (
@@ -90,7 +111,8 @@ function HeroSection() {
             Find your next home in <span className="text-blue-300">trusted buildings</span>
           </h1>
           <p className="hero-sub mt-4 text-sm sm:text-base lg:text-lg text-white/85 max-w-xl leading-relaxed">
-            Explore verified apartments, compare amenities, view locations, and contact owners directly — all in one place.
+            Explore verified apartments, compare amenities, view locations, and contact owners
+            directly — all in one place.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/search" className="hero-cta">
@@ -99,15 +121,28 @@ function HeroSection() {
               </Button>
             </Link>
             <Link href={user ? "/dashboard/properties/new" : "/sign-in"} className="hero-cta">
-              <Button size="lg" variant="outline" className="text-base px-6 h-11 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-6 h-11 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm"
+              >
                 List your property
               </Button>
             </Link>
           </div>
           <div className="hero-cta mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-sm text-white/80">
-            <span className="inline-flex items-center gap-1.5"><FiCheckCircle className="h-4 w-4 text-blue-300" aria-hidden="true" /><strong className="text-white font-semibold">Verified</strong> buildings</span>
-            <span className="inline-flex items-center gap-1.5"><FiMessageSquare className="h-4 w-4 text-blue-300" aria-hidden="true" /><strong className="text-white font-semibold">Direct</strong> owner inquiries</span>
-            <span className="inline-flex items-center gap-1.5"><FiEye className="h-4 w-4 text-blue-300" aria-hidden="true" /><strong className="text-white font-semibold">Transparent</strong> details</span>
+            <span className="inline-flex items-center gap-1.5">
+              <FiCheckCircle className="h-4 w-4 text-blue-300" aria-hidden="true" />
+              <strong className="text-white font-semibold">Verified</strong> buildings
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <FiMessageSquare className="h-4 w-4 text-blue-300" aria-hidden="true" />
+              <strong className="text-white font-semibold">Direct</strong> owner inquiries
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <FiEye className="h-4 w-4 text-blue-300" aria-hidden="true" />
+              <strong className="text-white font-semibold">Transparent</strong> details
+            </span>
           </div>
         </div>
       </div>
@@ -120,7 +155,9 @@ function HeroSection() {
             className="group flex items-center justify-center h-8 w-8"
             aria-label={`Go to slide ${i + 1}`}
           >
-            <span className={`block h-1.5 rounded-full transition-all ${i === selected ? "w-7 bg-white" : "w-1.5 bg-white/50 group-hover:bg-white/70"}`} />
+            <span
+              className={`block h-1.5 rounded-full transition-all ${i === selected ? "w-7 bg-white" : "w-1.5 bg-white/50 group-hover:bg-white/70"}`}
+            />
           </button>
         ))}
       </div>
@@ -135,13 +172,20 @@ function PropertyCard({ item }: { item: ListingCard }) {
       <Card className="relative overflow-hidden h-full rounded-xl border-border/70 hover:shadow-xl hover:border-primary/20 transition-all duration-300 cursor-pointer pb-10">
         <div className="relative aspect-[4/3] bg-muted overflow-hidden">
           {image ? (
-            <img src={image} alt={`${item.building.name} ${item.unitLabel}`} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500" />
+            <img
+              src={image}
+              alt={`${item.building.name} ${item.unitLabel}`}
+              className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-muted to-muted/70">
               <span className="text-4xl font-bold text-muted-foreground/25">{item.unitLabel}</span>
             </div>
           )}
-          <Badge className="absolute top-3 left-3 shadow-sm backdrop-blur-sm" variant={item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>
+          <Badge
+            className="absolute top-3 left-3 shadow-sm backdrop-blur-sm"
+            variant={item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}
+          >
             {statusLabel(item.availabilityStatus)}
           </Badge>
         </div>
@@ -151,24 +195,48 @@ function PropertyCard({ item }: { item: ListingCard }) {
           </CardTitle>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">{item.building.areaZone}{item.floorNumber != null ? ` · Floor ${item.floorNumber}` : ""}</span>
+            <span className="truncate">
+              {item.building.areaZone}
+              {item.floorNumber != null ? ` · Floor ${item.floorNumber}` : ""}
+            </span>
           </div>
         </CardHeader>
         <CardContent className="pb-3 pt-0">
-          <div className="text-lg font-bold tracking-tight">
-            {formatPrice(item)}
-          </div>
+          <div className="text-lg font-bold tracking-tight">{formatPrice(item)}</div>
           <div className="flex items-center gap-4 mt-2.5 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><Bed className="h-3.5 w-3.5" /> {item.bedrooms} bed</span>
-            <span className="flex items-center gap-1"><Bath className="h-3.5 w-3.5" /> {item.bathrooms} bath</span>
-            {item.sizeSqft ? <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" /> {item.sizeSqft} sqft</span> : null}
+            <span className="flex items-center gap-1">
+              <Bed className="h-3.5 w-3.5" /> {item.bedrooms} bed
+            </span>
+            <span className="flex items-center gap-1">
+              <Bath className="h-3.5 w-3.5" /> {item.bathrooms} bath
+            </span>
+            {item.sizeSqft ? (
+              <span className="flex items-center gap-1">
+                <Maximize className="h-3.5 w-3.5" /> {item.sizeSqft} sqft
+              </span>
+            ) : null}
           </div>
         </CardContent>
         <CardFooter className="pt-0">
           <div className="flex gap-1 flex-wrap pr-24">
-            {item.building.hasElevator && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdElevator className="h-3 w-3" />Lift</span>}
-            {item.building.hasParking && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdLocalParking className="h-3 w-3" />Parking</span>}
-            {item.building.hasGenerator && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdBolt className="h-3 w-3" />Generator</span>}
+            {item.building.hasElevator && (
+              <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                <MdElevator className="h-3 w-3" />
+                Lift
+              </span>
+            )}
+            {item.building.hasParking && (
+              <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                <MdLocalParking className="h-3 w-3" />
+                Parking
+              </span>
+            )}
+            {item.building.hasGenerator && (
+              <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                <MdBolt className="h-3 w-3" />
+                Generator
+              </span>
+            )}
           </div>
         </CardFooter>
         <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
@@ -187,13 +255,22 @@ function PropertyListCard({ item }: { item: ListingCard }) {
         <div className="flex flex-col sm:flex-row">
           <div className="relative sm:w-64 md:w-72 aspect-[16/10] sm:aspect-auto bg-muted shrink-0 overflow-hidden">
             {image ? (
-              <img src={image} alt={`${item.building.name} ${item.unitLabel}`} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500" />
+              <img
+                src={image}
+                alt={`${item.building.name} ${item.unitLabel}`}
+                className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+              />
             ) : (
               <div className="w-full h-full min-h-[170px] flex items-center justify-center bg-gradient-to-br from-primary/5 via-muted to-muted/70">
-                <span className="text-4xl font-bold text-muted-foreground/25">{item.unitLabel}</span>
+                <span className="text-4xl font-bold text-muted-foreground/25">
+                  {item.unitLabel}
+                </span>
               </div>
             )}
-            <Badge className="absolute top-3 left-3 shadow-sm" variant={item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}>
+            <Badge
+              className="absolute top-3 left-3 shadow-sm"
+              variant={item.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}
+            >
               {statusLabel(item.availabilityStatus)}
             </Badge>
           </div>
@@ -206,7 +283,10 @@ function PropertyListCard({ item }: { item: ListingCard }) {
                   </h3>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                     <MapPin className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{item.building.areaZone}{item.floorNumber != null ? ` · Floor ${item.floorNumber}` : ""}</span>
+                    <span className="truncate">
+                      {item.building.areaZone}
+                      {item.floorNumber != null ? ` · Floor ${item.floorNumber}` : ""}
+                    </span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
@@ -215,17 +295,40 @@ function PropertyListCard({ item }: { item: ListingCard }) {
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5"><Bed className="h-4 w-4" /> {item.bedrooms} bed</span>
-                <span className="flex items-center gap-1.5"><Bath className="h-4 w-4" /> {item.bathrooms} bath</span>
-                {item.sizeSqft ? <span className="flex items-center gap-1.5"><Maximize className="h-4 w-4" /> {item.sizeSqft} sqft</span> : null}
+                <span className="flex items-center gap-1.5">
+                  <Bed className="h-4 w-4" /> {item.bedrooms} bed
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Bath className="h-4 w-4" /> {item.bathrooms} bath
+                </span>
+                {item.sizeSqft ? (
+                  <span className="flex items-center gap-1.5">
+                    <Maximize className="h-4 w-4" /> {item.sizeSqft} sqft
+                  </span>
+                ) : null}
                 {item.verandas ? <span>{item.verandas} veranda</span> : null}
               </div>
             </div>
             <div className="flex items-center justify-between mt-4 gap-3 pb-8 sm:pb-0 pr-0 sm:pr-28">
               <div className="flex gap-1.5 flex-wrap">
-                {item.building.hasElevator && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdElevator className="h-3.5 w-3.5" />Lift</span>}
-                {item.building.hasParking && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdLocalParking className="h-3.5 w-3.5" />Parking</span>}
-                {item.building.hasGenerator && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdBolt className="h-3.5 w-3.5" />Generator</span>}
+                {item.building.hasElevator && (
+                  <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                    <MdElevator className="h-3.5 w-3.5" />
+                    Lift
+                  </span>
+                )}
+                {item.building.hasParking && (
+                  <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                    <MdLocalParking className="h-3.5 w-3.5" />
+                    Parking
+                  </span>
+                )}
+                {item.building.hasGenerator && (
+                  <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                    <MdBolt className="h-3.5 w-3.5" />
+                    Generator
+                  </span>
+                )}
               </div>
             </div>
             <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl shadow-sm">
@@ -263,10 +366,20 @@ function FeaturedCarousel({ items, loading }: { items: ListingCard[]; loading: b
           <p className="text-muted-foreground mt-1">Popular apartments across trusted buildings</p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <Button variant="outline" size="icon" onClick={() => emblaApi?.scrollPrev()} aria-label="Previous">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => emblaApi?.scrollPrev()}
+            aria-label="Previous"
+          >
             <FiChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={() => emblaApi?.scrollNext()} aria-label="Next">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => emblaApi?.scrollNext()}
+            aria-label="Next"
+          >
             <FiChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -274,7 +387,9 @@ function FeaturedCarousel({ items, loading }: { items: ListingCard[]; loading: b
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => <Skeleton key={i} className="h-80 rounded-xl" />)}
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-80 rounded-xl" />
+          ))}
         </div>
       ) : featured.length === 0 ? (
         <div className="rounded-xl border bg-muted/30 p-10 text-center text-muted-foreground">
@@ -305,7 +420,9 @@ function FeaturedCarousel({ items, loading }: { items: ListingCard[]; loading: b
                   className="group flex items-center justify-center h-8 w-8"
                   aria-label={`Go to slide ${i + 1}`}
                 >
-                  <span className={`block h-2 rounded-full transition-all ${i === selected ? "w-6 bg-primary" : "w-2 bg-muted-foreground/30 group-hover:bg-muted-foreground/50"}`} />
+                  <span
+                    className={`block h-2 rounded-full transition-all ${i === selected ? "w-6 bg-primary" : "w-2 bg-muted-foreground/30 group-hover:bg-muted-foreground/50"}`}
+                  />
                 </button>
               ))}
             </div>
@@ -343,7 +460,9 @@ function PropertiesSection({ items, loading }: { items: ListingCard[]; loading: 
             <p className="text-sm font-medium text-primary mb-1">Explore</p>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Available properties</h2>
             <p className="text-muted-foreground mt-1">
-              {loading ? "Loading properties..." : `${items.length} ${items.length === 1 ? "property" : "properties"} to explore`}
+              {loading
+                ? "Loading properties..."
+                : `${items.length} ${items.length === 1 ? "property" : "properties"} to explore`}
             </p>
           </div>
           <div className="flex items-center gap-1 border rounded-lg p-1 bg-background w-fit">
@@ -365,17 +484,29 @@ function PropertiesSection({ items, loading }: { items: ListingCard[]; loading: 
         </div>
 
         {loading ? (
-          <div className={view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
-            {[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className={view === "grid" ? "h-80 rounded-xl" : "h-44 rounded-xl"} />)}
+          <div
+            className={
+              view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"
+            }
+          >
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Skeleton
+                key={i}
+                className={view === "grid" ? "h-80 rounded-xl" : "h-44 rounded-xl"}
+              />
+            ))}
           </div>
         ) : items.length === 0 ? (
           <div className="rounded-xl border bg-background p-12 text-center">
             <h3 className="font-semibold text-lg">No properties available yet</h3>
             <p className="text-muted-foreground text-sm mt-1 max-w-md mx-auto">
-              New properties will appear here once they are published. Check back soon or list your property to get started.
+              New properties will appear here once they are published. Check back soon or list your
+              property to get started.
             </p>
             <div className="mt-5 flex justify-center gap-3">
-              <Link href="/search"><Button>Search properties</Button></Link>
+              <Link href="/search">
+                <Button>Search properties</Button>
+              </Link>
             </div>
           </div>
         ) : (
@@ -413,9 +544,11 @@ function PropertiesSection({ items, loading }: { items: ListingCard[]; loading: 
         )}
 
         <div className="text-center mt-10">
-          <Link href="/search"><Button size="lg" variant="outline" className="h-11 px-6">
-            Browse all properties
-          </Button></Link>
+          <Link href="/search">
+            <Button size="lg" variant="outline" className="h-11 px-6">
+              Browse all properties
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
@@ -441,21 +574,40 @@ function FeaturesSection() {
   }, []);
 
   const features = [
-    { icon: Shield, title: "Verified properties", desc: "Buildings and apartments go through moderation so you can trust what you see." },
-    { icon: Zap, title: "Easy management", desc: "Owners can add buildings once and manage floors and apartments with ease." },
-    { icon: MessageSquare, title: "Direct inquiries", desc: "Connect with owners directly and track inquiries from one dashboard." },
+    {
+      icon: Shield,
+      title: "Verified properties",
+      desc: "Buildings and apartments go through moderation so you can trust what you see.",
+    },
+    {
+      icon: Zap,
+      title: "Easy management",
+      desc: "Owners can add buildings once and manage floors and apartments with ease.",
+    },
+    {
+      icon: MessageSquare,
+      title: "Direct inquiries",
+      desc: "Connect with owners directly and track inquiries from one dashboard.",
+    },
   ];
 
   return (
     <section ref={ref} className="max-w-6xl mx-auto px-4 py-16 sm:py-20">
       <div className="text-center mb-10">
         <p className="text-sm font-medium text-primary mb-1">Why Nibash</p>
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Built for renters and property owners</h2>
-        <p className="text-muted-foreground mt-2 max-w-xl mx-auto">A simpler way to discover, compare, and manage rental properties.</p>
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          Built for renters and property owners
+        </h2>
+        <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+          A simpler way to discover, compare, and manage rental properties.
+        </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {features.map((f) => (
-          <Card key={f.title} className="feature-card rounded-xl border-border/70 hover:shadow-md transition-shadow">
+          <Card
+            key={f.title}
+            className="feature-card rounded-xl border-border/70 hover:shadow-md transition-shadow"
+          >
             <CardContent className="pt-6 pb-6">
               <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                 <f.icon className="h-5 w-5 text-primary" />
@@ -470,8 +622,11 @@ function FeaturesSection() {
   );
 }
 
-
-function formatPrice(item: { listingType?: string; rentAmount: number; salePrice?: number | null }) {
+function formatPrice(item: {
+  listingType?: string;
+  rentAmount: number;
+  salePrice?: number | null;
+}) {
   if (item.listingType === "SALE") {
     return item.salePrice == null ? "—" : `৳${item.salePrice.toLocaleString()}`;
   }

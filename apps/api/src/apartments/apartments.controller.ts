@@ -4,7 +4,11 @@ import { User } from "../common/decorators/user.decorator";
 import { Verified } from "../common/decorators/verified.decorator";
 import { ApartmentsService } from "./apartments.service";
 import { CreateApartmentDto } from "./dto/create-apartment.dto";
-import { CloneApartmentDto, UpdateApartmentDto, UpdateApartmentStatusDto } from "./dto/update-apartment.dto";
+import {
+  CloneApartmentDto,
+  UpdateApartmentDto,
+  UpdateApartmentStatusDto,
+} from "./dto/update-apartment.dto";
 
 @ApiTags("Apartments")
 @Controller()
@@ -15,7 +19,9 @@ export class ApartmentsController {
   @ApiBearerAuth()
   @ApiCookieAuth("nibash_token")
   @Verified()
-  @ApiOperation({ summary: "Create apartment in building (auto-creates floor in hierarchy)" })
+  @ApiOperation({
+    summary: "Create apartment in building (auto-creates floor in hierarchy)",
+  })
   create(
     @Param("buildingId") buildingId: string,
     @User("id") userId: string,
@@ -37,11 +43,7 @@ export class ApartmentsController {
   @ApiCookieAuth("nibash_token")
   @Verified()
   @ApiOperation({ summary: "Update apartment" })
-  update(
-    @Param("id") id: string,
-    @User("id") userId: string,
-    @Body() dto: UpdateApartmentDto,
-  ) {
+  update(@Param("id") id: string, @User("id") userId: string, @Body() dto: UpdateApartmentDto) {
     return this.apartmentsService.update(id, userId, dto);
   }
 
@@ -61,12 +63,10 @@ export class ApartmentsController {
   @ApiBearerAuth()
   @ApiCookieAuth("nibash_token")
   @Verified()
-  @ApiOperation({ summary: "Clone apartment to another floor (copies specs, resets label/images)" })
-  clone(
-    @Param("id") id: string,
-    @User("id") userId: string,
-    @Body() dto: CloneApartmentDto,
-  ) {
+  @ApiOperation({
+    summary: "Clone apartment to another floor (copies specs, resets label/images)",
+  })
+  clone(@Param("id") id: string, @User("id") userId: string, @Body() dto: CloneApartmentDto) {
     return this.apartmentsService.clone(id, userId, dto);
   }
 

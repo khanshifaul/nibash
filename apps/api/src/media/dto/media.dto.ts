@@ -43,13 +43,23 @@ export class AttachBuildingImageDto {
   @ApiProperty() @IsString() @IsNotEmpty() storageKey!: string;
   @ApiProperty() @IsString() @IsNotEmpty() url!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() caption?: string;
-  @ApiProperty({ required: false, default: 0 }) @IsInt() @Min(0) @IsOptional() sortOrder?: number;
-  @ApiProperty({ required: false, default: false }) @IsOptional() isCover?: boolean;
+  @ApiProperty({ required: false, default: 0 })
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  sortOrder?: number;
+  @ApiProperty({ required: false, default: false })
+  @IsOptional()
+  isCover?: boolean;
 }
 
 export class AttachApartmentImageDto {
   @ApiProperty() @IsString() @IsNotEmpty() storageKey!: string;
   @ApiProperty() @IsString() @IsNotEmpty() url!: string;
   @ApiProperty({ enum: RoomTagDto }) @IsEnum(RoomTagDto) roomTag!: RoomTagDto;
-  @ApiProperty({ required: false, default: 0 }) @IsInt() @Min(0) @IsOptional() sortOrder?: number;
+  @ApiProperty({ required: false, default: 0 })
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  sortOrder?: number;
 }

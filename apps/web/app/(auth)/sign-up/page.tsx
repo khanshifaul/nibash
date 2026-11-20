@@ -10,7 +10,14 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 function getPasswordStrength(pw: string) {
   let score = 0;
@@ -51,7 +58,8 @@ export default function SignUpPage() {
     [password],
   );
 
-  const passwordsMatch = password.length > 0 && confirmPassword.length > 0 && password === confirmPassword;
+  const passwordsMatch =
+    password.length > 0 && confirmPassword.length > 0 && password === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
   const canSubmit =
     email.trim().length > 0 &&
@@ -91,7 +99,9 @@ export default function SignUpPage() {
         password,
       });
       await refresh();
-      setSuccess("Account created successfully. Check your email to verify your account before adding properties or viewing contact details.");
+      setSuccess(
+        "Account created successfully. Check your email to verify your account before adding properties or viewing contact details.",
+      );
       setTimeout(() => router.push("/dashboard"), 2200);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
@@ -105,8 +115,12 @@ export default function SignUpPage() {
       <div className="w-full max-w-[440px]">
         <Card className="shadow-xl shadow-black/5 border-border/70 rounded-2xl overflow-hidden">
           <CardHeader className="space-y-1.5 pb-3 px-6 sm:px-7 pt-7 sm:pt-8 text-center">
-            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight">Create your account</CardTitle>
-            <CardDescription className="text-sm sm:text-base">Join Nibash to discover homes or list your properties</CardDescription>
+            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Create your account
+            </CardTitle>
+            <CardDescription className="text-sm sm:text-base">
+              Join Nibash to discover homes or list your properties
+            </CardDescription>
           </CardHeader>
 
           <CardContent className="px-6 sm:px-7 pb-6">
@@ -116,22 +130,31 @@ export default function SignUpPage() {
                   <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-green-900 dark:text-green-200 font-semibold">You&apos;re all set!</p>
+                  <p className="text-sm text-green-900 dark:text-green-200 font-semibold">
+                    You&apos;re all set!
+                  </p>
                   <p className="text-sm text-green-800/90 dark:text-green-300/90 mt-1">{success}</p>
                 </div>
-                <p className="text-xs text-green-700/80 dark:text-green-400/80">Redirecting to your dashboard…</p>
+                <p className="text-xs text-green-700/80 dark:text-green-400/80">
+                  Redirecting to your dashboard…
+                </p>
               </div>
             ) : (
               <form className="space-y-4" onSubmit={onSubmit} noValidate>
                 {error && (
-                  <div role="alert" className="rounded-lg border border-destructive/25 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive flex gap-2 items-start">
+                  <div
+                    role="alert"
+                    className="rounded-lg border border-destructive/25 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive flex gap-2 items-start"
+                  >
                     <span className="mt-0.5 shrink-0">⚠</span>
                     <span>{error}</span>
                   </div>
                 )}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="name" className="text-sm font-medium">Full name <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                  <Label htmlFor="name" className="text-sm font-medium">
+                    Full name <span className="text-muted-foreground font-normal">(optional)</span>
+                  </Label>
                   <Input
                     id="name"
                     value={name}
@@ -143,7 +166,9 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" required className="text-sm font-medium">Email address</Label>
+                  <Label htmlFor="email" required className="text-sm font-medium">
+                    Email address
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <Input
@@ -162,7 +187,10 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-sm font-medium">Phone number <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                  <Label htmlFor="phone" className="text-sm font-medium">
+                    Phone number{" "}
+                    <span className="text-muted-foreground font-normal">(optional)</span>
+                  </Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <Input
@@ -175,11 +203,15 @@ export default function SignUpPage() {
                       autoComplete="tel"
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">Helps owners contact you about inquiries.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Helps owners contact you about inquiries.
+                  </p>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="password" required className="text-sm font-medium">Password</Label>
+                  <Label htmlFor="password" required className="text-sm font-medium">
+                    Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <input
@@ -216,14 +248,23 @@ export default function SignUpPage() {
                             />
                           ))}
                         </div>
-                        <span className={`text-xs font-medium ${strength.score <= 1 ? "text-red-600" : strength.score === 2 ? "text-amber-600" : strength.score === 3 ? "text-blue-600" : "text-green-600"}`}>
+                        <span
+                          className={`text-xs font-medium ${strength.score <= 1 ? "text-red-600" : strength.score === 2 ? "text-amber-600" : strength.score === 3 ? "text-blue-600" : "text-green-600"}`}
+                        >
                           {strength.label}
                         </span>
                       </div>
                       <ul className="grid grid-cols-1 gap-1">
                         {requirements.map((r) => (
-                          <li key={r.label} className={`flex items-center gap-2 text-xs ${r.met ? "text-green-700 dark:text-green-400" : "text-muted-foreground"}`}>
-                            {r.met ? <CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> : <Circle className="h-3.5 w-3.5 shrink-0" />}
+                          <li
+                            key={r.label}
+                            className={`flex items-center gap-2 text-xs ${r.met ? "text-green-700 dark:text-green-400" : "text-muted-foreground"}`}
+                          >
+                            {r.met ? (
+                              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                            ) : (
+                              <Circle className="h-3.5 w-3.5 shrink-0" />
+                            )}
                             {r.label}
                           </li>
                         ))}
@@ -231,12 +272,16 @@ export default function SignUpPage() {
                     </div>
                   )}
                   {password.length === 0 && (
-                    <p id="password-hint" className="text-xs text-muted-foreground">Must be at least 8 characters.</p>
+                    <p id="password-hint" className="text-xs text-muted-foreground">
+                      Must be at least 8 characters.
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="confirmPassword" required className="text-sm font-medium">Confirm password</Label>
+                  <Label htmlFor="confirmPassword" required className="text-sm font-medium">
+                    Confirm password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <input
@@ -262,10 +307,14 @@ export default function SignUpPage() {
                     </button>
                   </div>
                   {passwordsMismatch && (
-                    <p className="text-xs text-destructive flex items-center gap-1">Passwords do not match.</p>
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      Passwords do not match.
+                    </p>
                   )}
                   {passwordsMatch && (
-                    <p className="text-xs text-green-600 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Passwords match</p>
+                    <p className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Passwords match
+                    </p>
                   )}
                 </div>
 
@@ -298,7 +347,9 @@ export default function SignUpPage() {
             <CardFooter className="px-6 sm:px-7 pb-6 pt-0 flex flex-col">
               <div className="w-full border-t pt-4 text-sm text-center text-muted-foreground">
                 Already have an account?{" "}
-                <Link href="/sign-in" className="text-primary font-semibold hover:underline">Sign in</Link>
+                <Link href="/sign-in" className="text-primary font-semibold hover:underline">
+                  Sign in
+                </Link>
               </div>
             </CardFooter>
           )}

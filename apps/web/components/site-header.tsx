@@ -81,7 +81,10 @@ export function SiteHeader() {
             <ThemeToggle />
             {user ? (
               <>
-                <Link href="/dashboard/properties/new" className="bg-primary text-primary-foreground rounded-md px-3 py-2 font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-1.5">
+                <Link
+                  href="/dashboard/properties/new"
+                  className="bg-primary text-primary-foreground rounded-md px-3 py-2 font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-1.5"
+                >
                   <Plus className="h-4 w-4" />
                   <span className="hidden sm:inline">Add property</span>
                   <span className="sm:hidden">Add</span>
@@ -97,7 +100,9 @@ export function SiteHeader() {
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-sm font-medium leading-none truncate">{user.name || "Account"}</span>
+                        <span className="text-sm font-medium leading-none truncate">
+                          {user.name || "Account"}
+                        </span>
                         <span className="text-xs text-muted-foreground truncate">{user.email}</span>
                       </div>
                     </DropdownMenuLabel>
@@ -109,14 +114,21 @@ export function SiteHeader() {
                       <Link href="/dashboard/profile">Profile</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => { void logout(); }}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        void logout();
+                      }}
+                    >
                       Sign out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
             ) : (
-              <Link href="/sign-in" className="bg-primary text-primary-foreground rounded-md px-3 sm:px-4 py-2 font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-1.5">
+              <Link
+                href="/sign-in"
+                className="bg-primary text-primary-foreground rounded-md px-3 sm:px-4 py-2 font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-1.5"
+              >
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Add property</span>
                 <span className="sm:hidden">Add</span>

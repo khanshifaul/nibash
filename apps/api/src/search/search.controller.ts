@@ -27,7 +27,11 @@ export class SearchController {
   @ApiQuery({ name: "hasGenerator", required: false, type: Boolean })
   @ApiQuery({ name: "page", required: false, type: Number })
   @ApiQuery({ name: "limit", required: false, type: Number })
-  @ApiQuery({ name: "sort", required: false, enum: ["newest", "rent_asc", "rent_desc"] })
+  @ApiQuery({
+    name: "sort",
+    required: false,
+    enum: ["newest", "rent_asc", "rent_desc"],
+  })
   search(
     @Query("q") q?: string,
     @Query("area") area?: string,
@@ -64,16 +68,15 @@ export class SearchController {
       hasGenerator: toBool(hasGenerator),
       page: toNum(page),
       limit: toNum(limit),
-      sort:
-        sort === "rent_asc" || sort === "rent_desc" || sort === "newest"
-          ? sort
-          : undefined,
+      sort: sort === "rent_asc" || sort === "rent_desc" || sort === "newest" ? sort : undefined,
     });
   }
 
   @Public()
   @Get("listings/:id")
-  @ApiOperation({ summary: "Public listing detail (contact gated to verified users)" })
+  @ApiOperation({
+    summary: "Public listing detail (contact gated to verified users)",
+  })
   getListing(@Param("id") id: string, @Req() req: Request) {
     const user = req.user as { isEmailVerified?: boolean } | undefined;
     const viewerVerified = !!user?.isEmailVerified;

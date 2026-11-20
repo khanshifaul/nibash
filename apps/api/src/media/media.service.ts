@@ -9,7 +9,12 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
 import { DatabaseService } from "../database/database.service";
-import { AttachApartmentImageDto, AttachBuildingImageDto, ImageEntityDto, PresignDto } from "./dto/media.dto";
+import {
+  AttachApartmentImageDto,
+  AttachBuildingImageDto,
+  ImageEntityDto,
+  PresignDto,
+} from "./dto/media.dto";
 
 @Injectable()
 export class MediaService {
@@ -21,13 +26,27 @@ export class MediaService {
     private readonly configService: ConfigService,
     private readonly prisma: DatabaseService,
   ) {
-    const endpoint = this.configService.get<string>("storage.endpoint") || this.configService.get<string>("STORAGE_ENDPOINT");
-    const accessKeyId = this.configService.get<string>("storage.accessKeyId") || this.configService.get<string>("STORAGE_ACCESS_KEY_ID");
-    const secretAccessKey = this.configService.get<string>("storage.secretAccessKey") || this.configService.get<string>("STORAGE_SECRET_ACCESS_KEY");
+    const endpoint =
+      this.configService.get<string>("storage.endpoint") ||
+      this.configService.get<string>("STORAGE_ENDPOINT");
+    const accessKeyId =
+      this.configService.get<string>("storage.accessKeyId") ||
+      this.configService.get<string>("STORAGE_ACCESS_KEY_ID");
+    const secretAccessKey =
+      this.configService.get<string>("storage.secretAccessKey") ||
+      this.configService.get<string>("STORAGE_SECRET_ACCESS_KEY");
     const region = this.configService.get<string>("storage.region") || "us-east-1";
-    const forcePathStyle = this.configService.get<boolean>("storage.forcePathStyle") ?? this.configService.get<string>("STORAGE_FORCE_PATH_STYLE") === "true";
-    this.bucket = this.configService.get<string>("storage.bucket") || this.configService.get<string>("STORAGE_BUCKET") || "nibash-storage";
-    this.publicBaseUrl = this.configService.get<string>("storage.publicBaseUrl") || this.configService.get<string>("STORAGE_PUBLIC_BASE_URL") || "";
+    const forcePathStyle =
+      this.configService.get<boolean>("storage.forcePathStyle") ??
+      this.configService.get<string>("STORAGE_FORCE_PATH_STYLE") === "true";
+    this.bucket =
+      this.configService.get<string>("storage.bucket") ||
+      this.configService.get<string>("STORAGE_BUCKET") ||
+      "nibash-storage";
+    this.publicBaseUrl =
+      this.configService.get<string>("storage.publicBaseUrl") ||
+      this.configService.get<string>("STORAGE_PUBLIC_BASE_URL") ||
+      "";
 
     if (endpoint && accessKeyId && secretAccessKey) {
       this.s3 = new S3Client({
@@ -125,7 +144,9 @@ export class MediaService {
 
   private async assertOwnership(userId: string, entity: ImageEntityDto, entityId: string) {
     if (entity === ImageEntityDto.BUILDING) {
-      const building = await this.prisma.building.findUnique({ where: { id: entityId } });
+      const building = await this.prisma.building.findUnique({
+        where: { id: entityId },
+      });
       if (!building) throw new NotFoundException("Building not found");
       if (building.ownerId !== userId) throw new ForbiddenException();
       return;

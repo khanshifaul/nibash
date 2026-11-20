@@ -11,7 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { searchApi, type ListingCard } from "@/lib/api";
 import { MdElevator, MdLocalParking, MdBolt } from "react-icons/md";
@@ -84,7 +90,16 @@ export function SearchDialog({
     return () => clearTimeout(t);
   }, [open, filters, runSearch]);
 
-  const formatPrice = (item: { listingType?: string; rentAmount: number; salePrice?: number | null }) => item.listingType === "SALE" ? (item.salePrice == null ? "—" : `৳${item.salePrice.toLocaleString()}`) : `৳${item.rentAmount.toLocaleString()}/mo`;
+  const formatPrice = (item: {
+    listingType?: string;
+    rentAmount: number;
+    salePrice?: number | null;
+  }) =>
+    item.listingType === "SALE"
+      ? item.salePrice == null
+        ? "—"
+        : `৳${item.salePrice.toLocaleString()}`
+      : `৳${item.rentAmount.toLocaleString()}/mo`;
 
   const goToSearchPage = useCallback(() => {
     const params = new URLSearchParams();
@@ -145,7 +160,12 @@ export function SearchDialog({
                   type="number"
                   placeholder="Min"
                   value={filters.minRent ?? ""}
-                  onChange={(e) => setFilters((f) => ({ ...f, minRent: e.target.value ? Number(e.target.value) : undefined }))}
+                  onChange={(e) =>
+                    setFilters((f) => ({
+                      ...f,
+                      minRent: e.target.value ? Number(e.target.value) : undefined,
+                    }))
+                  }
                 />
               </div>
               <div>
@@ -154,19 +174,32 @@ export function SearchDialog({
                   type="number"
                   placeholder="Max"
                   value={filters.maxRent ?? ""}
-                  onChange={(e) => setFilters((f) => ({ ...f, maxRent: e.target.value ? Number(e.target.value) : undefined }))}
+                  onChange={(e) =>
+                    setFilters((f) => ({
+                      ...f,
+                      maxRent: e.target.value ? Number(e.target.value) : undefined,
+                    }))
+                  }
                 />
               </div>
               <div>
                 <label className="text-xs font-medium mb-1 block">Bedrooms</label>
                 <Select
                   value={String(filters.bedrooms ?? "")}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, bedrooms: v ? Number(v) : undefined }))}
+                  onValueChange={(v) =>
+                    setFilters((f) => ({ ...f, bedrooms: v ? Number(v) : undefined }))
+                  }
                 >
-                  <SelectTrigger><SelectValue placeholder="Any" /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Any" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">Any</SelectItem>
-                    {[1, 2, 3, 4, 5].map((n) => <SelectItem key={n} value={String(n)}>{n}+</SelectItem>)}
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <SelectItem key={n} value={String(n)}>
+                        {n}+
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -174,9 +207,13 @@ export function SearchDialog({
                 <label className="text-xs font-medium mb-1 block">Sort</label>
                 <Select
                   value={filters.sort}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, sort: v as SearchFilters["sort"] }))}
+                  onValueChange={(v) =>
+                    setFilters((f) => ({ ...f, sort: v as SearchFilters["sort"] }))
+                  }
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="newest">Newest</SelectItem>
                     <SelectItem value="price_asc">Price: low to high</SelectItem>
@@ -185,16 +222,31 @@ export function SearchDialog({
                 </Select>
               </div>
               <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1 cursor-pointer">
-                <Checkbox checked={filters.hasElevator} onCheckedChange={(v) => setFilters((f) => ({ ...f, hasElevator: Boolean(v) }))} />
-                <span className="inline-flex items-center gap-1.5"><MdElevator className="h-4 w-4 text-muted-foreground" /> Lift</span>
+                <Checkbox
+                  checked={filters.hasElevator}
+                  onCheckedChange={(v) => setFilters((f) => ({ ...f, hasElevator: Boolean(v) }))}
+                />
+                <span className="inline-flex items-center gap-1.5">
+                  <MdElevator className="h-4 w-4 text-muted-foreground" /> Lift
+                </span>
               </label>
               <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1 cursor-pointer">
-                <Checkbox checked={filters.hasParking} onCheckedChange={(v) => setFilters((f) => ({ ...f, hasParking: Boolean(v) }))} />
-                <span className="inline-flex items-center gap-1.5"><MdLocalParking className="h-4 w-4 text-muted-foreground" /> Parking</span>
+                <Checkbox
+                  checked={filters.hasParking}
+                  onCheckedChange={(v) => setFilters((f) => ({ ...f, hasParking: Boolean(v) }))}
+                />
+                <span className="inline-flex items-center gap-1.5">
+                  <MdLocalParking className="h-4 w-4 text-muted-foreground" /> Parking
+                </span>
               </label>
               <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1 cursor-pointer">
-                <Checkbox checked={filters.hasGenerator} onCheckedChange={(v) => setFilters((f) => ({ ...f, hasGenerator: Boolean(v) }))} />
-                <span className="inline-flex items-center gap-1.5"><MdBolt className="h-4 w-4 text-muted-foreground" /> Generator</span>
+                <Checkbox
+                  checked={filters.hasGenerator}
+                  onCheckedChange={(v) => setFilters((f) => ({ ...f, hasGenerator: Boolean(v) }))}
+                />
+                <span className="inline-flex items-center gap-1.5">
+                  <MdBolt className="h-4 w-4 text-muted-foreground" /> Generator
+                </span>
               </label>
               <Button
                 variant="ghost"
@@ -210,21 +262,32 @@ export function SearchDialog({
 
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {error && (
-            <div className="p-3 rounded border border-red-200 bg-red-50 text-red-800 text-sm mb-4">{error}</div>
+            <div className="p-3 rounded border border-red-200 bg-red-50 text-red-800 text-sm mb-4">
+              {error}
+            </div>
           )}
 
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm text-muted-foreground">
-              {loading ? "Searching..." : `${total} ${total === 1 ? "property" : "properties"} found`}
+              {loading
+                ? "Searching..."
+                : `${total} ${total === 1 ? "property" : "properties"} found`}
             </p>
-            <Button variant="link" size="sm" className="h-auto p-0 text-sm" onClick={goToSearchPage}>
+            <Button
+              variant="link"
+              size="sm"
+              className="h-auto p-0 text-sm"
+              onClick={goToSearchPage}
+            >
               View all on search page <FiChevronRight className="h-4 w-4 ml-0.5" />
             </Button>
           </div>
 
           {loading && !results ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className="h-48" />)}
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Skeleton key={i} className="h-48" />
+              ))}
             </div>
           ) : !results || results.length === 0 ? (
             <div className="rounded-lg border bg-muted/30 p-10 text-center text-muted-foreground">
@@ -233,15 +296,23 @@ export function SearchDialog({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {results.map((item) => (
-                <Link key={item.id} href={`/listings/${item.id}`} onClick={() => onOpenChange(false)} className="block">
+                <Link
+                  key={item.id}
+                  href={`/listings/${item.id}`}
+                  onClick={() => onOpenChange(false)}
+                  className="block"
+                >
                   <Card className="relative overflow-hidden hover:shadow-md transition-shadow h-full cursor-pointer pb-10">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between gap-2">
                         <CardTitle className="text-sm line-clamp-1">{item.unitLabel}</CardTitle>
-                        <Badge variant="outline" className="text-[10px]">{item.availabilityStatus}</Badge>
+                        <Badge variant="outline" className="text-[10px]">
+                          {item.availabilityStatus}
+                        </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {item.floorNumber != null && `Floor ${item.floorNumber} • `}{item.building.areaZone}
+                        {item.floorNumber != null && `Floor ${item.floorNumber} • `}
+                        {item.building.areaZone}
                       </div>
                       <div className="font-bold">{formatPrice(item)}/mo</div>
                     </CardHeader>
@@ -250,11 +321,23 @@ export function SearchDialog({
                     </CardContent>
                     <CardFooter className="pt-0">
                       <div className="flex gap-1 text-[10px] flex-wrap pr-24">
-                        {item.building.hasElevator && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700"><MdElevator className="h-3 w-3" />Lift</span>}
-                        {item.building.hasParking && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700"><MdLocalParking className="h-3 w-3" />Parking</span>}
+                        {item.building.hasElevator && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">
+                            <MdElevator className="h-3 w-3" />
+                            Lift
+                          </span>
+                        )}
+                        {item.building.hasParking && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">
+                            <MdLocalParking className="h-3 w-3" />
+                            Parking
+                          </span>
+                        )}
                       </div>
                     </CardFooter>
-                    <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl">View details <FiChevronRight className="h-3.5 w-3.5" /></span>
+                    <span className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-4 py-2.5 rounded-tl-xl">
+                      View details <FiChevronRight className="h-3.5 w-3.5" />
+                    </span>
                   </Card>
                 </Link>
               ))}

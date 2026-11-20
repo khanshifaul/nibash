@@ -39,9 +39,14 @@ export default function DashboardProfilePage() {
   }, [user]);
 
   async function update() {
-    setSaving(true); setError(null); setSaved(false);
+    setSaving(true);
+    setError(null);
+    setSaved(false);
     try {
-      const updated = await authApi.updateProfile({ name: form.name || undefined, phone: form.phone || undefined });
+      const updated = await authApi.updateProfile({
+        name: form.name || undefined,
+        phone: form.phone || undefined,
+      });
       setProfile(updated);
       setForm({ name: updated.name ?? "", phone: updated.phone ?? "" });
       await refresh();
@@ -59,9 +64,13 @@ export default function DashboardProfilePage() {
   return (
     <main className="max-w-2xl mx-auto px-4 py-8 sm:py-10">
       <div className="mb-6">
-        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground"><FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Back to dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+          <FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> Back to dashboard
+        </Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-2">Profile</h1>
-        <p className="text-muted-foreground mt-1">Manage your account details used for inquiries and property management.</p>
+        <p className="text-muted-foreground mt-1">
+          Manage your account details used for inquiries and property management.
+        </p>
       </div>
 
       {error && <p className="text-destructive text-sm mb-4">{error}</p>}
@@ -70,7 +79,9 @@ export default function DashboardProfilePage() {
       <Card>
         <CardHeader>
           <CardTitle>Account details</CardTitle>
-          <CardDescription>Keep your name and phone number up to date so owners and renters can reach you.</CardDescription>
+          <CardDescription>
+            Keep your name and phone number up to date so owners and renters can reach you.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="space-y-2">
@@ -82,16 +93,28 @@ export default function DashboardProfilePage() {
               </Badge>
             </div>
             {!profile?.isEmailVerified && (
-              <p className="text-xs text-amber-700">Verify your email to publish properties and access contact details.</p>
+              <p className="text-xs text-amber-700">
+                Verify your email to publish properties and access contact details.
+              </p>
             )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="name">Full name</Label>
-            <Input id="name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Your name" />
+            <Input
+              id="name"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="Your name"
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone">Phone number</Label>
-            <Input id="phone" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="+880..." />
+            <Input
+              id="phone"
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              placeholder="+880..."
+            />
           </div>
           <Button type="button" onClick={update} disabled={saving}>
             {saving ? "Saving…" : "Save changes"}

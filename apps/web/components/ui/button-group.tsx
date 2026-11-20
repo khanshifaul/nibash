@@ -36,9 +36,7 @@ const buttonGroupVariants = cva("inline-flex", {
 });
 
 interface ButtonGroupProps
-  extends
-    React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof buttonGroupVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof buttonGroupVariants> {}
 
 /**
  * ButtonGroup to group buttons together
@@ -56,10 +54,7 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
       <div
         ref={ref}
         role="group"
-        className={cn(
-          buttonGroupVariants({ orientation, attached }),
-          className,
-        )}
+        className={cn(buttonGroupVariants({ orientation, attached }), className)}
         {...props}
       />
     );

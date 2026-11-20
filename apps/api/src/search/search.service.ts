@@ -54,7 +54,11 @@ export class SearchService {
       } else {
         // mixed/unspecified: match either rent or sale price in range
         apartmentWhere.OR = [
-          { ...(apartmentWhere.OR ? {} : {}), listingType: "RENT", rentAmount: range },
+          {
+            ...(apartmentWhere.OR ? {} : {}),
+            listingType: "RENT",
+            rentAmount: range,
+          },
           { listingType: "SALE", salePrice: range },
         ];
       }
@@ -64,7 +68,11 @@ export class SearchService {
     if (query.verandas !== undefined) apartmentWhere.verandas = { gte: query.verandas };
     if (query.minSqft !== undefined) apartmentWhere.sizeSqft = { gte: query.minSqft };
     if (query.floorNumber !== undefined) apartmentWhere.floor = { floorNumber: query.floorNumber };
-    if (query.excludeGround) apartmentWhere.floor = { ...apartmentWhere.floor, floorNumber: { gt: 0 } };
+    if (query.excludeGround)
+      apartmentWhere.floor = {
+        ...apartmentWhere.floor,
+        floorNumber: { gt: 0 },
+      };
 
     const buildingFilters: any = {};
     if (query.area) buildingFilters.areaZone = { contains: query.area, mode: "insensitive" };
@@ -79,22 +87,25 @@ export class SearchService {
     if (query.hasParking) buildingFilters.hasParking = true;
     if (query.hasGenerator) buildingFilters.hasGenerator = true;
 
-    apartmentWhere.building = { ...apartmentWhere.building, ...buildingFilters };
+    apartmentWhere.building = {
+      ...apartmentWhere.building,
+      ...buildingFilters,
+    };
 
     const hasSearchCriteria = Boolean(
       query.q ||
-        query.area ||
-        query.minRent !== undefined ||
-        query.maxRent !== undefined ||
-        query.bedrooms !== undefined ||
-        query.bathrooms !== undefined ||
-        query.verandas !== undefined ||
-        query.minSqft !== undefined ||
-        query.floorNumber !== undefined ||
-        query.excludeGround ||
-        query.hasElevator ||
-        query.hasParking ||
-        query.hasGenerator,
+      query.area ||
+      query.minRent !== undefined ||
+      query.maxRent !== undefined ||
+      query.bedrooms !== undefined ||
+      query.bathrooms !== undefined ||
+      query.verandas !== undefined ||
+      query.minSqft !== undefined ||
+      query.floorNumber !== undefined ||
+      query.excludeGround ||
+      query.hasElevator ||
+      query.hasParking ||
+      query.hasGenerator,
     );
 
     // Featured properties first (especially after search/filters), then by selected sort.
@@ -102,16 +113,29 @@ export class SearchService {
     const isSale = query.listingType === "SALE";
     const asc = sort === "rent_asc" || sort === "price_asc";
     const desc = sort === "rent_desc" || sort === "price_desc";
-    const priceField = (sort === "price_asc" || sort === "price_desc")
-      ? (isSale ? "salePrice" : "rentAmount")
-      : (sort === "rent_asc" || sort === "rent_desc")
-        ? "rentAmount"
-        : (isSale ? "salePrice" : "rentAmount");
+    const priceField =
+      sort === "price_asc" || sort === "price_desc"
+        ? isSale
+          ? "salePrice"
+          : "rentAmount"
+        : sort === "rent_asc" || sort === "rent_desc"
+          ? "rentAmount"
+          : isSale
+            ? "salePrice"
+            : "rentAmount";
 
     const orderBy: Prisma.ApartmentOrderByWithRelationInput[] = asc
-      ? [{ building: { isFeatured: "desc" } }, { [priceField]: "asc" } as any, { createdAt: "desc" }]
+      ? [
+          { building: { isFeatured: "desc" } },
+          { [priceField]: "asc" } as any,
+          { createdAt: "desc" },
+        ]
       : desc
-        ? [{ building: { isFeatured: "desc" } }, { [priceField]: "desc" } as any, { createdAt: "desc" }]
+        ? [
+            { building: { isFeatured: "desc" } },
+            { [priceField]: "desc" } as any,
+            { createdAt: "desc" },
+          ]
         : [{ building: { isFeatured: "desc" } }, { createdAt: "desc" }];
 
     void hasSearchCriteria; // ordering rule: featured-first always acceptable before/after search
@@ -228,7 +252,11 @@ export class SearchService {
         images: building.images,
       },
       contact: viewerVerified
-        ? { phone: contactPhone, email: contactEmail, name: building.owner.name }
+        ? {
+            phone: contactPhone,
+            email: contactEmail,
+            name: building.owner.name,
+          }
         : null,
       contactGated: !viewerVerified,
     };

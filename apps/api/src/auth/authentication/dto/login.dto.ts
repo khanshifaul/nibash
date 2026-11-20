@@ -11,7 +11,11 @@ export class LoginDto {
   @IsNotEmpty()
   password!: string;
 
-  @ApiProperty({ example: false, required: false, description: "Extend refresh token expiry" })
+  @ApiProperty({
+    example: false,
+    required: false,
+    description: "Extend refresh token expiry",
+  })
   @IsBoolean()
   @IsOptional()
   rememberMe?: boolean;
