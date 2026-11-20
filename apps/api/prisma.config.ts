@@ -1,9 +1,13 @@
 // prisma.config.ts — Prisma 7 config: connection URL and migration settings.
-import { config } from "dotenv";
 import { resolve } from "path";
 import { defineConfig, env } from "prisma/config";
 
-config({ path: resolve(__dirname, ".env.local") });
+try {
+  const { config } = await import("dotenv");
+  config({ path: resolve(__dirname, ".env.local") });
+} catch {
+  // dotenv optional in containers where env vars are provided
+}
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

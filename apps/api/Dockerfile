@@ -18,7 +18,7 @@ COPY apps/api ./apps/api
 ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
 ENV DATABASE_URL=$DATABASE_URL
 WORKDIR /app/apps/api
-RUN bun run db:generate
+RUN set -e;   export PATH="/app/node_modules/.bin:/app/apps/api/node_modules/.bin:$PATH";   if command -v prisma >/dev/null 2>&1; then prisma generate;   elif [ -f /app/node_modules/.bin/prisma ]; then /app/node_modules/.bin/prisma generate;   elif [ -f /app/apps/api/node_modules/.bin/prisma ]; then /app/apps/api/node_modules/.bin/prisma generate;   elif [ -f /app/node_modules/prisma/build/index.js ]; then bun /app/node_modules/prisma/build/index.js generate;   else bunx prisma@7.10.1 generate; fi
 RUN bun run build
 
 # Runtime
@@ -35,4 +35,4 @@ COPY --from=build /app/apps/api/generated ./apps/api/generated
 WORKDIR /app/apps/api
 EXPOSE 4000
 # Run migrations on startup (single-instance friendly), then start server
-CMD ["sh", "-c", "bun run db:migrate:deploy && bun dist/src/main.js"]
+CMD ["sh", "-c", "set -e; export PATH=\"/app/node_modules/.bin:/app/apps/api/node_modules/.bin:$PATH\"; if command -v prisma >/dev/null 2>&1; then prisma migrate deploy; elif [ -f /app/node_modules/.bin/prisma ]; then /app/node_modules/.bin/prisma migrate deploy; elif [ -f /app/apps/api/node_modules/.bin/prisma ]; then /app/apps/api/node_modules/.bin/prisma migrate deploy; elif [ -f /app/node_modules/prisma/build/index.js ]; then bun /app/node_modules/prisma/build/index.js migrate deploy; else bunx prisma@7.10.1 migrate deploy; fi; exec bun dist/src/main.js"]
