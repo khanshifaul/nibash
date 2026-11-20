@@ -30,6 +30,12 @@ services:
         sync: false # https://<api-service>.onrender.com
       - key: WEB_ORIGIN
         sync: false # https://<your-vercel-app>.vercel.app (exact origin, no trailing slash)
+      - key: GOOGLE_CLIENT_ID
+        sync: false # optional — enables Google sign-in
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false # optional — server-side only
+      - key: GOOGLE_CALLBACK_URL
+        sync: false # optional — https://<api-service>.onrender.com/auth/google/callback
       - key: RESEND_API_KEY
         sync: false
       - key: MAIL_FROM

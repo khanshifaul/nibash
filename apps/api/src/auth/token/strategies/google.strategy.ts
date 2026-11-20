@@ -24,16 +24,18 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
       configService.get<string>("google.callbackURL") ??
       configService.get<string>("GOOGLE_CALLBACK_URL");
 
-    if (!clientId) throw new Error("GOOGLE_CLIENT_ID is not configured");
-    if (!clientSecret) throw new Error("GOOGLE_CLIENT_SECRET is not configured");
-    if (!callbackURL) throw new Error("GOOGLE_CALLBACK_URL is not configured");
-
+    // Google sign-in is optional: fall back to inert credentials so the API
+    // still boots on deployments where OAuth is not configured.
     super({
-      clientID: clientId,
-      clientSecret: clientSecret,
-      callbackURL,
+      clientID: clientId || "google-oauth-disabled",
+      clientSecret: clientSecret || "google-oauth-disabled",
+      callbackURL: callbackURL || "http://localhost/auth/google/callback",
       scope: ["email", "profile"],
     });
+
+    if (!clientId || !clientSecret || !callbackURL) {
+      this.logger.warn("Google OAuth is not configured; Google sign-in is disabled");
+    }
   }
 
   async validate(
