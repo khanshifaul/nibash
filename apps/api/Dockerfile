@@ -43,10 +43,16 @@ RUN set -e; \
     ; do [ -e "$p" ] && NEST_BIN="$p" && break; done; \
   if [ -z "$NEST_BIN" ]; then NEST_BIN=$(find /app -path '*@nestjs/cli*/bin/nest.js' 2>/dev/null | head -1 || true); fi; \
   if [ -n "$NEST_BIN" ]; then \
-    case "$NEST_BIN" in *.js) bun "$NEST_BIN" build ;; *) "$NEST_BIN" build ;; esac; \
+    case "$NEST_BIN" in *.js) bun "$NEST_BIN" build || true ;; *) "$NEST_BIN" build || true ;; esac; \
   else \
-    echo "nest cli not found, trying bunx"; bunx --bun @nestjs/cli build; \
-  fi
+    echo "nest cli not found, trying bunx"; bunx --bun @nestjs/cli build || true; \
+  fi; \
+  if [ ! -f dist/src/main.js ] && [ ! -f dist/main.js ]; then \
+    echo "nest build did not produce entrypoint, falling back to tsc"; \
+    TSC_BIN=$(find /app -path '*typescript*/bin/tsc' 2>/dev/null | head -1 || true); \
+    if [ -n "$TSC_BIN" ]; then bun "$TSC_BIN" -p tsconfig.build.json; else bunx --bun tsc -p tsconfig.build.json; fi; \
+  fi; \
+  echo "---dist---"; find dist -maxdepth 4 | head -80 || true
 
 # Runtime
 FROM oven/bun:1 AS runtime
