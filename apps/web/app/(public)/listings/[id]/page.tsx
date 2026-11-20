@@ -38,6 +38,7 @@ export default function ListingDetailPage() {
   );
   const [inquiryStatus, setInquiryStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [inquiryMsgText, setInquiryMsgText] = useState<string | null>(null);
+  const [activeImage, setActiveImage] = useState(0);
 
   const loadListing = useCallback(async () => {
     setLoading(true);
@@ -45,6 +46,7 @@ export default function ListingDetailPage() {
     try {
       const data = await searchApi.getListing(id);
       setListing(data);
+      setActiveImage(0);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load property");
     } finally {
@@ -56,8 +58,6 @@ export default function ListingDetailPage() {
     loadListing();
   }, [loadListing]);
 
-  const coverImage =
-    listing?.images.find((i) => i.roomTag === "COVER") ?? listing?.images[0] ?? null;
   const apartmentImages = listing?.images ?? [];
 
   const monthlyRent = listing ? listing.rentAmount / 100 : 0;
@@ -102,36 +102,67 @@ export default function ListingDetailPage() {
     );
   }
 
-  const coverUrl = coverImage?.url;
   const contact = listing.contact;
-  const ownerName = contact?.name ?? listing.building.images[0]?.caption ?? "Owner";
+  const ownerName = contact?.name ?? "Property owner";
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Gallery + main info */}
         <section className="lg:col-span-8 space-y-6">
-          <div className="relative rounded-xl overflow-hidden bg-muted aspect-video">
-            {coverUrl ? (
-              <img src={coverUrl} alt="Property cover" className="w-full h-full object-cover" />
+          <div className="relative rounded-xl overflow-hidden bg-muted aspect-video group">
+            {apartmentImages.length > 0 ? (
+              <>
+                <img
+                  src={apartmentImages[activeImage]?.url ?? ""}
+                  alt={apartmentImages[activeImage]?.roomTag ?? "Property image"}
+                  className="w-full h-full object-cover"
+                />
+                {apartmentImages.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setActiveImage((i) => (i - 1 + apartmentImages.length) % apartmentImages.length)}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/45 text-white hover:bg-black/60 flex items-center justify-center cursor-pointer transition-colors"
+                      aria-label="Previous image"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveImage((i) => (i + 1) % apartmentImages.length)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/45 text-white hover:bg-black/60 flex items-center justify-center cursor-pointer transition-colors"
+                      aria-label="Next image"
+                    >
+                      ›
+                    </button>
+                    <div className="absolute bottom-3 right-3 bg-black/55 text-white text-xs px-2 py-1 rounded-md">
+                      {activeImage + 1} / {apartmentImages.length}
+                    </div>
+                  </>
+                )}
+              </>
             ) : (
               <div className="flex h-full items-center justify-center">
                 <Building2 className="h-16 w-16 text-muted-foreground" />
               </div>
             )}
-            <div className="absolute top-3 left-3 bg-black/50 px-2 py-1 rounded text-xs text-white">
-              {listing.availabilityStatus}
+            <div className="absolute top-3 left-3 bg-black/55 px-2 py-1 rounded text-xs text-white font-medium">
+              {listing.availabilityStatus.replace(/_/g, " ")}
             </div>
           </div>
 
           {apartmentImages.length > 1 && (
-            <div className="grid grid-cols-5 gap-2">
-              {apartmentImages.map((img) => (
+            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2">
+              {apartmentImages.map((img, idx) => (
                 <button
                   key={img.id}
-                  className="rounded overflow-hidden border border-transparent hover:border-muted focus:ring-2 focus:ring-ring cursor-pointer"
+                  type="button"
+                  onClick={() => setActiveImage(idx)}
+                  className={`relative rounded-md overflow-hidden border aspect-square cursor-pointer transition-all ${idx === activeImage ? "ring-2 ring-primary border-primary" : "border-transparent hover:border-muted-foreground/30"}`}
+                  aria-label={`View image ${idx + 1}`}
                 >
-                  <img src={img.url} alt={img.roomTag ?? ""} className="w-full h-full object-cover" />
+                  <img src={img.url} alt={img.roomTag ?? `Property image ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

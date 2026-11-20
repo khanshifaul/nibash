@@ -90,7 +90,7 @@ export default function SignUpPage() {
         password,
       });
       await refresh();
-      setSuccess("Account created successfully. Check your email to verify your account before listing properties or viewing contact details.");
+      setSuccess("Account created successfully. Check your email to verify your account before adding properties or viewing contact details.");
       setTimeout(() => router.push("/dashboard"), 2200);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed. Please try again.");

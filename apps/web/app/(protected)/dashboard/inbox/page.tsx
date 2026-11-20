@@ -48,7 +48,7 @@ export default function DashboardInboxPage() {
           <CardContent className="py-12 text-center">
             <Inbox className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
             <h2 className="font-semibold text-lg">No inquiries yet</h2>
-            <p className="text-muted-foreground text-sm mt-1">When renters contact you about your listings, their messages will appear here.</p>
+            <p className="text-muted-foreground text-sm mt-1">When renters contact you about your properties, their messages will appear here.</p>
           </CardContent>
         </Card>
       ) : (

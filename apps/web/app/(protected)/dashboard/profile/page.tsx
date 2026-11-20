@@ -60,7 +60,7 @@ export default function DashboardProfilePage() {
       <div className="mb-6">
         <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">← Back to dashboard</Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-2">Profile</h1>
-        <p className="text-muted-foreground mt-1">Manage your account details used for inquiries and property listings.</p>
+        <p className="text-muted-foreground mt-1">Manage your account details used for inquiries and property management.</p>
       </div>
 
       {error && <p className="text-destructive text-sm mb-4">{error}</p>}
