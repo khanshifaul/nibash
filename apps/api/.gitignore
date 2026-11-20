@@ -1,5 +1,3 @@
-src/
-test/
 dist/
 prisma/generated/
 *.tsbuildinfo
