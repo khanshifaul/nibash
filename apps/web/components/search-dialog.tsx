@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { searchApi, type ListingCard } from "@/lib/api";
+import { MdElevator, MdLocalParking, MdBolt } from "react-icons/md";
 
 type SearchFilters = {
   q: string;
@@ -156,17 +157,17 @@ export function SearchDialog({
                   </SelectContent>
                 </Select>
               </div>
-              <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1">
+              <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1 cursor-pointer">
                 <Checkbox checked={filters.hasElevator} onCheckedChange={(v) => setFilters((f) => ({ ...f, hasElevator: Boolean(v) }))} />
-                Lift
+                <span className="inline-flex items-center gap-1.5"><MdElevator className="h-4 w-4 text-muted-foreground" /> Lift</span>
               </label>
-              <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1">
+              <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1 cursor-pointer">
                 <Checkbox checked={filters.hasParking} onCheckedChange={(v) => setFilters((f) => ({ ...f, hasParking: Boolean(v) }))} />
-                Parking
+                <span className="inline-flex items-center gap-1.5"><MdLocalParking className="h-4 w-4 text-muted-foreground" /> Parking</span>
               </label>
-              <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1">
+              <label className="flex items-center gap-2 text-sm col-span-2 sm:col-span-1 cursor-pointer">
                 <Checkbox checked={filters.hasGenerator} onCheckedChange={(v) => setFilters((f) => ({ ...f, hasGenerator: Boolean(v) }))} />
-                Generator
+                <span className="inline-flex items-center gap-1.5"><MdBolt className="h-4 w-4 text-muted-foreground" /> Generator</span>
               </label>
               <Button
                 variant="ghost"
@@ -219,8 +220,8 @@ export function SearchDialog({
                     </CardContent>
                     <CardFooter className="pt-0 flex justify-between items-center">
                       <div className="flex gap-1 text-[10px]">
-                        {item.building.hasElevator && <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">Lift</span>}
-                        {item.building.hasParking && <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">Parking</span>}
+                        {item.building.hasElevator && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700"><MdElevator className="h-3 w-3" />Lift</span>}
+                        {item.building.hasParking && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700"><MdLocalParking className="h-3 w-3" />Parking</span>}
                       </div>
                       <span className="inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md">View details <ChevronRight className="h-3.5 w-3.5" /></span>
                     </CardFooter>

@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "description": "Multi-building apartment rental listing platform",
-  "workspaces": ["apps/*"],
-  "engines": { "node": ">=20.0.0" },
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "bun run --parallel --filter '@nibash/{web,api}' dev",
     "dev:web": "bun --filter '@nibash/web' dev",
@@ -18,7 +22,8 @@
     "db:migrate": "bun --filter '@nibash/api' db:migrate",
     "db:push": "bun --filter '@nibash/api' db:push",
     "db:seed": "bun --filter '@nibash/api' db:seed",
-    "db:studio": "bun --filter '@nibash/api' db:studio"
+    "db:studio": "bun --filter '@nibash/api' db:studio",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "devDependencies": {
     "@types/node": "^20.17.0",

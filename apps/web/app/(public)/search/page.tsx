@@ -141,7 +141,7 @@ export default function SearchPage() {
                 <SlidersHorizontal className="h-4 w-4" /> Filters
               </h2>
               {hasActiveFilters && (
-                <button onClick={clearFilters} className="text-xs text-primary hover:underline font-medium">
+                <button onClick={clearFilters} className="text-xs text-primary hover:underline font-medium cursor-pointer">
                   Clear all
                 </button>
               )}

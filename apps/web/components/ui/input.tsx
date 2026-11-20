@@ -110,7 +110,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     <button
                         type="button"
                         onClick={handleClear}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
                     >
                         <FiX className="h-4 w-4" aria-hidden="true" />
                         <span className="sr-only">Clear search</span>

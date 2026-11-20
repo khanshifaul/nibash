@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, Building2, Home } from "lucide-react";
 import Map from "@/components/ui/map";
+import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdPhoneInTalk, MdRoofing, MdWaterDrop } from "react-icons/md";
 
 export default function BuildingPage() {
   const params = useParams<{ id: string }>();
@@ -110,17 +111,17 @@ export default function BuildingPage() {
             <h3 className="text-lg font-semibold mb-2">Amenities</h3>
             <div className="flex flex-wrap gap-2">
               {building.hasElevator && (
-                <Badge variant="secondary">Lift ({building.elevatorCount ?? 1})</Badge>
+                <Badge variant="secondary" className="gap-1.5"><MdElevator className="h-3.5 w-3.5" /> Lift ({building.elevatorCount ?? 1})</Badge>
               )}
               {building.hasParking && (
-                <Badge variant="secondary">Parking ({building.parkingType})</Badge>
+                <Badge variant="secondary" className="gap-1.5"><MdLocalParking className="h-3.5 w-3.5" /> Parking ({building.parkingType})</Badge>
               )}
-              {building.hasGenerator && <Badge variant="secondary">Generator</Badge>}
-              {building.hasSecurityGuard && <Badge variant="secondary">Security guard</Badge>}
-              {building.hasCctv && <Badge variant="secondary">CCTV</Badge>}
-              {building.hasIntercom && <Badge variant="secondary">Intercom</Badge>}
-              {building.hasRooftop && <Badge variant="secondary">Rooftop access</Badge>}
-              {building.hasSubmersiblePump && <Badge variant="secondary">Submersible pump</Badge>}
+              {building.hasGenerator && <Badge variant="secondary" className="gap-1.5"><MdBolt className="h-3.5 w-3.5" /> Generator</Badge>}
+              {building.hasSecurityGuard && <Badge variant="secondary" className="gap-1.5"><MdSecurity className="h-3.5 w-3.5" /> Security guard</Badge>}
+              {building.hasCctv && <Badge variant="secondary" className="gap-1.5"><MdVideocam className="h-3.5 w-3.5" /> CCTV</Badge>}
+              {building.hasIntercom && <Badge variant="secondary" className="gap-1.5"><MdPhoneInTalk className="h-3.5 w-3.5" /> Intercom</Badge>}
+              {building.hasRooftop && <Badge variant="secondary" className="gap-1.5"><MdRoofing className="h-3.5 w-3.5" /> Rooftop access</Badge>}
+              {building.hasSubmersiblePump && <Badge variant="secondary" className="gap-1.5"><MdWaterDrop className="h-3.5 w-3.5" /> Submersible pump</Badge>}
               {!building.hasElevator && !building.hasParking && !building.hasGenerator && !building.hasSecurityGuard && !building.hasCctv && !building.hasIntercom && !building.hasRooftop && !building.hasSubmersiblePump && (
                 <span className="text-xs text-muted-foreground">No amenities listed</span>
               )}

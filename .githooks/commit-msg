@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MSG_FILE="${1:-}"
+if [ -z "$MSG_FILE" ] || [ ! -f "$MSG_FILE" ]; then
+  echo "[commit-msg] ERROR: commit message file not found" >&2
+  exit 1
+fi
+
+# First non-comment, non-empty line
+SUBJECT=$(grep -vE '^\s*#' "$MSG_FILE" | sed '/^\s*$/d' | head -n 1 || true)
+if [ -z "$SUBJECT" ]; then
+  echo "[commit-msg] ERROR: commit message must not be empty" >&2
+  exit 1
+fi
+
+# Trim leading/trailing whitespace
+SUBJECT_TRIMMED=$(echo "$SUBJECT" | sed -E 's/^\s+//; s/\s+$//')
+LEN=${#SUBJECT_TRIMMED}
+if [ "$LEN" -lt 3 ]; then
+  echo "[commit-msg] ERROR: commit subject too short" >&2
+  exit 1
+fi
+if [ "$LEN" -gt 120 ]; then
+  echo "[commit-msg] ERROR: commit subject too long (>120 chars). Keep it concise." >&2
+  exit 1
+fi
+
+case "$SUBJECT_TRIMMED" in
+  fixup!*|squash!*) ;; # allow git fixup/squash
+  Merge\ *|Revert\ *) ;; # allow git-generated subjects
+  *)
+    # encourage conventional-ish prefixes but don't hard-fail to avoid blocking legitimate commits
+    ;;
+esac
+
+exit 0

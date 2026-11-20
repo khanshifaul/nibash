@@ -30,7 +30,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={cycle}
-      className="h-9 w-9 inline-flex items-center justify-center rounded-md border hover:bg-muted transition-colors"
+      className="h-9 w-9 inline-flex items-center justify-center rounded-md border hover:bg-muted transition-colors cursor-pointer"
       title={`Theme: ${label} (click to change)`}
       aria-label={`Theme: ${label}`}
     >

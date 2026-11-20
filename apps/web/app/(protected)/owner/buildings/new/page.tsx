@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdPhoneInTalk, MdRoofing, MdWaterDrop } from "react-icons/md";
 
 export default function NewBuildingPage() {
   const { user } = useAuth();
@@ -69,21 +70,21 @@ export default function NewBuildingPage() {
 
         <section className="space-y-2">
           <h2 className="font-semibold">Amenities</h2>
-          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasElevator} onCheckedChange={(v) => set("hasElevator", !!v)} /> <span>Lift/Elevator</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasElevator} onCheckedChange={(v) => set("hasElevator", !!v)} /> <MdElevator className="h-4 w-4 text-muted-foreground" /> <span>Lift/Elevator</span></label>
           {form.hasElevator && <Input className="w-40" type="number" min={1} placeholder="Elevator count" value={form.elevatorCount} onChange={(e) => set("elevatorCount", Number(e.target.value))} />}
-          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasParking} onCheckedChange={(v) => set("hasParking", !!v)} /> <span>Parking</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasParking} onCheckedChange={(v) => set("hasParking", !!v)} /> <MdLocalParking className="h-4 w-4 text-muted-foreground" /> <span>Parking</span></label>
           {form.hasParking && (
             <NativeSelect className="w-auto" value={form.parkingType} onChange={(e) => set("parkingType", e.target.value)}>
               <option value="CAR">Car</option><option value="BIKE">Bike</option><option value="CAR_AND_BIKE">Car + Bike</option><option value="PAID">Paid</option>
             </NativeSelect>
           )}
-          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasGenerator} onCheckedChange={(v) => set("hasGenerator", !!v)} /> <span>Generator</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasGenerator} onCheckedChange={(v) => set("hasGenerator", !!v)} /> <MdBolt className="h-4 w-4 text-muted-foreground" /> <span>Generator</span></label>
           {form.hasGenerator && <Input placeholder="Scope (full/common)" value={form.generatorScope} onChange={(e) => set("generatorScope", e.target.value)} />}
-          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasSecurityGuard} onCheckedChange={(v) => set("hasSecurityGuard", !!v)} /> <span>Security guard</span></label>
-          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasCctv} onCheckedChange={(v) => set("hasCctv", !!v)} /> <span>CCTV</span></label>
-          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasIntercom} onCheckedChange={(v) => set("hasIntercom", !!v)} /> <span>Intercom</span></label>
-          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasRooftop} onCheckedChange={(v) => set("hasRooftop", !!v)} /> <span>Rooftop access</span></label>
-          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasSubmersiblePump} onCheckedChange={(v) => set("hasSubmersiblePump", !!v)} /> <span>Submersible pump</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasSecurityGuard} onCheckedChange={(v) => set("hasSecurityGuard", !!v)} /> <MdSecurity className="h-4 w-4 text-muted-foreground" /> <span>Security guard</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasCctv} onCheckedChange={(v) => set("hasCctv", !!v)} /> <MdVideocam className="h-4 w-4 text-muted-foreground" /> <span>CCTV</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasIntercom} onCheckedChange={(v) => set("hasIntercom", !!v)} /> <MdPhoneInTalk className="h-4 w-4 text-muted-foreground" /> <span>Intercom</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasRooftop} onCheckedChange={(v) => set("hasRooftop", !!v)} /> <MdRoofing className="h-4 w-4 text-muted-foreground" /> <span>Rooftop access</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasSubmersiblePump} onCheckedChange={(v) => set("hasSubmersiblePump", !!v)} /> <MdWaterDrop className="h-4 w-4 text-muted-foreground" /> <span>Submersible pump</span></label>
         </section>
 
         <Button type="submit" disabled={saving}>

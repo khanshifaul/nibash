@@ -89,7 +89,7 @@ const StarRating = React.forwardRef<HTMLDivElement, StarRatingProps>(
               key={index}
               type="button"
               role="radio"
-              aria-checked={value >= starValue}
+              aria-checked={value ===  starValue}
               aria-label={`${starValue} star${starValue > 1 ? "s" : ""}`}
               disabled={readonly}
               tabIndex={

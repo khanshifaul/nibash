@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Phone, Mail, Building2 } from "lucide-react";
+import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdRoofing } from "react-icons/md";
+import { Button } from "@/components/ui/button";
 
 const MONTH_NAMES = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -127,7 +129,7 @@ export default function ListingDetailPage() {
               {apartmentImages.map((img) => (
                 <button
                   key={img.id}
-                  className="rounded overflow-hidden border border-transparent hover:border-muted focus:ring-2 focus:ring-ring"
+                  className="rounded overflow-hidden border border-transparent hover:border-muted focus:ring-2 focus:ring-ring cursor-pointer"
                 >
                   <img src={img.url} alt={img.roomTag ?? ""} className="w-full h-full object-cover" />
                 </button>
@@ -193,17 +195,20 @@ export default function ListingDetailPage() {
                 Available from {formatDate(listing.availableFrom)}.
               </div>
               <div className="border rounded p-3 bg-muted text-xs text-muted-foreground">
-                {listing.building.areaZone} • {listing.building.totalFloors} floors •
-                {listing.building.hasElevator ? " Has lift" : " No lift"} •
-                {listing.building.hasParking ? " Has parking" : " No parking"} •
-                {listing.building.hasGenerator ? " Has generator" : " No generator"}
+                <span className="inline-flex items-center gap-1">{listing.building.areaZone} • {listing.building.totalFloors} floors</span>
+                <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 mt-1"><span className="inline-flex items-center gap-1">{listing.building.hasElevator ? <><MdElevator className="h-3.5 w-3.5" /> Lift</> : "No lift"}</span><span className="inline-flex items-center gap-1">{listing.building.hasParking ? <><MdLocalParking className="h-3.5 w-3.5" /> Parking</> : "No parking"}</span><span className="inline-flex items-center gap-1">{listing.building.hasGenerator ? <><MdBolt className="h-3.5 w-3.5" /> Generator</> : "No generator"}</span></span>
               </div>
             </TabsContent>
             <TabsContent value="amenities" className="mt-4 grid grid-cols-2 gap-2">
-              {(["Lift", "Parking", "Generator", "Security", "CCTV", "Rooftop"] as const)
-                .filter((_, i) => [listing.building.hasElevator, listing.building.hasParking, listing.building.hasGenerator, listing.building.hasSecurityGuard, listing.building.hasCctv, listing.building.hasRooftop][i])
-                .map((amenity) => (
-                  <Badge key={amenity} variant="secondary">{amenity}</Badge>
+              {[
+                { label: "Lift", has: listing.building.hasElevator, Icon: MdElevator },
+                { label: "Parking", has: listing.building.hasParking, Icon: MdLocalParking },
+                { label: "Generator", has: listing.building.hasGenerator, Icon: MdBolt },
+                { label: "Security", has: listing.building.hasSecurityGuard, Icon: MdSecurity },
+                { label: "CCTV", has: listing.building.hasCctv, Icon: MdVideocam },
+                { label: "Rooftop", has: listing.building.hasRooftop, Icon: MdRoofing },
+              ].filter((a) => a.has).map((a) => (
+                  <Badge key={a.label} variant="secondary" className="gap-1.5"><a.Icon className="h-3.5 w-3.5" />{a.label}</Badge>
                 ))}
             </TabsContent>
             <TabsContent value="floorplan" className="mt-4">
@@ -224,7 +229,6 @@ export default function ListingDetailPage() {
                   <Textarea
                     value={inquiryMsg}
                     onChange={(e) => setInquiryMsg(e.target.value)}
-                    className="border rounded px-3 py-2 w-full"
                     rows={3}
                     required
                   />
@@ -234,13 +238,13 @@ export default function ListingDetailPage() {
                     {inquiryMsgText}
                   </div>
                 )}
-                <button
+                <Button
                   type="submit"
                   disabled={inquiryStatus === "sending"}
-                  className={`w-full py-2 rounded ${inquiryStatus === "sending" ? "opacity-50 cursor-not-allowed" : "bg-black text-white hover:bg-gray-800"}`}
+                  className="w-full"
                 >
                   {inquiryStatus === "sending" ? "Sending…" : "Send inquiry"}
-                </button>
+                </Button>
               </form>
             </CardContent>
           </Card>

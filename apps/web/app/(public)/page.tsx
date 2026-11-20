@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SearchDialog } from "@/components/search-dialog";
 import { searchApi, type ListingCard } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { MdElevator, MdLocalParking, MdBolt } from "react-icons/md";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -167,9 +168,9 @@ function PropertyCard({ item }: { item: ListingCard }) {
         </CardContent>
         <CardFooter className="pt-0 flex items-end justify-between gap-2">
           <div className="flex gap-1 flex-wrap">
-            {item.building.hasElevator && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Lift</span>}
-            {item.building.hasParking && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Parking</span>}
-            {item.building.hasGenerator && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Generator</span>}
+            {item.building.hasElevator && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdElevator className="h-3 w-3" />Lift</span>}
+            {item.building.hasParking && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdLocalParking className="h-3 w-3" />Parking</span>}
+            {item.building.hasGenerator && <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdBolt className="h-3 w-3" />Generator</span>}
           </div>
           <span className="inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md shrink-0 shadow-sm">
             View details <ChevronRight className="h-3.5 w-3.5" />
@@ -224,9 +225,9 @@ function PropertyListCard({ item }: { item: ListingCard }) {
             </div>
             <div className="flex items-center justify-between mt-4 gap-3">
               <div className="flex gap-1.5 flex-wrap">
-                {item.building.hasElevator && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Lift</span>}
-                {item.building.hasParking && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Parking</span>}
-                {item.building.hasGenerator && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Generator</span>}
+                {item.building.hasElevator && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdElevator className="h-3.5 w-3.5" />Lift</span>}
+                {item.building.hasParking && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdLocalParking className="h-3.5 w-3.5" />Parking</span>}
+                {item.building.hasGenerator && <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"><MdBolt className="h-3.5 w-3.5" />Generator</span>}
               </div>
               <span className="inline-flex items-center gap-1 text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md shrink-0 shadow-sm">
                 View details <ChevronRight className="h-3.5 w-3.5" />

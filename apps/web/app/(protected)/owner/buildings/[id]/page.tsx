@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { MdElevator, MdLocalParking, MdBolt, MdSecurity, MdVideocam, MdRoofing } from "react-icons/md";
 
 export default function OwnerBuildingPage() {
   const params = useParams<{ id: string }>();
@@ -160,12 +161,12 @@ export default function OwnerBuildingPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex flex-wrap gap-2">
-                {building.hasElevator && <Badge variant="secondary">Lift ({building.elevatorCount ?? 1})</Badge>}
-                {building.hasParking && <Badge variant="secondary">Parking ({building.parkingType})</Badge>}
-                {building.hasGenerator && <Badge variant="secondary">Generator</Badge>}
-                {building.hasSecurityGuard && <Badge variant="secondary">Security guard</Badge>}
-                {building.hasCctv && <Badge variant="secondary">CCTV</Badge>}
-                {building.hasRooftop && <Badge variant="secondary">Rooftop</Badge>}
+                {building.hasElevator && <Badge variant="secondary" className="gap-1.5"><MdElevator className="h-3.5 w-3.5" />Lift ({building.elevatorCount ?? 1})</Badge>}
+                {building.hasParking && <Badge variant="secondary" className="gap-1.5"><MdLocalParking className="h-3.5 w-3.5" />Parking ({building.parkingType})</Badge>}
+                {building.hasGenerator && <Badge variant="secondary" className="gap-1.5"><MdBolt className="h-3.5 w-3.5" />Generator</Badge>}
+                {building.hasSecurityGuard && <Badge variant="secondary" className="gap-1.5"><MdSecurity className="h-3.5 w-3.5" />Security guard</Badge>}
+                {building.hasCctv && <Badge variant="secondary" className="gap-1.5"><MdVideocam className="h-3.5 w-3.5" />CCTV</Badge>}
+                {building.hasRooftop && <Badge variant="secondary" className="gap-1.5"><MdRoofing className="h-3.5 w-3.5" />Rooftop</Badge>}
               </div>
             </CardContent>
           </Card>
@@ -205,42 +206,42 @@ export default function OwnerBuildingPage() {
           <h3 className="font-semibold">Add apartment (Stage B)</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <label className="text-sm">
-              Floor <input className="border rounded px-2 py-1 w-full" type="number" min={0} max={building.totalFloors} value={apt.floorNumber} onChange={(e) => setApt({ ...apt, floorNumber: Number(e.target.value) })} />
+              Floor <Input type="number" min={0} max={building.totalFloors} value={apt.floorNumber} onChange={(e) => setApt({ ...apt, floorNumber: Number(e.target.value) })} />
             </label>
             <label className="text-sm">
-              Unit label <input className="border rounded px-2 py-1 w-full" value={apt.unitLabel} onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })} required />
+              Unit label <Input value={apt.unitLabel} onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })} required />
             </label>
             <label className="text-sm">
-              Bedrooms <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.bedrooms} onChange={(e) => setApt({ ...apt, bedrooms: Number(e.target.value) })} />
+              Bedrooms <Input type="number" min={0} value={apt.bedrooms} onChange={(e) => setApt({ ...apt, bedrooms: Number(e.target.value) })} />
             </label>
             <label className="text-sm">
-              Bathrooms <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.bathrooms} onChange={(e) => setApt({ ...apt, bathrooms: Number(e.target.value) })} />
+              Bathrooms <Input type="number" min={0} value={apt.bathrooms} onChange={(e) => setApt({ ...apt, bathrooms: Number(e.target.value) })} />
             </label>
             <label className="text-sm">
-              Verandas <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.verandas} onChange={(e) => setApt({ ...apt, verandas: Number(e.target.value) })} />
+              Verandas <Input type="number" min={0} value={apt.verandas} onChange={(e) => setApt({ ...apt, verandas: Number(e.target.value) })} />
             </label>
             <label className="text-sm">
-              Dining <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.diningRooms} onChange={(e) => setApt({ ...apt, diningRooms: Number(e.target.value) })} />
+              Dining <Input type="number" min={0} value={apt.diningRooms} onChange={(e) => setApt({ ...apt, diningRooms: Number(e.target.value) })} />
             </label>
             <label className="text-sm">
-              Drawing <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.drawingRooms} onChange={(e) => setApt({ ...apt, drawingRooms: Number(e.target.value) })} />
+              Drawing <Input type="number" min={0} value={apt.drawingRooms} onChange={(e) => setApt({ ...apt, drawingRooms: Number(e.target.value) })} />
             </label>
             <label className="text-sm">
-              Kitchens <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.kitchens} onChange={(e) => setApt({ ...apt, kitchens: Number(e.target.value) })} />
+              Kitchens <Input type="number" min={0} value={apt.kitchens} onChange={(e) => setApt({ ...apt, kitchens: Number(e.target.value) })} />
             </label>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <label className="text-sm">
-              Rent (minor units) <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: Number(e.target.value) })} required />
+              Rent (minor units) <Input type="number" min={0} value={apt.rentAmount} onChange={(e) => setApt({ ...apt, rentAmount: Number(e.target.value) })} required />
             </label>
             <label className="text-sm">
-              Service charge <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.serviceCharge} onChange={(e) => setApt({ ...apt, serviceCharge: Number(e.target.value) })} />
+              Service charge <Input type="number" min={0} value={apt.serviceCharge} onChange={(e) => setApt({ ...apt, serviceCharge: Number(e.target.value) })} />
             </label>
             <label className="text-sm">
-              Security deposit <input className="border rounded px-2 py-1 w-full" type="number" min={0} value={apt.securityDepositAmount} onChange={(e) => setApt({ ...apt, securityDepositAmount: Number(e.target.value) })} />
+              Security deposit <Input type="number" min={0} value={apt.securityDepositAmount} onChange={(e) => setApt({ ...apt, securityDepositAmount: Number(e.target.value) })} />
             </label>
           </div>
-          <button type="submit" disabled={saving} className="bg-black text-white px-4 py-2 rounded disabled:opacity-50">{saving ? "Saving..." : "Save apartment"}</button>
+          <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save apartment"}</Button>
         </form>
       )}
 
@@ -262,8 +263,8 @@ export default function OwnerBuildingPage() {
                         <div className="text-sm text-gray-600">{a.bedrooms} bed • {a.bathrooms} bath • {a.verandas} veranda • ৳{(a.rentAmount / 100).toLocaleString()}/mo • {a.availabilityStatus}</div>
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={() => toggleStatus(a.id, a.availabilityStatus)} className="text-sm border rounded px-3 py-1">Toggle status</button>
-                        <button onClick={() => cloneApartment(a.id, floor.floorNumber)} className="text-sm border rounded px-3 py-1">Clone</button>
+                        <Button size="sm" variant="outline" onClick={() => toggleStatus(a.id, a.availabilityStatus)}>Toggle status</Button>
+                        <Button size="sm" variant="outline" onClick={() => cloneApartment(a.id, floor.floorNumber)}>Clone</Button>
                       </div>
                     </div>
                   ))}
