@@ -320,8 +320,11 @@ export default function ListingDetailPage() {
                 ))}
             </TabsContent>
             <TabsContent value="floorplan" className="mt-4">
-              <div className="flex h-64 items-center justify-center rounded-lg border border-dashed bg-muted text-muted-foreground">
-                Floor plan image coming soon
+              <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/40 px-6 text-center">
+                <p className="text-sm font-medium text-foreground">Floor plan coming soon</p>
+                <p className="text-xs text-muted-foreground">
+                  The owner hasn&apos;t uploaded a floor plan for this unit yet.
+                </p>
               </div>
             </TabsContent>
           </Tabs>
@@ -415,16 +418,26 @@ export default function ListingDetailPage() {
               <CardTitle className="text-sm font-medium">Location</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video rounded-lg overflow-hidden bg-muted border relative">
-                <iframe
-                  title="Apartment location"
-                  src={`https://www.google.com/maps/embed/v1/place?key=&q=${listing.building.lat},${listing.building.lng}&zoom=16`}
-                  className="w-full h-full"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+              <div className="aspect-video overflow-hidden rounded-lg border bg-muted">
+                {(() => {
+                  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim();
+                  const q = `${listing.building.lat},${listing.building.lng}`;
+                  const src = apiKey
+                    ? `https://www.google.com/maps/embed/v1/place?key=${encodeURIComponent(apiKey)}&q=${q}&zoom=16`
+                    : `https://maps.google.com/maps?q=${q}&z=16&output=embed`;
+                  return (
+                    <iframe
+                      title="Apartment location"
+                      src={src}
+                      className="h-full w-full border-0"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      allowFullScreen
+                    />
+                  );
+                })()}
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="mt-2 text-xs text-muted-foreground">
                 {listing.building.addressLine ?? listing.building.areaZone}
               </p>
             </CardContent>

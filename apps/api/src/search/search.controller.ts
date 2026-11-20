@@ -14,8 +14,11 @@ export class SearchController {
   @ApiOperation({ summary: "Public search for apartment listings" })
   @ApiQuery({ name: "q", required: false })
   @ApiQuery({ name: "area", required: false })
+  @ApiQuery({ name: "listingType", required: false, enum: ["RENT", "SALE"] })
   @ApiQuery({ name: "minRent", required: false, type: Number })
   @ApiQuery({ name: "maxRent", required: false, type: Number })
+  @ApiQuery({ name: "minPrice", required: false, type: Number })
+  @ApiQuery({ name: "maxPrice", required: false, type: Number })
   @ApiQuery({ name: "bedrooms", required: false, type: Number })
   @ApiQuery({ name: "bathrooms", required: false, type: Number })
   @ApiQuery({ name: "verandas", required: false, type: Number })
@@ -30,13 +33,16 @@ export class SearchController {
   @ApiQuery({
     name: "sort",
     required: false,
-    enum: ["newest", "rent_asc", "rent_desc"],
+    enum: ["newest", "rent_asc", "rent_desc", "price_asc", "price_desc"],
   })
   search(
     @Query("q") q?: string,
     @Query("area") area?: string,
+    @Query("listingType") listingType?: string,
     @Query("minRent") minRent?: string,
     @Query("maxRent") maxRent?: string,
+    @Query("minPrice") minPrice?: string,
+    @Query("maxPrice") maxPrice?: string,
     @Query("bedrooms") bedrooms?: string,
     @Query("bathrooms") bathrooms?: string,
     @Query("verandas") verandas?: string,
@@ -52,11 +58,16 @@ export class SearchController {
   ) {
     const toNum = (v?: string) => (v !== undefined && v !== "" ? Number(v) : undefined);
     const toBool = (v?: string) => v === "true" || v === "1";
+    const allowedSort = new Set(["newest", "rent_asc", "rent_desc", "price_asc", "price_desc"]);
+    const lt = listingType === "RENT" || listingType === "SALE" ? listingType : undefined;
     return this.searchService.search({
       q,
       area,
+      listingType: lt,
       minRent: toNum(minRent),
       maxRent: toNum(maxRent),
+      minPrice: toNum(minPrice),
+      maxPrice: toNum(maxPrice),
       bedrooms: toNum(bedrooms),
       bathrooms: toNum(bathrooms),
       verandas: toNum(verandas),
@@ -68,7 +79,7 @@ export class SearchController {
       hasGenerator: toBool(hasGenerator),
       page: toNum(page),
       limit: toNum(limit),
-      sort: sort === "rent_asc" || sort === "rent_desc" || sort === "newest" ? sort : undefined,
+      sort: sort && allowedSort.has(sort) ? (sort as any) : undefined,
     });
   }
 

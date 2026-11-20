@@ -262,6 +262,8 @@ export type ListingCard = {
     name: string;
     slug: string;
     areaZone: string;
+    lat: number;
+    lng: number;
     hasElevator: boolean;
     hasParking: boolean;
     hasGenerator: boolean;
@@ -272,8 +274,11 @@ export type ListingCard = {
 export type SearchInput = {
   q?: string;
   area?: string;
+  listingType?: ListingType;
   minRent?: number;
   maxRent?: number;
+  minPrice?: number;
+  maxPrice?: number;
   bedrooms?: number;
   bathrooms?: number;
   verandas?: number;
@@ -285,7 +290,6 @@ export type SearchInput = {
   hasGenerator?: boolean;
   page?: number;
   limit?: number;
-  listingType?: ListingType;
   sort?: "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc";
 };
 

@@ -107,8 +107,11 @@ export const searchApi = {
   search: (params: {
     q?: string;
     area?: string;
+    listingType?: "RENT" | "SALE";
     minRent?: number;
     maxRent?: number;
+    minPrice?: number;
+    maxPrice?: number;
     bedrooms?: number;
     bathrooms?: number;
     verandas?: number;
@@ -120,7 +123,6 @@ export const searchApi = {
     hasGenerator?: boolean;
     page?: number;
     limit?: number;
-    listingType?: "RENT" | "SALE";
     sort?: "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc";
   }) => {
     const searchParams = new URLSearchParams();
@@ -128,6 +130,8 @@ export const searchApi = {
     if (params.area !== undefined) searchParams.set("area", params.area);
     if (params.minRent !== undefined) searchParams.set("minRent", String(params.minRent));
     if (params.maxRent !== undefined) searchParams.set("maxRent", String(params.maxRent));
+    if (params.minPrice !== undefined) searchParams.set("minPrice", String(params.minPrice));
+    if (params.maxPrice !== undefined) searchParams.set("maxPrice", String(params.maxPrice));
     if (params.bedrooms !== undefined) searchParams.set("bedrooms", String(params.bedrooms));
     if (params.bathrooms !== undefined) searchParams.set("bathrooms", String(params.bathrooms));
     if (params.verandas !== undefined) searchParams.set("verandas", String(params.verandas));

@@ -282,6 +282,8 @@ export class SearchService {
         name: apt.building.name,
         slug: apt.building.slug,
         areaZone: apt.building.areaZone,
+        lat: apt.building.lat,
+        lng: apt.building.lng,
         hasElevator: apt.building.hasElevator,
         hasParking: apt.building.hasParking,
         hasGenerator: apt.building.hasGenerator,

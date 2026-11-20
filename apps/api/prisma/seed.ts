@@ -364,12 +364,8 @@ async function main() {
       isFeatured: false,
     },
   });
-  const m3 = await prisma.floor.create({
-    data: { buildingId: mirpur.id, floorNumber: 3 },
-  });
-  const m5 = await prisma.floor.create({
-    data: { buildingId: mirpur.id, floorNumber: 5 },
-  });
+  const m3 = await prisma.floor.create({ data: { buildingId: mirpur.id, floorNumber: 3 } });
+  const m5 = await prisma.floor.create({ data: { buildingId: mirpur.id, floorNumber: 5 } });
   const m3a = await prisma.apartment.create({
     data: {
       buildingId: mirpur.id,
@@ -420,10 +416,372 @@ async function main() {
   });
   await upsertImage(m5b.id, `seed/${m5b.id}/cover.jpg`, img("photo-1501183638710-841dd1904471"));
 
+  // 5) Banani high-rise — premium rent & sale mix, varied amenities/status
+  const banani = await prisma.building.create({
+    data: {
+      ownerId: owner.id,
+      name: "Banani Skyline Residences",
+      slug: "banani-skyline-residences",
+      areaZone: "Banani",
+      roadBlock: "Road 11",
+      addressLine: "Plot 7, Road 11, Banani, Dhaka",
+      contactPhone: "+8801711000040",
+      lat: 23.7937,
+      lng: 90.4066,
+      totalFloors: 12,
+      hasElevator: true,
+      elevatorCount: 2,
+      hasParking: true,
+      parkingType: ParkingType.CAR_AND_BIKE,
+      hasGenerator: true,
+      generatorScope: "Full backup",
+      hasSecurityGuard: true,
+      hasCctv: true,
+      hasIntercom: true,
+      hasRooftop: true,
+      hasSubmersiblePump: true,
+      moderationStatus: ModerationStatus.APPROVED,
+      publishedAt: new Date(),
+      isFeatured: true,
+    },
+  });
+  const bananiUnits = [
+    {
+      floor: 3,
+      label: "3A",
+      lt: ListingType.RENT,
+      status: AvailabilityStatus.AVAILABLE,
+      listed: true,
+      beds: 3,
+      baths: 3,
+      size: 1650,
+      rent: 65000,
+      sale: null,
+    },
+    {
+      floor: 5,
+      label: "5B",
+      lt: ListingType.RENT,
+      status: AvailabilityStatus.RENTED,
+      listed: true,
+      beds: 3,
+      baths: 3,
+      size: 1600,
+      rent: 62000,
+      sale: null,
+    },
+    {
+      floor: 7,
+      label: "7A",
+      lt: ListingType.SALE,
+      status: AvailabilityStatus.AVAILABLE,
+      listed: true,
+      beds: 4,
+      baths: 4,
+      size: 2200,
+      rent: 0,
+      sale: 320000000,
+    },
+    {
+      floor: 9,
+      label: "9C",
+      lt: ListingType.SALE,
+      status: AvailabilityStatus.SOLD,
+      listed: true,
+      beds: 3,
+      baths: 3,
+      size: 1750,
+      rent: 0,
+      sale: 265000000,
+    },
+    {
+      floor: 11,
+      label: "11A",
+      lt: ListingType.RENT,
+      status: AvailabilityStatus.MAINTENANCE,
+      listed: false,
+      beds: 4,
+      baths: 4,
+      size: 2400,
+      rent: 95000,
+      sale: null,
+    },
+  ];
+  for (const [i, u] of bananiUnits.entries()) {
+    const floor = await prisma.floor.upsert({
+      where: { buildingId_floorNumber: { buildingId: banani.id, floorNumber: u.floor } },
+      update: {},
+      create: { buildingId: banani.id, floorNumber: u.floor },
+    });
+    const apt = await prisma.apartment.create({
+      data: {
+        buildingId: banani.id,
+        floorId: floor.id,
+        unitLabel: u.label,
+        listingType: u.lt,
+        sizeSqft: u.size,
+        bedrooms: u.beds,
+        bathrooms: u.baths,
+        verandas: 2,
+        diningRooms: 1,
+        drawingRooms: 1,
+        kitchens: 1,
+        gasType: GasType.LINE,
+        rentAmount: bdt(u.rent),
+        salePrice: u.sale == null ? null : bdt(u.sale),
+        serviceCharge: bdt(u.lt === ListingType.RENT ? 5000 : 8000),
+        securityDepositAmount: bdt(u.lt === ListingType.RENT ? u.rent * 2 : 0),
+        depositMonths: u.lt === ListingType.RENT ? 2 : null,
+        availabilityStatus: u.status,
+        publishedAt: u.listed ? new Date() : null,
+        preferredTenantTypes: ["Family", "Professional"],
+      },
+    });
+    await upsertImage(
+      apt.id,
+      `seed/${apt.id}/cover.jpg`,
+      img(
+        [
+          "photo-1522708323590-d24dbb6b0267",
+          "photo-1493809842364-78817add7ffb",
+          "photo-1484154218962-a197022b5858",
+          "photo-1505693416388-ac5ce068fe85",
+          "photo-1560448204-e02f11c3d0e2",
+        ][i],
+      ),
+    );
+  }
+
+  // 6) Mohammadpur budget apartments — affordable rent, small units, mixed visibility
+  const mohammadpur = await prisma.building.create({
+    data: {
+      ownerId: owner2.id,
+      name: "Mohammadpur Lakeview",
+      slug: "mohammadpur-lakeview",
+      areaZone: "Mohammadpur",
+      roadBlock: "Tajmahal Road",
+      addressLine: "House 18, Tajmahal Road, Mohammadpur, Dhaka",
+      contactPhone: "+8801811000050",
+      lat: 23.7658,
+      lng: 90.3588,
+      totalFloors: 5,
+      hasElevator: false,
+      hasParking: true,
+      parkingType: ParkingType.BIKE,
+      hasGenerator: false,
+      hasSecurityGuard: false,
+      hasCctv: false,
+      hasRooftop: true,
+      hasSubmersiblePump: true,
+      moderationStatus: ModerationStatus.APPROVED,
+      publishedAt: new Date(),
+      isFeatured: false,
+    },
+  });
+  const mpUnits = [
+    {
+      floor: 1,
+      label: "1A",
+      status: AvailabilityStatus.AVAILABLE,
+      listed: true,
+      beds: 2,
+      baths: 1,
+      size: 720,
+      rent: 14000,
+    },
+    {
+      floor: 2,
+      label: "2B",
+      status: AvailabilityStatus.AVAILABLE,
+      listed: true,
+      beds: 1,
+      baths: 1,
+      size: 480,
+      rent: 10000,
+    },
+    {
+      floor: 4,
+      label: "4A",
+      status: AvailabilityStatus.COMING_SOON,
+      listed: true,
+      beds: 2,
+      baths: 2,
+      size: 900,
+      rent: 17000,
+    },
+    {
+      floor: 5,
+      label: "5A",
+      status: AvailabilityStatus.AVAILABLE,
+      listed: false,
+      beds: 3,
+      baths: 2,
+      size: 1050,
+      rent: 21000,
+    },
+  ];
+  for (const [i, u] of mpUnits.entries()) {
+    const floor = await prisma.floor.upsert({
+      where: { buildingId_floorNumber: { buildingId: mohammadpur.id, floorNumber: u.floor } },
+      update: {},
+      create: { buildingId: mohammadpur.id, floorNumber: u.floor },
+    });
+    const apt = await prisma.apartment.create({
+      data: {
+        buildingId: mohammadpur.id,
+        floorId: floor.id,
+        unitLabel: u.label,
+        listingType: ListingType.RENT,
+        sizeSqft: u.size,
+        bedrooms: u.beds,
+        bathrooms: u.baths,
+        verandas: 1,
+        diningRooms: 1,
+        drawingRooms: 0,
+        kitchens: 1,
+        gasType: GasType.CYLINDER,
+        rentAmount: bdt(u.rent),
+        serviceCharge: bdt(1000),
+        securityDepositAmount: bdt(u.rent * 2),
+        depositMonths: 2,
+        availabilityStatus: u.status,
+        publishedAt: u.listed ? new Date() : null,
+        availableFrom:
+          u.status === AvailabilityStatus.COMING_SOON
+            ? new Date(Date.now() + 14 * 24 * 3600 * 1000)
+            : null,
+        preferredTenantTypes: ["Small Family", "Bachelor", "Student"],
+      },
+    });
+    await upsertImage(
+      apt.id,
+      `seed/${apt.id}/cover.jpg`,
+      img(
+        [
+          "photo-1502672260266-1c1ef2d93688",
+          "photo-1495433324511-bf8e92934d90",
+          "photo-1501183638710-841dd1904471",
+          "photo-1560185007-cde436f6a4d0",
+        ][i],
+      ),
+    );
+  }
+
+  // 7) Gulshan studio/compact — high-rent compact units
+  const gulshan = await prisma.building.create({
+    data: {
+      ownerId: owner.id,
+      name: "Gulshan North Compact",
+      slug: "gulshan-north-compact",
+      areaZone: "Gulshan",
+      roadBlock: "Road 90",
+      addressLine: "House 12, Road 90, Gulshan 2, Dhaka",
+      contactPhone: "+8801711000060",
+      lat: 23.7925,
+      lng: 90.4167,
+      totalFloors: 8,
+      hasElevator: true,
+      elevatorCount: 1,
+      hasParking: true,
+      parkingType: ParkingType.CAR,
+      hasGenerator: true,
+      generatorScope: "Full backup",
+      hasSecurityGuard: true,
+      hasCctv: true,
+      hasIntercom: true,
+      hasRooftop: false,
+      hasSubmersiblePump: true,
+      moderationStatus: ModerationStatus.APPROVED,
+      publishedAt: new Date(),
+      isFeatured: true,
+    },
+  });
+  const gulshanUnits = [
+    {
+      floor: 2,
+      label: "2A",
+      lt: ListingType.RENT,
+      status: AvailabilityStatus.AVAILABLE,
+      listed: true,
+      beds: 1,
+      baths: 1,
+      size: 550,
+      rent: 45000,
+      sale: null,
+    },
+    {
+      floor: 4,
+      label: "4B",
+      lt: ListingType.RENT,
+      status: AvailabilityStatus.AVAILABLE,
+      listed: true,
+      beds: 2,
+      baths: 2,
+      size: 980,
+      rent: 70000,
+      sale: null,
+    },
+    {
+      floor: 6,
+      label: "6A",
+      lt: ListingType.SALE,
+      status: AvailabilityStatus.AVAILABLE,
+      listed: true,
+      beds: 2,
+      baths: 2,
+      size: 1100,
+      rent: 0,
+      sale: 210000000,
+    },
+  ];
+  for (const [i, u] of gulshanUnits.entries()) {
+    const floor = await prisma.floor.upsert({
+      where: { buildingId_floorNumber: { buildingId: gulshan.id, floorNumber: u.floor } },
+      update: {},
+      create: { buildingId: gulshan.id, floorNumber: u.floor },
+    });
+    const apt = await prisma.apartment.create({
+      data: {
+        buildingId: gulshan.id,
+        floorId: floor.id,
+        unitLabel: u.label,
+        listingType: u.lt,
+        sizeSqft: u.size,
+        bedrooms: u.beds,
+        bathrooms: u.baths,
+        verandas: 1,
+        diningRooms: u.beds > 1 ? 1 : 0,
+        drawingRooms: 1,
+        kitchens: 1,
+        gasType: GasType.LINE,
+        rentAmount: bdt(u.rent),
+        salePrice: u.sale == null ? null : bdt(u.sale),
+        serviceCharge: bdt(u.lt === ListingType.RENT ? 4000 : 6000),
+        securityDepositAmount: bdt(u.lt === ListingType.RENT ? u.rent * 2 : 0),
+        depositMonths: u.lt === ListingType.RENT ? 2 : null,
+        availabilityStatus: u.status,
+        publishedAt: u.listed ? new Date() : null,
+        preferredTenantTypes:
+          u.beds === 1 ? ["Bachelor", "Professional"] : ["Family", "Professional"],
+      },
+    });
+    await upsertImage(
+      apt.id,
+      `seed/${apt.id}/cover.jpg`,
+      img(
+        [
+          "photo-1493809842364-78817add7ffb",
+          "photo-1560448204-e02f11c3d0e2",
+          "photo-1522708323590-d24dbb6b0267",
+        ][i],
+      ),
+    );
+  }
+
   console.log("Seed complete.");
   console.log("- Users: owner@example.com / password123, landlord@example.com / password123");
   console.log(
-    "- Buildings: Green View House (single-story, 1 unit rent), Lake Corner Duplex (duplex, 1 unit for sale), Shapla Residency Tower (10 floors, 25 units: floors 1-5 x2, floors 6-10 x3, mixed rent/sale/available/rented/sold/coming-soon/maintenance/listed/unlisted), Mirpur Garden View (rent examples)",
+    "- Buildings: Green View House (rent), Lake Corner Duplex (sale), Shapla Residency Tower (25 mixed units), Mirpur Garden View (rent/coming soon), Banani Skyline Residences (premium rent+sale, varied status), Mohammadpur Lakeview (budget rent, listed/unlisted), Gulshan North Compact (studio/compact rent+sale).",
   );
 }
 

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { FiArrowLeft } from "react-icons/fi";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FiArrowLeft, FiCopy, FiEdit2, FiEye, FiEyeOff, FiImage, FiPlus } from "react-icons/fi";
 import {
   MdBolt,
   MdElevator,
@@ -14,7 +14,7 @@ import {
 } from "react-icons/md";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -26,66 +26,110 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { apartmentsApi, api, type Building, buildingsApi, mediaApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+
+type AptForm = {
+  floorNumber: string;
+  unitLabel: string;
+  bedrooms: string;
+  bathrooms: string;
+  verandas: string;
+  diningRooms: string;
+  drawingRooms: string;
+  kitchens: string;
+  listingType: "RENT" | "SALE";
+  rentAmount: string;
+  salePrice: string;
+  serviceCharge: string;
+  securityDepositAmount: string;
+};
+
+const defaultApt: AptForm = {
+  floorNumber: "1",
+  unitLabel: "",
+  bedrooms: "2",
+  bathrooms: "2",
+  verandas: "1",
+  diningRooms: "1",
+  drawingRooms: "1",
+  kitchens: "1",
+  listingType: "RENT",
+  rentAmount: "2000000",
+  salePrice: "",
+  serviceCharge: "0",
+  securityDepositAmount: "0",
+};
 
 export default function OwnerBuildingPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+
   const [building, setBuilding] = useState<Building | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
   const [showAdd, setShowAdd] = useState(false);
-  const [apt, setApt] = useState({
-    floorNumber: "1",
-    unitLabel: "",
-    bedrooms: "2",
-    bathrooms: "2",
-    verandas: "1",
-    diningRooms: "1",
-    drawingRooms: "1",
-    kitchens: "1",
-    listingType: "RENT" as "RENT" | "SALE",
-    rentAmount: "2000000",
-    salePrice: "",
-    serviceCharge: "0",
-    securityDepositAmount: "0",
-  });
+  const [apt, setApt] = useState<AptForm>(defaultApt);
   const [saving, setSaving] = useState(false);
+
   const [imageDialog, setImageDialog] = useState(false);
   const [newImageUrl, setNewImageUrl] = useState("");
   const [newImageCaption, setNewImageCaption] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  const [cloneDialog, setCloneDialog] = useState<{
+    open: boolean;
+    apartmentId: string | null;
+    unitLabel: string;
+    floorNumber: string;
+  }>({ open: false, apartmentId: null, unitLabel: "", floorNumber: "1" });
+  const [cloning, setCloning] = useState(false);
+
   useEffect(() => {
-    if (!loading && !user) router.push("/sign-in");
-  }, [loading, user, router]);
+    if (!authLoading && !user) router.push("/sign-in");
+  }, [authLoading, user, router]);
 
   const load = useCallback(async () => {
+    if (!id) return;
     try {
+      setError(null);
       const data = await buildingsApi.findOne(id);
       setBuilding(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load building");
+      setError(e instanceof Error ? e.message : "Failed to load property");
     } finally {
       setLoading(false);
     }
   }, [id]);
 
   useEffect(() => {
-    if (user && id) load();
+    if (user && id) void load();
   }, [user, id, load]);
+
+  const allUnits = useMemo(() => (building?.floors ?? []).flatMap((f) => f.apartments), [building]);
+  const stats = useMemo(() => {
+    const available = allUnits.filter((u) => u.availabilityStatus === "AVAILABLE").length;
+    const rented = allUnits.filter((u) => u.availabilityStatus === "RENTED").length;
+    const sold = allUnits.filter((u) => u.availabilityStatus === "SOLD").length;
+    const unlisted = allUnits.filter(
+      (u) => !(u as { publishedAt?: string | null }).publishedAt,
+    ).length;
+    return { available, rented, sold, unlisted, total: allUnits.length };
+  }, [allUnits]);
 
   async function addApartment(e: React.FormEvent) {
     e.preventDefault();
+    if (!building) return;
     setSaving(true);
     setError(null);
     try {
       await apartmentsApi.create(id, {
         floorNumber: Number(apt.floorNumber),
-        unitLabel: apt.unitLabel,
+        unitLabel: apt.unitLabel.trim(),
         bedrooms: Number(apt.bedrooms || 0),
         bathrooms: Number(apt.bathrooms || 0),
         verandas: Number(apt.verandas || 0),
@@ -119,34 +163,50 @@ export default function OwnerBuildingPage() {
 
   async function setListed(apartmentId: string, publish: boolean) {
     try {
-      await apartmentsApi.update(apartmentId, { publish } as any);
+      await apartmentsApi.update(apartmentId, { publish } as never);
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Update failed");
     }
   }
 
-  async function cloneApartment(apartmentId: string, currentFloor: number) {
-    const unitLabel = prompt("New unit label for cloned flat:");
-    if (!unitLabel) return;
-    const floorStr = prompt("Target floor number:", String(currentFloor + 1));
-    const floorNumber = Number(floorStr ?? currentFloor + 1);
+  function openClone(apartmentId: string, currentFloor: number) {
+    setCloneDialog({
+      open: true,
+      apartmentId,
+      unitLabel: "",
+      floorNumber: String(currentFloor),
+    });
+  }
+
+  async function submitClone(e: React.FormEvent) {
+    e.preventDefault();
+    if (!cloneDialog.apartmentId) return;
+    const unitLabel = cloneDialog.unitLabel.trim();
+    const floorNumber = Number(cloneDialog.floorNumber);
+    if (!unitLabel || !Number.isFinite(floorNumber)) return;
+    setCloning(true);
+    setError(null);
     try {
-      await api.post(`/apartments/${apartmentId}/clone`, { floorNumber, unitLabel });
+      await api.post(`/apartments/${cloneDialog.apartmentId}/clone`, { floorNumber, unitLabel });
+      setCloneDialog({ open: false, apartmentId: null, unitLabel: "", floorNumber: "1" });
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Clone failed");
+    } finally {
+      setCloning(false);
     }
   }
 
   async function attachCoverImage() {
     if (!newImageUrl.trim()) return;
     setUploadingImage(true);
+    setError(null);
     try {
       await mediaApi.attachBuilding(id, {
-        storageKey: newImageUrl,
-        url: newImageUrl,
-        caption: newImageCaption || undefined,
+        storageKey: newImageUrl.trim(),
+        url: newImageUrl.trim(),
+        caption: newImageCaption.trim() || undefined,
         isCover: true,
       });
       setImageDialog(false);
@@ -160,417 +220,573 @@ export default function OwnerBuildingPage() {
     }
   }
 
-  if (loading || !user || !building) return <div className="p-8">Loading...</div>;
+  if (authLoading || loading) {
+    return (
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="mb-6 space-y-3 sm:mb-8">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-8 w-72 max-w-full" />
+          <Skeleton className="h-4 w-96 max-w-full" />
+        </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+          <div className="space-y-6 lg:col-span-8">
+            <Card>
+              <CardHeader className="space-y-2">
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="h-4 w-56" />
+              </CardHeader>
+              <CardContent className="grid gap-4 sm:grid-cols-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full sm:col-span-2" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-5 w-28" />
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-2">
+                <Skeleton className="h-7 w-20 rounded-full" />
+                <Skeleton className="h-7 w-24 rounded-full" />
+                <Skeleton className="h-7 w-20 rounded-full" />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="lg:col-span-4">
+            <Card>
+              <CardHeader className="space-y-2">
+                <Skeleton className="h-5 w-28" />
+                <Skeleton className="h-4 w-40" />
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="space-y-2 rounded-lg border p-3">
+                    <Skeleton className="mx-auto h-7 w-10" />
+                    <Skeleton className="mx-auto h-3 w-14" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <div className="mt-10 space-y-4">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-9 w-36" />
+          </div>
+          <Skeleton className="h-44 w-full rounded-xl" />
+          <Skeleton className="h-44 w-full rounded-xl" />
+        </div>
+      </main>
+    );
+  }
 
-  const allUnits = building.floors.flatMap((f) => f.apartments);
-  const availableCount = allUnits.filter((u) => u.availabilityStatus === "AVAILABLE").length;
-  const rentedCount = allUnits.filter((u) => u.availabilityStatus === "RENTED").length;
-  const unlistedCount = allUnits.filter((u) => !(u as any).publishedAt).length;
-  const soldCount = allUnits.filter((u) => u.availabilityStatus === "SOLD").length;
+  if (!user) return null;
+
+  if (!building) {
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Property not found</CardTitle>
+            <CardDescription>
+              {error || "This property could not be loaded or you don’t have access."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="outline">
+              <Link href="/dashboard/properties">
+                <FiArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
+                Back to my properties
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </main>
+    );
+  }
+
+  const amenityBadges = [
+    building.hasElevator && {
+      icon: MdElevator,
+      label: `Lift${building.elevatorCount ? ` (${building.elevatorCount})` : ""}`,
+    },
+    building.hasParking && { icon: MdLocalParking, label: `Parking (${building.parkingType})` },
+    building.hasGenerator && { icon: MdBolt, label: "Generator" },
+    building.hasSecurityGuard && { icon: MdSecurity, label: "Security guard" },
+    building.hasCctv && { icon: MdVideocam, label: "CCTV" },
+    building.hasRooftop && { icon: MdRoofing, label: "Rooftop" },
+  ].filter(Boolean) as { icon: React.ComponentType<{ className?: string }>; label: string }[];
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-8">
-      <div className="mb-6">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8">
         <Link
           href="/dashboard/properties"
-          className="text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          <FiArrowLeft className="inline h-4 w-4" aria-hidden="true" /> My properties
+          <FiArrowLeft className="h-4 w-4" aria-hidden="true" />
+          My properties
         </Link>
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mt-4">
-          <div>
-            <h1 className="text-2xl font-bold">{building.name}</h1>
-            <p className="text-gray-600">
-              {building.areaZone} • {building.totalFloors} floors • {allUnits.length} units
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0 space-y-1">
+            <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+              {building.name}
+            </h1>
+            <p className="text-sm text-muted-foreground sm:text-base">
+              {building.areaZone}
+              {building.addressLine ? ` · ${building.addressLine}` : ""} · {building.totalFloors}{" "}
+              floors · {stats.total} units
             </p>
           </div>
-          <div className="flex gap-2">
-            <Link
-              href={`/dashboard/properties/${id}/edit`}
-              className="text-sm font-medium hover:underline"
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="outline" size="sm" className="cursor-pointer">
+              <Link href={`/dashboard/properties/${id}/edit`}>
+                <FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                Edit building
+              </Link>
+            </Button>
+            <Button
+              onClick={() => setImageDialog(true)}
+              variant="outline"
+              size="sm"
+              className="cursor-pointer"
             >
-              Edit building
-            </Link>
-            <Button onClick={() => setImageDialog(true)} variant="outline" size="sm">
+              <FiImage className="mr-2 h-4 w-4" aria-hidden="true" />
               Add cover photo
             </Button>
           </div>
         </div>
       </div>
 
-      {error && <p className="text-red-600 mb-4">{error}</p>}
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-        <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Building details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Name</span>
-              </div>
-              <p className="text-sm">{building.name}</p>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Location</span>
-              </div>
-              <p className="text-sm">{building.addressLine ?? building.areaZone}</p>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Contact phone</span>
-              </div>
-              <p className="text-sm">{building.contactPhone ?? "Not set"}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Amenities</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex flex-wrap gap-2">
-                {building.hasElevator && (
-                  <Badge variant="secondary" className="gap-1.5">
-                    <MdElevator className="h-3.5 w-3.5" />
-                    Lift ({building.elevatorCount ?? 1})
-                  </Badge>
-                )}
-                {building.hasParking && (
-                  <Badge variant="secondary" className="gap-1.5">
-                    <MdLocalParking className="h-3.5 w-3.5" />
-                    Parking ({building.parkingType})
-                  </Badge>
-                )}
-                {building.hasGenerator && (
-                  <Badge variant="secondary" className="gap-1.5">
-                    <MdBolt className="h-3.5 w-3.5" />
-                    Generator
-                  </Badge>
-                )}
-                {building.hasSecurityGuard && (
-                  <Badge variant="secondary" className="gap-1.5">
-                    <MdSecurity className="h-3.5 w-3.5" />
-                    Security guard
-                  </Badge>
-                )}
-                {building.hasCctv && (
-                  <Badge variant="secondary" className="gap-1.5">
-                    <MdVideocam className="h-3.5 w-3.5" />
-                    CCTV
-                  </Badge>
-                )}
-                {building.hasRooftop && (
-                  <Badge variant="secondary" className="gap-1.5">
-                    <MdRoofing className="h-3.5 w-3.5" />
-                    Rooftop
-                  </Badge>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-1">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex flex-col gap-3">
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{availableCount}</div>
-                  <div className="text-xs text-muted-foreground">Available</div>
-                </div>
-                <Separator />
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{rentedCount}</div>
-                  <div className="text-xs text-muted-foreground">Rented</div>
-                </div>
-                <Separator />
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{soldCount}</div>
-                  <div className="text-xs text-muted-foreground">Sold</div>
-                </div>
-                <Separator />
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{unlistedCount}</div>
-                  <div className="text-xs text-muted-foreground">Unlisted</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">Units by floor</h2>
-        <button
-          onClick={() => setShowAdd((s) => !s)}
-          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 text-sm"
+      {error && (
+        <div
+          className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          role="alert"
         >
-          {showAdd ? "Cancel" : "Add apartment"}
-        </button>
-      </div>
-
-      {showAdd && (
-        <form onSubmit={addApartment} className="border rounded-lg p-4 mb-6 space-y-4">
-          <h3 className="font-semibold">Add apartment/unit</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-floor">Floor</Label>
-              <Input
-                id="apt-floor"
-                type="text"
-                inputMode="numeric"
-                placeholder={`0–${building.totalFloors}`}
-                value={apt.floorNumber}
-                onChange={(e) =>
-                  setApt({ ...apt, floorNumber: e.target.value.replace(/[^0-9]/g, "") })
-                }
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-unit">Unit label</Label>
-              <Input
-                id="apt-unit"
-                type="text"
-                placeholder="e.g. A-1"
-                value={apt.unitLabel}
-                onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-bedrooms">Bedrooms</Label>
-              <Input
-                id="apt-bedrooms"
-                type="text"
-                inputMode="numeric"
-                placeholder="e.g. 3"
-                value={apt.bedrooms}
-                onChange={(e) =>
-                  setApt({ ...apt, bedrooms: e.target.value.replace(/[^0-9]/g, "") })
-                }
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-bathrooms">Bathrooms</Label>
-              <Input
-                id="apt-bathrooms"
-                type="text"
-                inputMode="numeric"
-                placeholder="e.g. 2"
-                value={apt.bathrooms}
-                onChange={(e) =>
-                  setApt({ ...apt, bathrooms: e.target.value.replace(/[^0-9]/g, "") })
-                }
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-verandas">Verandas</Label>
-              <Input
-                id="apt-verandas"
-                type="text"
-                inputMode="numeric"
-                placeholder="e.g. 2"
-                value={apt.verandas}
-                onChange={(e) =>
-                  setApt({ ...apt, verandas: e.target.value.replace(/[^0-9]/g, "") })
-                }
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-dining">Dining rooms</Label>
-              <Input
-                id="apt-dining"
-                type="text"
-                inputMode="numeric"
-                placeholder="e.g. 1"
-                value={apt.diningRooms}
-                onChange={(e) =>
-                  setApt({ ...apt, diningRooms: e.target.value.replace(/[^0-9]/g, "") })
-                }
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-drawing">Drawing rooms</Label>
-              <Input
-                id="apt-drawing"
-                type="text"
-                inputMode="numeric"
-                placeholder="e.g. 1"
-                value={apt.drawingRooms}
-                onChange={(e) =>
-                  setApt({ ...apt, drawingRooms: e.target.value.replace(/[^0-9]/g, "") })
-                }
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-kitchens">Kitchens</Label>
-              <Input
-                id="apt-kitchens"
-                type="text"
-                inputMode="numeric"
-                placeholder="e.g. 1"
-                value={apt.kitchens}
-                onChange={(e) =>
-                  setApt({ ...apt, kitchens: e.target.value.replace(/[^0-9]/g, "") })
-                }
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-listing-type">Listing type</Label>
-              <select
-                id="apt-listing-type"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                value={apt.listingType}
-                onChange={(e) => setApt({ ...apt, listingType: e.target.value as "RENT" | "SALE" })}
-              >
-                <option value="RENT">For rent</option>
-                <option value="SALE">For sale</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-rent">
-                {apt.listingType === "SALE"
-                  ? "Sale price (BDT, minor units)"
-                  : "Monthly rent (BDT, minor units)"}
-              </Label>
-              {apt.listingType === "SALE" ? (
-                <Input
-                  id="apt-rent"
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="e.g. 1250000000"
-                  value={apt.salePrice}
-                  onChange={(e) =>
-                    setApt({ ...apt, salePrice: e.target.value.replace(/[^0-9]/g, "") })
-                  }
-                  required
-                />
-              ) : (
-                <Input
-                  id="apt-rent"
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="e.g. 2500000"
-                  value={apt.rentAmount}
-                  onChange={(e) =>
-                    setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })
-                  }
-                  required
-                />
-              )}
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-service">Service charge (minor units)</Label>
-              <Input
-                id="apt-service"
-                type="text"
-                inputMode="numeric"
-                placeholder="e.g. 0"
-                value={apt.serviceCharge}
-                onChange={(e) =>
-                  setApt({ ...apt, serviceCharge: e.target.value.replace(/[^0-9]/g, "") })
-                }
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="apt-deposit">Security deposit (minor units)</Label>
-              <Input
-                id="apt-deposit"
-                type="text"
-                inputMode="numeric"
-                placeholder="e.g. 0"
-                value={apt.securityDepositAmount}
-                onChange={(e) =>
-                  setApt({ ...apt, securityDepositAmount: e.target.value.replace(/[^0-9]/g, "") })
-                }
-              />
-            </div>
-          </div>
-          <Button type="submit" disabled={saving}>
-            {saving ? "Saving..." : "Save apartment"}
-          </Button>
-        </form>
+          {error}
+        </div>
       )}
 
-      {building.floors.length === 0 ? (
-        <p className="text-gray-600">
-          No floors/apartments yet. Add an apartment to create floors in the hierarchy.
-        </p>
-      ) : (
-        <div className="space-y-4">
-          {building.floors.map((floor) => (
-            <div key={floor.id} className="border rounded p-4">
-              <h3 className="font-semibold mb-2">Floor {floor.floorNumber}</h3>
-              {floor.apartments.length === 0 ? (
-                <p className="text-sm text-gray-600">No apartments on this floor.</p>
-              ) : (
-                <div className="space-y-2">
-                  {floor.apartments.map((a) => (
-                    <div
-                      key={a.id}
-                      className="flex flex-wrap items-start justify-between gap-3 border rounded p-3"
-                    >
-                      <div className="min-w-0">
-                        <div className="font-medium flex flex-wrap items-center gap-2">
-                          Unit {a.unitLabel}
-                          <Badge
-                            variant={a.availabilityStatus === "AVAILABLE" ? "default" : "secondary"}
-                          >
-                            {a.availabilityStatus}
-                          </Badge>
-                          <Badge variant={(a as any).publishedAt ? "outline" : "secondary"}>
-                            {(a as any).publishedAt ? "Listed" : "Unlisted"}
-                          </Badge>
-                        </div>
-                        <div className="text-sm text-muted-foreground mt-1">
-                          {a.bedrooms} bed • {a.bathrooms} bath • {a.verandas} veranda •{" "}
-                          {a.listingType === "SALE"
-                            ? `৳${((a.salePrice ?? 0) / 100).toLocaleString()} (sale)`
-                            : `৳${(a.rentAmount / 100).toLocaleString()}/mo (rent)`}
-                        </div>
-                      </div>
-                      <div className="flex flex-col sm:flex-row flex-wrap gap-2">
-                        <label className="text-xs text-muted-foreground flex flex-col gap-1">
-                          Status
-                          <select
-                            className="h-8 rounded border bg-background px-2 text-sm text-foreground"
-                            value={a.availabilityStatus}
-                            onChange={(e) => void setStatus(a.id, e.target.value)}
-                          >
-                            <option value="AVAILABLE">Available</option>
-                            <option value="RENTED">Rented</option>
-                            <option value="MAINTENANCE">Maintenance</option>
-                            <option value="COMING_SOON">Coming soon</option>
-                            <option value="SOLD">Sold</option>
-                          </select>
-                        </label>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => void setListed(a.id, !(a as any).publishedAt)}
-                        >
-                          {(a as any).publishedAt ? "Unlist (hide)" : "List publicly"}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => void cloneApartment(a.id, floor.floorNumber)}
-                        >
-                          Clone
-                        </Button>
-                      </div>
-                    </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+        <div className="space-y-6 lg:col-span-8">
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Building details</CardTitle>
+              <CardDescription>Core information and contact for this property.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-5 sm:grid-cols-2">
+              <div className="space-y-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Name
+                </p>
+                <p className="text-sm font-medium leading-6">{building.name}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Location
+                </p>
+                <p className="text-sm leading-6">{building.addressLine || building.areaZone}</p>
+              </div>
+              <div className="space-y-1 sm:col-span-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Contact phone
+                </p>
+                <p className="text-sm leading-6">{building.contactPhone || "Not set"}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Amenities</CardTitle>
+              <CardDescription>Facilities available in this building.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {amenityBadges.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {amenityBadges.map(({ icon: Icon, label }) => (
+                    <Badge key={label} variant="secondary" className="gap-1.5 px-2.5 py-1">
+                      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                      {label}
+                    </Badge>
                   ))}
                 </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No amenities recorded.</p>
               )}
-            </div>
-          ))}
+            </CardContent>
+          </Card>
         </div>
-      )}
 
-      {/* Image dialog */}
+        <div className="lg:col-span-4">
+          <Card className="lg:sticky lg:top-24">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">At a glance</CardTitle>
+              <CardDescription>Unit status and listing visibility.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-lg border bg-muted/20 p-3 text-center">
+                  <div className="text-2xl font-bold tabular-nums">{stats.available}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">Available</div>
+                </div>
+                <div className="rounded-lg border bg-muted/20 p-3 text-center">
+                  <div className="text-2xl font-bold tabular-nums">{stats.rented}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">Rented</div>
+                </div>
+                <div className="rounded-lg border bg-muted/20 p-3 text-center">
+                  <div className="text-2xl font-bold tabular-nums">{stats.sold}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">Sold</div>
+                </div>
+                <div className="rounded-lg border bg-muted/20 p-3 text-center">
+                  <div className="text-2xl font-bold tabular-nums">{stats.unlisted}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">Unlisted</div>
+                </div>
+              </div>
+              <Separator className="my-4" />
+              <p className="text-center text-xs text-muted-foreground">
+                {stats.total} total unit{stats.total === 1 ? "" : "s"}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <section className="mt-10 space-y-4 sm:mt-12">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold tracking-tight">Units by floor</h2>
+            <p className="text-sm text-muted-foreground">
+              Manage availability, listing visibility, and unit copies.
+            </p>
+          </div>
+          <Button
+            onClick={() => setShowAdd((s) => !s)}
+            variant={showAdd ? "outline" : "default"}
+            className="cursor-pointer"
+          >
+            <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" />
+            {showAdd ? "Cancel" : "Add apartment"}
+          </Button>
+        </div>
+
+        {showAdd && (
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base">Add apartment/unit</CardTitle>
+              <CardDescription>
+                Create a unit on an existing floor (floors are created automatically if needed).
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={addApartment} className="space-y-5">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-floor">Floor</Label>
+                    <Input
+                      id="apt-floor"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder={`0–${building.totalFloors}`}
+                      value={apt.floorNumber}
+                      onChange={(e) =>
+                        setApt({ ...apt, floorNumber: e.target.value.replace(/[^0-9]/g, "") })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label htmlFor="apt-unit">Unit label</Label>
+                    <Input
+                      id="apt-unit"
+                      type="text"
+                      placeholder="e.g. A-1"
+                      value={apt.unitLabel}
+                      onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-bedrooms">Bedrooms</Label>
+                    <Input
+                      id="apt-bedrooms"
+                      type="text"
+                      inputMode="numeric"
+                      value={apt.bedrooms}
+                      onChange={(e) =>
+                        setApt({ ...apt, bedrooms: e.target.value.replace(/[^0-9]/g, "") })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-bathrooms">Bathrooms</Label>
+                    <Input
+                      id="apt-bathrooms"
+                      type="text"
+                      inputMode="numeric"
+                      value={apt.bathrooms}
+                      onChange={(e) =>
+                        setApt({ ...apt, bathrooms: e.target.value.replace(/[^0-9]/g, "") })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-verandas">Verandas</Label>
+                    <Input
+                      id="apt-verandas"
+                      type="text"
+                      inputMode="numeric"
+                      value={apt.verandas}
+                      onChange={(e) =>
+                        setApt({ ...apt, verandas: e.target.value.replace(/[^0-9]/g, "") })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-dining">Dining rooms</Label>
+                    <Input
+                      id="apt-dining"
+                      type="text"
+                      inputMode="numeric"
+                      value={apt.diningRooms}
+                      onChange={(e) =>
+                        setApt({ ...apt, diningRooms: e.target.value.replace(/[^0-9]/g, "") })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-drawing">Drawing rooms</Label>
+                    <Input
+                      id="apt-drawing"
+                      type="text"
+                      inputMode="numeric"
+                      value={apt.drawingRooms}
+                      onChange={(e) =>
+                        setApt({ ...apt, drawingRooms: e.target.value.replace(/[^0-9]/g, "") })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-kitchens">Kitchens</Label>
+                    <Input
+                      id="apt-kitchens"
+                      type="text"
+                      inputMode="numeric"
+                      value={apt.kitchens}
+                      onChange={(e) =>
+                        setApt({ ...apt, kitchens: e.target.value.replace(/[^0-9]/g, "") })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-listing-type">Listing type</Label>
+                    <select
+                      id="apt-listing-type"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={apt.listingType}
+                      onChange={(e) =>
+                        setApt({ ...apt, listingType: e.target.value as "RENT" | "SALE" })
+                      }
+                    >
+                      <option value="RENT">For rent</option>
+                      <option value="SALE">For sale</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
+                    <Label htmlFor="apt-price">
+                      {apt.listingType === "SALE"
+                        ? "Sale price (BDT, minor units)"
+                        : "Monthly rent (BDT, minor units)"}
+                    </Label>
+                    {apt.listingType === "SALE" ? (
+                      <Input
+                        id="apt-price"
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="e.g. 1250000000"
+                        value={apt.salePrice}
+                        onChange={(e) =>
+                          setApt({ ...apt, salePrice: e.target.value.replace(/[^0-9]/g, "") })
+                        }
+                        required
+                      />
+                    ) : (
+                      <Input
+                        id="apt-price"
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="e.g. 2500000"
+                        value={apt.rentAmount}
+                        onChange={(e) =>
+                          setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })
+                        }
+                        required
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-service">Service charge (minor units)</Label>
+                    <Input
+                      id="apt-service"
+                      type="text"
+                      inputMode="numeric"
+                      value={apt.serviceCharge}
+                      onChange={(e) =>
+                        setApt({ ...apt, serviceCharge: e.target.value.replace(/[^0-9]/g, "") })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="apt-deposit">Security deposit (minor units)</Label>
+                    <Input
+                      id="apt-deposit"
+                      type="text"
+                      inputMode="numeric"
+                      value={apt.securityDepositAmount}
+                      onChange={(e) =>
+                        setApt({
+                          ...apt,
+                          securityDepositAmount: e.target.value.replace(/[^0-9]/g, ""),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="cursor-pointer"
+                    onClick={() => setShowAdd(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={saving} className="cursor-pointer">
+                    {saving ? "Saving..." : "Save apartment"}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {building.floors.length === 0 ? (
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+              <p className="font-medium">No floors or units yet</p>
+              <p className="max-w-md text-sm text-muted-foreground">
+                Add an apartment to create floors in the building hierarchy.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {building.floors.map((floor) => (
+              <Card key={floor.id} className="overflow-hidden">
+                <CardHeader className="border-b bg-muted/20 px-4 py-4 sm:px-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <CardTitle className="text-base">Floor {floor.floorNumber}</CardTitle>
+                    <Badge variant="secondary" className="font-normal">
+                      {floor.apartments.length} unit{floor.apartments.length === 1 ? "" : "s"}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {floor.apartments.length === 0 ? (
+                    <p className="px-4 py-8 text-center text-sm text-muted-foreground sm:px-6">
+                      No apartments on this floor.
+                    </p>
+                  ) : (
+                    <div className="divide-y">
+                      {floor.apartments.map((a) => {
+                        const published = Boolean(
+                          (a as { publishedAt?: string | null }).publishedAt,
+                        );
+                        return (
+                          <div
+                            key={a.id}
+                            className="flex flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between"
+                          >
+                            <div className="min-w-0 space-y-1.5">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-semibold">Unit {a.unitLabel}</span>
+                                <Badge
+                                  variant={
+                                    a.availabilityStatus === "AVAILABLE" ? "default" : "secondary"
+                                  }
+                                >
+                                  {a.availabilityStatus}
+                                </Badge>
+                                <Badge variant={published ? "outline" : "secondary"}>
+                                  {published ? "Listed" : "Unlisted"}
+                                </Badge>
+                                <Badge variant="outline">
+                                  {a.listingType === "SALE" ? "For sale" : "For rent"}
+                                </Badge>
+                              </div>
+                              <p className="text-sm leading-6 text-muted-foreground">
+                                {a.bedrooms} bed · {a.bathrooms} bath · {a.verandas} veranda ·{" "}
+                                {a.listingType === "SALE"
+                                  ? `৳${((a.salePrice ?? 0) / 100).toLocaleString()} (sale)`
+                                  : `৳${(a.rentAmount / 100).toLocaleString()}/mo (rent)`}
+                              </p>
+                            </div>
+
+                            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end lg:justify-end">
+                              <label className="flex flex-col gap-1.5 text-xs font-medium text-muted-foreground">
+                                <span>Status</span>
+                                <select
+                                  className="h-9 min-w-[160px] cursor-pointer rounded-md border border-input bg-background px-3 text-sm text-foreground"
+                                  value={a.availabilityStatus}
+                                  onChange={(e) => void setStatus(a.id, e.target.value)}
+                                >
+                                  <option value="AVAILABLE">Available</option>
+                                  <option value="RENTED">Rented</option>
+                                  <option value="MAINTENANCE">Maintenance</option>
+                                  <option value="COMING_SOON">Coming soon</option>
+                                  <option value="SOLD">Sold</option>
+                                </select>
+                              </label>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-9 cursor-pointer"
+                                onClick={() => void setListed(a.id, !published)}
+                              >
+                                {published ? (
+                                  <FiEyeOff className="mr-2 h-4 w-4" aria-hidden="true" />
+                                ) : (
+                                  <FiEye className="mr-2 h-4 w-4" aria-hidden="true" />
+                                )}
+                                {published ? "Unlist" : "List publicly"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-9 cursor-pointer"
+                                onClick={() => openClone(a.id, floor.floorNumber)}
+                              >
+                                <FiCopy className="mr-2 h-4 w-4" aria-hidden="true" />
+                                Clone
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </section>
+
       <Dialog open={imageDialog} onOpenChange={setImageDialog}>
         <DialogContent>
           <DialogHeader>
@@ -579,26 +795,114 @@ export default function OwnerBuildingPage() {
               Paste the public URL of an uploaded building image.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
-            <Input
-              value={newImageUrl}
-              onChange={(e) => setNewImageUrl(e.target.value)}
-              placeholder="https://..."
-            />
-            <Input
-              value={newImageCaption}
-              onChange={(e) => setNewImageCaption(e.target.value)}
-              placeholder="Caption (optional)"
-            />
-            <Button onClick={attachCoverImage} disabled={uploadingImage} className="w-full">
-              {uploadingImage ? "Attaching…" : "Attach cover photo"}
-            </Button>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="cover-url">Image URL</Label>
+              <Input
+                id="cover-url"
+                value={newImageUrl}
+                onChange={(e) => setNewImageUrl(e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="cover-caption">Caption (optional)</Label>
+              <Input
+                id="cover-caption"
+                value={newImageCaption}
+                onChange={(e) => setNewImageCaption(e.target.value)}
+                placeholder="e.g. Front view"
+              />
+            </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setImageDialog(false)}>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              onClick={() => setImageDialog(false)}
+            >
               Cancel
             </Button>
+            <Button
+              className="cursor-pointer"
+              onClick={attachCoverImage}
+              disabled={uploadingImage || !newImageUrl.trim()}
+            >
+              {uploadingImage ? "Attaching…" : "Attach cover photo"}
+            </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={cloneDialog.open}
+        onOpenChange={(open) =>
+          setCloneDialog((d) =>
+            open
+              ? { ...d, open }
+              : { open: false, apartmentId: null, unitLabel: "", floorNumber: "1" },
+          )
+        }
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Clone apartment</DialogTitle>
+            <DialogDescription>
+              Copy specs to another floor/unit. Images and availability are reset.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitClone} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="clone-unit">New unit label</Label>
+              <Input
+                id="clone-unit"
+                value={cloneDialog.unitLabel}
+                onChange={(e) => setCloneDialog((d) => ({ ...d, unitLabel: e.target.value }))}
+                placeholder="e.g. A-2"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="clone-floor">Target floor number</Label>
+              <Input
+                id="clone-floor"
+                type="text"
+                inputMode="numeric"
+                value={cloneDialog.floorNumber}
+                onChange={(e) =>
+                  setCloneDialog((d) => ({
+                    ...d,
+                    floorNumber: e.target.value.replace(/[^0-9]/g, ""),
+                  }))
+                }
+                required
+              />
+            </div>
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button
+                type="button"
+                variant="outline"
+                className="cursor-pointer"
+                onClick={() =>
+                  setCloneDialog({
+                    open: false,
+                    apartmentId: null,
+                    unitLabel: "",
+                    floorNumber: "1",
+                  })
+                }
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="cursor-pointer"
+                disabled={cloning || !cloneDialog.unitLabel.trim()}
+              >
+                {cloning ? "Cloning…" : "Clone unit"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </main>

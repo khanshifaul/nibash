@@ -10,6 +10,9 @@ interface SelectContextValue {
   open: boolean;
   setOpen: (open: boolean) => void;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
+  selectedLabel: React.ReactNode;
+  registerItem: (value: string, label: React.ReactNode) => void;
+  unregisterItem: (value: string) => void;
 }
 
 const SelectContext = React.createContext<SelectContextValue | null>(null);
@@ -44,12 +47,38 @@ function Select({
   const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
   const [open, setOpen] = React.useState(false);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const [labels, setLabels] = React.useState<Record<string, React.ReactNode>>({});
 
   const value = controlledValue !== undefined ? controlledValue : uncontrolledValue;
   const setValue = onValueChange || setUncontrolledValue;
 
+  const registerItem = React.useCallback((itemValue: string, label: React.ReactNode) => {
+    setLabels((prev) => (prev[itemValue] === label ? prev : { ...prev, [itemValue]: label }));
+  }, []);
+  const unregisterItem = React.useCallback((itemValue: string) => {
+    setLabels((prev) => {
+      if (!(itemValue in prev)) return prev;
+      const next = { ...prev };
+      delete next[itemValue];
+      return next;
+    });
+  }, []);
+
+  const selectedLabel = labels[value];
+
   return (
-    <SelectContext.Provider value={{ value, onValueChange: setValue, open, setOpen, triggerRef }}>
+    <SelectContext.Provider
+      value={{
+        value,
+        onValueChange: setValue,
+        open,
+        setOpen,
+        triggerRef,
+        selectedLabel,
+        registerItem,
+        unregisterItem,
+      }}
+    >
       <div className="relative">{children}</div>
     </SelectContext.Provider>
   );
@@ -106,11 +135,10 @@ function SelectValue({ placeholder }: SelectValueProps) {
   const context = React.useContext(SelectContext);
   if (!context) throw new Error("SelectValue must be used within Select");
 
-  return (
-    <span className={cn(!context.value && "text-muted-foreground")}>
-      {context.value || placeholder}
-    </span>
-  );
+  const display = context.selectedLabel ?? (context.value || placeholder);
+  const isPlaceholder = context.selectedLabel == null && !context.value;
+
+  return <span className={cn(isPlaceholder && "text-muted-foreground")}>{display}</span>;
 }
 
 interface SelectContentProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -272,6 +300,11 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
     if (!context) throw new Error("SelectItem must be used within Select");
 
     const isSelected = context.value === value;
+
+    React.useEffect(() => {
+      context.registerItem(value, children);
+      return () => context.unregisterItem(value);
+    }, [context, value, children]);
 
     return (
       <div

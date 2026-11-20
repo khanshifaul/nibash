@@ -45,6 +45,7 @@ export default function SearchPage() {
   const filters = {
     q: get("q"),
     area: get("area"),
+    listingType: (get("listingType") as "RENT" | "SALE" | "") || undefined,
     minRent: Number(get("minRent")) || undefined,
     maxRent: Number(get("maxRent")) || undefined,
     bedrooms: Number(get("bedrooms")) || undefined,
@@ -58,7 +59,8 @@ export default function SearchPage() {
     hasGenerator: get("hasGenerator") === "true",
     page: Number(get("page")) || 1,
     limit: 12,
-    sort: (get("sort") as "newest" | "rent_asc" | "rent_desc") || "newest",
+    sort:
+      (get("sort") as "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc") || "newest",
   };
 
   const runSearch = useCallback(async () => {
@@ -69,7 +71,12 @@ export default function SearchPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await searchApi.search(filters);
+      const data = await searchApi.search({
+        ...filters,
+        listingType: filters.listingType || undefined,
+        minPrice: filters.minRent,
+        maxPrice: filters.maxRent,
+      });
       setResult(data.items);
       setTotal(data.total);
     } catch (e) {
@@ -94,6 +101,7 @@ export default function SearchPage() {
     filters.hasElevator,
     filters.hasParking,
     filters.hasGenerator,
+    filters.listingType,
     filters.sort,
     filters.page,
     filters,
@@ -122,6 +130,7 @@ export default function SearchPage() {
 
   const hasActiveFilters = Boolean(
     filters.q ||
+      filters.listingType ||
       filters.minRent ||
       filters.maxRent ||
       filters.bedrooms ||
@@ -198,6 +207,23 @@ export default function SearchPage() {
                   placeholder="e.g. Dhanmondi, Gulshan"
                   className="h-9"
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Listing type</label>
+                <Select
+                  value={filters.listingType || "any"}
+                  onValueChange={(v) => setParam("listingType", v === "any" ? "" : v)}
+                >
+                  <SelectTrigger className="h-9" aria-label="Listing type">
+                    <SelectValue placeholder="Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="any">Any</SelectItem>
+                    <SelectItem value="RENT">For rent</SelectItem>
+                    <SelectItem value="SALE">For sale</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-1.5">
