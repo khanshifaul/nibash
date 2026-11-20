@@ -50,7 +50,7 @@ export default function AdminPage() {
     <main className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Moderation queue</h1>
-        <Link href="/owner/dashboard" className="underline text-sm">Dashboard</Link>
+        <Link href="/dashboard" className="underline text-sm">Dashboard</Link>
       </div>
       {error && <p className="text-red-600 mb-4">{error}</p>}
       {items.length === 0 ? (

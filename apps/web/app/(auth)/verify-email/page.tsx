@@ -38,7 +38,7 @@ function VerifyEmailInner() {
       {status === "loading" && <p>Verifying...</p>}
       {status === "success" && <p className="text-green-700 mb-4">{message}</p>}
       {status === "error" && <p className="text-red-600 mb-4">{message}</p>}
-      <Link href="/owner/dashboard" className="underline">Go to dashboard</Link>
+      <Link href="/dashboard" className="underline">Go to dashboard</Link>
     </div>
   );
 }

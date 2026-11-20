@@ -72,9 +72,9 @@ export function SiteHeader() {
             <ThemeToggle />
             {user ? (
               <>
-                <Link href="/owner/dashboard" className="hover:text-foreground text-muted-foreground transition-colors hidden lg:inline">Dashboard</Link>
-                <Link href="/profile" className="hover:text-foreground text-muted-foreground transition-colors hidden lg:inline">Profile</Link>
-                <Link href="/owner/buildings/new" className="bg-primary text-primary-foreground rounded-md px-3 py-2 font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-1.5">
+                <Link href="/dashboard" className="hover:text-foreground text-muted-foreground transition-colors hidden lg:inline">Dashboard</Link>
+                <Link href="/dashboard/profile" className="hover:text-foreground text-muted-foreground transition-colors hidden lg:inline">Profile</Link>
+                <Link href="/dashboard/properties/new" className="bg-primary text-primary-foreground rounded-md px-3 py-2 font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-1.5">
                   <Plus className="h-4 w-4" />
                   <span className="hidden sm:inline">Add property</span>
                   <span className="sm:hidden">Add</span>

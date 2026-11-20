@@ -27,7 +27,7 @@ export default function SignInPage() {
     try {
       await api.post("/auth/login", { email, password });
       await refresh();
-      router.push("/owner/dashboard");
+      router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invalid email or password.");
     } finally {

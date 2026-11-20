@@ -26,9 +26,9 @@ export function SiteFooter() {
           <div>
             <h3 className="font-semibold text-sm mb-3">For owners</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/owner/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link></li>
-              <li><Link href="/owner/buildings/new" className="hover:text-foreground transition-colors">Add building</Link></li>
-              <li><Link href="/owner/inquiries" className="hover:text-foreground transition-colors">Inquiries</Link></li>
+              <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link></li>
+              <li><Link href="/dashboard/properties/new" className="hover:text-foreground transition-colors">Add property</Link></li>
+              <li><Link href="/dashboard/inbox" className="hover:text-foreground transition-colors">Inbox</Link></li>
             </ul>
           </div>
 
@@ -36,7 +36,7 @@ export function SiteFooter() {
             <h3 className="font-semibold text-sm mb-3">Account</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/sign-in" className="hover:text-foreground transition-colors">Sign in</Link></li>
-              <li><Link href="/profile" className="hover:text-foreground transition-colors">Profile</Link></li>
+              <li><Link href="/dashboard/profile" className="hover:text-foreground transition-colors">Profile</Link></li>
             </ul>
           </div>
         </div>

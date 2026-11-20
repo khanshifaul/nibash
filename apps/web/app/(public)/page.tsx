@@ -101,7 +101,7 @@ function HeroSection() {
                 Browse properties
               </Button>
             </Link>
-            <Link href={user ? "/owner/buildings/new" : "/sign-in"} className="hero-cta">
+            <Link href={user ? "/dashboard/properties/new" : "/sign-in"} className="hero-cta">
               <Button size="lg" variant="outline" className="text-base px-6 h-11 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm">
                 List your property
               </Button>
