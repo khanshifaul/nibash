@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function NewBuildingPage() {
   const { user } = useAuth();
@@ -48,43 +52,43 @@ export default function NewBuildingPage() {
       <form className="space-y-6" onSubmit={onSubmit}>
         <section className="space-y-3">
           <h2 className="font-semibold">Identity & location</h2>
-          <input className="w-full border rounded px-3 py-2" placeholder="Building name" value={form.name} onChange={(e) => set("name", e.target.value)} required />
+          <Input placeholder="Building name" value={form.name} onChange={(e) => set("name", e.target.value)} required />
           <div className="grid grid-cols-2 gap-3">
-            <input className="border rounded px-3 py-2" placeholder="Area/Neighborhood" value={form.areaZone} onChange={(e) => set("areaZone", e.target.value)} required />
-            <input className="border rounded px-3 py-2" type="number" min={1} placeholder="Total floors" value={form.totalFloors} onChange={(e) => set("totalFloors", Number(e.target.value))} required />
+            <Input placeholder="Area/Neighborhood" value={form.areaZone} onChange={(e) => set("areaZone", e.target.value)} required />
+            <Input type="number" min={1} placeholder="Total floors" value={form.totalFloors} onChange={(e) => set("totalFloors", Number(e.target.value))} required />
           </div>
-          <input className="w-full border rounded px-3 py-2" placeholder="Road/Block" value={form.roadBlock} onChange={(e) => set("roadBlock", e.target.value)} />
-          <input className="w-full border rounded px-3 py-2" placeholder="Full address" value={form.addressLine} onChange={(e) => set("addressLine", e.target.value)} />
-          <input className="w-full border rounded px-3 py-2" placeholder="Contact phone (required for property contact)" value={form.contactPhone} onChange={(e) => set("contactPhone", e.target.value)} />
+          <Input placeholder="Road/Block" value={form.roadBlock} onChange={(e) => set("roadBlock", e.target.value)} />
+          <Input placeholder="Full address" value={form.addressLine} onChange={(e) => set("addressLine", e.target.value)} />
+          <Input placeholder="Contact phone (required for property contact)" value={form.contactPhone} onChange={(e) => set("contactPhone", e.target.value)} />
           <div className="grid grid-cols-2 gap-3">
-            <input className="border rounded px-3 py-2" type="number" step="any" placeholder="Latitude" value={form.lat} onChange={(e) => set("lat", Number(e.target.value))} required />
-            <input className="border rounded px-3 py-2" type="number" step="any" placeholder="Longitude" value={form.lng} onChange={(e) => set("lng", Number(e.target.value))} required />
+            <Input type="number" step="any" placeholder="Latitude" value={form.lat} onChange={(e) => set("lat", Number(e.target.value))} required />
+            <Input type="number" step="any" placeholder="Longitude" value={form.lng} onChange={(e) => set("lng", Number(e.target.value))} required />
           </div>
           <p className="text-xs text-gray-500">Google Maps pin picker can be added with NEXT_PUBLIC_GOOGLE_MAPS_API_KEY; coordinates required for now.</p>
         </section>
 
         <section className="space-y-2">
           <h2 className="font-semibold">Amenities</h2>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={form.hasElevator} onChange={(e) => set("hasElevator", e.target.checked)} /> Lift/Elevator</label>
-          {form.hasElevator && <input className="border rounded px-3 py-2 w-40" type="number" min={1} placeholder="Elevator count" value={form.elevatorCount} onChange={(e) => set("elevatorCount", Number(e.target.value))} />}
-          <label className="flex items-center gap-2"><input type="checkbox" checked={form.hasParking} onChange={(e) => set("hasParking", e.target.checked)} /> Parking</label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasElevator} onCheckedChange={(v) => set("hasElevator", !!v)} /> <span>Lift/Elevator</span></label>
+          {form.hasElevator && <Input className="w-40" type="number" min={1} placeholder="Elevator count" value={form.elevatorCount} onChange={(e) => set("elevatorCount", Number(e.target.value))} />}
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasParking} onCheckedChange={(v) => set("hasParking", !!v)} /> <span>Parking</span></label>
           {form.hasParking && (
-            <select className="border rounded px-3 py-2" value={form.parkingType} onChange={(e) => set("parkingType", e.target.value)}>
+            <NativeSelect className="w-auto" value={form.parkingType} onChange={(e) => set("parkingType", e.target.value)}>
               <option value="CAR">Car</option><option value="BIKE">Bike</option><option value="CAR_AND_BIKE">Car + Bike</option><option value="PAID">Paid</option>
-            </select>
+            </NativeSelect>
           )}
-          <label className="flex items-center gap-2"><input type="checkbox" checked={form.hasGenerator} onChange={(e) => set("hasGenerator", e.target.checked)} /> Generator</label>
-          {form.hasGenerator && <input className="border rounded px-3 py-2" placeholder="Scope (full/common)" value={form.generatorScope} onChange={(e) => set("generatorScope", e.target.value)} />}
-          <label className="flex items-center gap-2"><input type="checkbox" checked={form.hasSecurityGuard} onChange={(e) => set("hasSecurityGuard", e.target.checked)} /> Security guard</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={form.hasCctv} onChange={(e) => set("hasCctv", e.target.checked)} /> CCTV</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={form.hasIntercom} onChange={(e) => set("hasIntercom", e.target.checked)} /> Intercom</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={form.hasRooftop} onChange={(e) => set("hasRooftop", e.target.checked)} /> Rooftop access</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={form.hasSubmersiblePump} onChange={(e) => set("hasSubmersiblePump", e.target.checked)} /> Submersible pump</label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasGenerator} onCheckedChange={(v) => set("hasGenerator", !!v)} /> <span>Generator</span></label>
+          {form.hasGenerator && <Input placeholder="Scope (full/common)" value={form.generatorScope} onChange={(e) => set("generatorScope", e.target.value)} />}
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasSecurityGuard} onCheckedChange={(v) => set("hasSecurityGuard", !!v)} /> <span>Security guard</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasCctv} onCheckedChange={(v) => set("hasCctv", !!v)} /> <span>CCTV</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasIntercom} onCheckedChange={(v) => set("hasIntercom", !!v)} /> <span>Intercom</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasRooftop} onCheckedChange={(v) => set("hasRooftop", !!v)} /> <span>Rooftop access</span></label>
+          <label className="flex items-center gap-2 cursor-pointer"><Checkbox checked={form.hasSubmersiblePump} onCheckedChange={(v) => set("hasSubmersiblePump", !!v)} /> <span>Submersible pump</span></label>
         </section>
 
-        <button type="submit" disabled={saving} className="bg-black text-white px-4 py-2 rounded disabled:opacity-50">
+        <Button type="submit" disabled={saving}>
           {saving ? "Saving..." : "Save building & add apartments"}
-        </button>
+        </Button>
       </form>
     </main>
   );

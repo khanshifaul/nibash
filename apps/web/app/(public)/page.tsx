@@ -1,5 +1,7 @@
 "use client";
 
+import { FiCheckCircle, FiMessageSquare, FiEye } from "react-icons/fi";
+
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -104,9 +106,9 @@ function HeroSection({ onSearch }: { onSearch: () => void }) {
             </Link>
           </div>
           <div className="hero-cta mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-sm text-white/80">
-            <span><strong className="text-white font-semibold">Verified</strong> buildings</span>
-            <span><strong className="text-white font-semibold">Direct</strong> owner inquiries</span>
-            <span><strong className="text-white font-semibold">Transparent</strong> details</span>
+            <span className="inline-flex items-center gap-1.5"><FiCheckCircle className="h-4 w-4 text-blue-300" aria-hidden="true" /><strong className="text-white font-semibold">Verified</strong> buildings</span>
+            <span className="inline-flex items-center gap-1.5"><FiMessageSquare className="h-4 w-4 text-blue-300" aria-hidden="true" /><strong className="text-white font-semibold">Direct</strong> owner inquiries</span>
+            <span className="inline-flex items-center gap-1.5"><FiEye className="h-4 w-4 text-blue-300" aria-hidden="true" /><strong className="text-white font-semibold">Transparent</strong> details</span>
           </div>
         </div>
       </div>

@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Eye, EyeOff, Lock, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -92,13 +91,13 @@ function ResetInner() {
                   <Label htmlFor="password" required>New password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input
+                    <input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Minimum 8 characters"
-                      className="h-10 pl-9 pr-10"
+                      className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9 pr-10"
                       minLength={8}
                       required
                       autoComplete="new-password"
@@ -118,13 +117,13 @@ function ResetInner() {
                   <Label htmlFor="confirmPassword" required>Confirm new password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input
+                    <input
                       id="confirmPassword"
                       type={showConfirm ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Re-enter your password"
-                      className={`h-10 pl-9 pr-10 ${passwordsMismatch ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                      className={`flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9 pr-10 ${passwordsMismatch ? "border-destructive focus-visible:ring-destructive" : ""}`}
                       minLength={8}
                       required
                       autoComplete="new-password"

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { authApi, type AuthUser } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ProfilePage() {
@@ -22,9 +24,9 @@ export default function ProfilePage() {
 
   async function load() {
     try {
-      const data = await authApi.me();
-      setProfile(data.data);
-      setForm({ name: data.data.name ?? "", phone: data.data.phone ?? "" });
+      const me = await authApi.me();
+      setProfile(me);
+      setForm({ name: me.name ?? "", phone: me.phone ?? "" });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load profile");
     }
@@ -37,9 +39,9 @@ export default function ProfilePage() {
   async function update() {
     setSaving(true); setError(null);
     try {
-      const data = await authApi.updateProfile({ name: form.name, phone: form.phone });
-      setProfile(data.data);
-      setForm({ name: data.data.name ?? "", phone: data.data.phone ?? "" });
+      const updated = await authApi.updateProfile({ name: form.name, phone: form.phone });
+      setProfile(updated);
+      setForm({ name: updated.name ?? "", phone: updated.phone ?? "" });
       await refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Update failed");
@@ -63,39 +65,39 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium block">Email</label>
+            <Label>Email</Label>
             <p className="text-sm">{profile?.email}</p>
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium block">Name</label>
+            <Label htmlFor="name">Name</Label>
             <Input
+              id="name"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="border rounded px-3 py-2 w-full"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium block">Phone</label>
+            <Label htmlFor="phone">Phone</Label>
             <Input
+              id="phone"
               value={form.phone}
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-              className="border rounded px-3 py-2 w-full"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium block">Email verified</label>
+            <Label>Email verified</Label>
             <p className={`text-sm ${profile?.isEmailVerified ? "text-green-700" : "text-amber-700"}`}>
               {profile?.isEmailVerified ? "Yes" : "No"}
             </p>
           </div>
-          <button
+          <Button
             type="button"
             onClick={update}
             disabled={saving}
-            className="w-full bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+            className="w-full"
           >
             {saving ? "Saving…" : "Save changes"}
-          </button>
+          </Button>
         </CardContent>
       </Card>
     </main>

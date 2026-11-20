@@ -37,10 +37,10 @@ export const authApi = {
   forgotPassword: (body: { email: string }) => api.post("/auth/forgot-password", body),
   resetPassword: (body: { token: string; newPassword: string }) =>
     api.post("/auth/reset-password", body),
-  refresh: () => api.post<{ success: boolean; data: { accessToken: string } }>("/auth/refresh"),
-  me: () => api.get<{ success: boolean; data: AuthUser }>("/auth/me"),
+  refresh: () => api.post<{ accessToken: string }>("/auth/refresh"),
+  me: () => api.get<AuthUser>("/auth/me"),
   updateProfile: (body: UpdateProfileInput) =>
-    api.patch<{ success: boolean; data: AuthUser }>("/auth/me", body),
+    api.patch<AuthUser>("/auth/me", body),
   logout: () => api.post<{ success: boolean }>("/auth/logout"),
 };
 

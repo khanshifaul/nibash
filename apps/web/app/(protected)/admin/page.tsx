@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 type Building = {
   id: string; name: string; areaZone: string; slug: string;
@@ -72,20 +73,24 @@ export default function AdminPage() {
                   </Badge>
                   {b.moderationStatus === "PENDING_REVIEW" && (
                     <>
-                      <button
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => moderate(b.id, "APPROVED")}
                         disabled={saving === b.id}
-                        className="text-xs border rounded px-2 py-1 bg-green-100 text-green-800 hover:bg-green-200"
+                        className="text-xs bg-green-100 text-green-800 hover:bg-green-200 border-green-200"
                       >
                         Approve
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => moderate(b.id, "REJECTED", "Needs review")}
                         disabled={saving === b.id}
-                        className="text-xs border rounded px-2 py-1 bg-red-50 text-red-800 hover:bg-red-100"
+                        className="text-xs bg-red-50 text-red-800 hover:bg-red-100 border-red-200"
                       >
                         Reject
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>

@@ -181,14 +181,14 @@ export default function SignUpPage() {
                   <Label htmlFor="password" required className="text-sm font-medium">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input
+                    <input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       onBlur={() => markTouched("password")}
                       placeholder="Create a password"
-                      className="h-10 pl-9 pr-10"
+                      className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9 pr-10"
                       minLength={8}
                       required
                       autoComplete="new-password"
@@ -238,14 +238,14 @@ export default function SignUpPage() {
                   <Label htmlFor="confirmPassword" required className="text-sm font-medium">Confirm password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input
+                    <input
                       id="confirmPassword"
                       type={showConfirm ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       onBlur={() => markTouched("confirmPassword")}
                       placeholder="Re-enter your password"
-                      className={`h-10 pl-9 pr-10 ${passwordsMismatch ? "border-destructive focus-visible:ring-destructive" : passwordsMatch ? "border-green-500 focus-visible:ring-green-500" : ""}`}
+                      className={`flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9 pr-10 ${passwordsMismatch ? "border-destructive focus-visible:ring-destructive" : passwordsMatch ? "border-green-500 focus-visible:ring-green-500" : ""}`}
                       minLength={8}
                       required
                       autoComplete="new-password"

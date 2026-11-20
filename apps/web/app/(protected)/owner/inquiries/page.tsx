@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { inquiriesApi, type Inquiry } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
 
 export default function OwnerInquiriesPage() {
   const { user, loading } = useAuth();
@@ -46,7 +47,7 @@ export default function OwnerInquiriesPage() {
                 </div>
                 <div className="flex gap-2 items-start">
                   {["CONTACTED", "SCHEDULED", "CLOSED", "SPAM"].map((s) => (
-                    <button key={s} onClick={() => setStatus(q.id, s)} className="text-xs border rounded px-2 py-1">{s}</button>
+                    <Button key={s} size="sm" variant="outline" onClick={() => setStatus(q.id, s)} className="text-xs h-7 px-2">{s}</Button>
                   ))}
                 </div>
               </div>
