@@ -3,7 +3,7 @@
 import { Bath, Bed, Grid3X3, List, MapPin, Maximize, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FiChevronRight } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,28 +40,32 @@ export default function SearchPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const initial = useRef(true);
 
-  const get = (key: string) => searchParams.get(key) ?? "";
+  const get = useCallback((key: string) => searchParams.get(key) ?? "", [searchParams]);
 
-  const filters = {
-    q: get("q"),
-    area: get("area"),
-    listingType: (get("listingType") as "RENT" | "SALE" | "") || undefined,
-    minRent: Number(get("minRent")) || undefined,
-    maxRent: Number(get("maxRent")) || undefined,
-    bedrooms: Number(get("bedrooms")) || undefined,
-    bathrooms: Number(get("bathrooms")) || undefined,
-    verandas: Number(get("verandas")) || undefined,
-    minSqft: Number(get("minSqft")) || undefined,
-    floorNumber: Number(get("floorNumber")) || undefined,
-    excludeGround: get("excludeGround") === "true",
-    hasElevator: get("hasElevator") === "true",
-    hasParking: get("hasParking") === "true",
-    hasGenerator: get("hasGenerator") === "true",
-    page: Number(get("page")) || 1,
-    limit: 12,
-    sort:
-      (get("sort") as "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc") || "newest",
-  };
+  const filters = useMemo(
+    () => ({
+      q: get("q"),
+      area: get("area"),
+      listingType: (get("listingType") as "RENT" | "SALE" | "") || undefined,
+      minRent: Number(get("minRent")) || undefined,
+      maxRent: Number(get("maxRent")) || undefined,
+      bedrooms: Number(get("bedrooms")) || undefined,
+      bathrooms: Number(get("bathrooms")) || undefined,
+      verandas: Number(get("verandas")) || undefined,
+      minSqft: Number(get("minSqft")) || undefined,
+      floorNumber: Number(get("floorNumber")) || undefined,
+      excludeGround: get("excludeGround") === "true",
+      hasElevator: get("hasElevator") === "true",
+      hasParking: get("hasParking") === "true",
+      hasGenerator: get("hasGenerator") === "true",
+      page: Number(get("page")) || 1,
+      limit: 12 as const,
+      sort:
+        (get("sort") as "newest" | "rent_asc" | "rent_desc" | "price_asc" | "price_desc") ||
+        "newest",
+    }),
+    [get],
+  );
 
   const runSearch = useCallback(async () => {
     if (initial.current) {
@@ -85,27 +89,7 @@ export default function SearchPage() {
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    mounted,
-    filters.q,
-    filters.area,
-    filters.minRent,
-    filters.maxRent,
-    filters.bedrooms,
-    filters.bathrooms,
-    filters.verandas,
-    filters.minSqft,
-    filters.floorNumber,
-    filters.excludeGround,
-    filters.hasElevator,
-    filters.hasParking,
-    filters.hasGenerator,
-    filters.listingType,
-    filters.sort,
-    filters.page,
-    filters,
-  ]);
+  }, [filters, mounted]);
 
   useEffect(() => {
     setMounted(true);

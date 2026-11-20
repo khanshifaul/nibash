@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
@@ -30,14 +30,14 @@ export default function AdminPage() {
     if (!loading && !user) router.push("/sign-in");
   }, [loading, user, router]);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const data = await api.get<Building[]>("/buildings");
       setItems(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load buildings");
     }
-  }
+  }, []);
   useEffect(() => {
     if (user) load();
   }, [user, load]);

@@ -3,7 +3,7 @@
 import { Inbox } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FiArrowLeft } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,13 +23,13 @@ export default function DashboardInboxPage() {
     if (!loading && !user) router.push("/sign-in");
   }, [loading, user, router]);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setItems(await inquiriesApi.listForOwner());
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load inbox");
     }
-  }
+  }, []);
   useEffect(() => {
     if (user) load();
   }, [user, load]);
