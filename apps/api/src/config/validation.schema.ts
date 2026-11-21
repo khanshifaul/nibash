@@ -36,4 +36,9 @@ export const validationSchema = Joi.object({
   GOOGLE_CLIENT_ID: optionalStr(),
   GOOGLE_CLIENT_SECRET: optionalStr(),
   GOOGLE_CALLBACK_URL: optionalStr(),
+
+  // Web Push (VAPID)
+  VAPID_PUBLIC_KEY: optionalStr(),
+  VAPID_PRIVATE_KEY: optionalStr(),
+  VAPID_SUBJECT: Joi.string().default("mailto:support@nibash.local"),
 }).unknown(true);

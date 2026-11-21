@@ -12,6 +12,7 @@ import { DatabaseModule } from "./database/database.module";
 import { HealthController } from "./health.controller";
 import { InquiriesModule } from "./inquiries/inquiries.module";
 import { MediaModule } from "./media/media.module";
+import { NotificationsModule } from "./notifications/notifications.module";
 import { SearchModule } from "./search/search.module";
 
 @Module({
@@ -29,6 +30,7 @@ import { SearchModule } from "./search/search.module";
     MediaModule,
     SearchModule,
     InquiriesModule,
+    NotificationsModule,
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: AccessTokenGuard }],

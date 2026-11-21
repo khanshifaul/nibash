@@ -5,11 +5,15 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { DatabaseService } from "../database/database.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import type { CreateInquiryDto, UpdateInquiryStatusDto } from "./dto/inquiry.dto";
 
 @Injectable()
 export class InquiriesService {
-  constructor(private readonly prisma: DatabaseService) {}
+  constructor(
+    private readonly prisma: DatabaseService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   async create(renterId: string, dto: CreateInquiryDto) {
     const apartment = await this.prisma.apartment.findUnique({
@@ -21,7 +25,7 @@ export class InquiriesService {
       throw new BadRequestException("Cannot inquire on your own listing");
     }
 
-    return this.prisma.inquiry.create({
+    const inquiry = await this.prisma.inquiry.create({
       data: {
         apartmentId: apartment.id,
         buildingId: apartment.buildingId,
@@ -31,9 +35,19 @@ export class InquiriesService {
       },
       include: {
         apartment: { select: { id: true, unitLabel: true } },
-        building: { select: { id: true, name: true } },
+        building: { select: { id: true, name: true, ownerId: true } },
       },
     });
+
+    void this.notifications
+      .sendToUser(apartment.building.ownerId, {
+        title: "New inquiry received",
+        body: `${inquiry.building.name} · Unit ${inquiry.apartment.unitLabel}`,
+        url: "/dashboard/inquiries",
+      })
+      .catch(() => {});
+
+    return inquiry;
   }
 
   listForOwner(ownerId: string) {

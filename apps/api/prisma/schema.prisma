@@ -83,7 +83,8 @@ model User {
   buildings      Building[]
   inquiries      Inquiry[]      @relation("RenterInquiries")
   favorites      Favorite[]
-  refreshTokens  RefreshToken[]
+  refreshTokens     RefreshToken[]
+  pushSubscriptions PushSubscription[]
 
   @@index([phone])
   @@index([provider, googleId])
@@ -274,4 +275,19 @@ model RefreshToken {
   @@index([userId])
   @@index([expiresAt])
   @@map("refresh_tokens")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @db.Text
+  p256dh    String   @db.Text
+  auth      String   @db.Text
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@index([userId])
+  @@map("push_subscriptions")
 }

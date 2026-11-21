@@ -28,6 +28,11 @@ export const appConfig = () => {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
       callbackURL: process.env.GOOGLE_CALLBACK_URL ?? "",
     },
+    vapid: {
+      publicKey: process.env.VAPID_PUBLIC_KEY ?? "",
+      privateKey: process.env.VAPID_PRIVATE_KEY ?? "",
+      subject: process.env.VAPID_SUBJECT ?? "mailto:support@nibash.local",
+    },
     storage: {
       endpoint: process.env.STORAGE_ENDPOINT ?? "",
       region: process.env.STORAGE_REGION ?? "us-east-1",
