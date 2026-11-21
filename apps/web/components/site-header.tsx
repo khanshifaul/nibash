@@ -71,9 +71,9 @@ export function SiteHeader() {
           <button
             onClick={() => setSearchOpen(true)}
             className="h-9 w-9 sm:w-auto sm:flex-1 sm:max-w-md flex items-center justify-center sm:justify-start gap-2 sm:px-3 rounded-md border bg-muted/40 text-sm text-muted-foreground hover:bg-muted/60 transition-colors text-left shrink-0 sm:shrink cursor-pointer"
-            aria-label="Search properties"
+            aria-label="Search properties, areas"
           >
-            <Search className="h-4 w-4 shrink-0" />
+            <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span className="hidden sm:inline truncate">Search properties, areas...</span>
           </button>
 

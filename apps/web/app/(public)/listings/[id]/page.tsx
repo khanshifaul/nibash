@@ -287,7 +287,7 @@ export default function ListingDetailPage() {
 
           <Separator />
 
-          <h3 className="text-lg font-semibold mb-2">Cost breakdown</h3>
+          <h2 className="text-lg font-semibold mb-2">Cost breakdown</h2>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>{isSale ? "Sale price" : "Monthly rent"}</span>
