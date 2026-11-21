@@ -180,20 +180,17 @@ function HeroSection() {
             communication together in one trusted platform.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/search" className="hero-cta">
-              <Button size="lg" className="text-base px-6 h-11 shadow-lg">
-                Browse properties
-              </Button>
-            </Link>
-            <Link href={user ? "/dashboard/properties/new" : "/sign-in"} className="hero-cta">
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-base px-6 h-11 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm"
-              >
-                List your property
-              </Button>
-            </Link>
+            <Button asChild size="lg" className="hero-cta text-base px-6 h-11 shadow-lg">
+              <Link href="/search">Browse properties</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="hero-cta text-base px-6 h-11 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm"
+            >
+              <Link href={user ? "/dashboard/properties/new" : "/sign-in"}>List your property</Link>
+            </Button>
           </div>
           <div className="hero-cta mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-sm text-white/80">
             <span className="inline-flex items-center gap-1.5">
@@ -569,9 +566,9 @@ function PropertiesSection({ items, loading }: { items: ListingCard[]; loading: 
               property to get started.
             </p>
             <div className="mt-5 flex justify-center gap-3">
-              <Link href="/search">
-                <Button>Search properties</Button>
-              </Link>
+              <Button asChild>
+                <Link href="/search">Search properties</Link>
+              </Button>
             </div>
           </div>
         ) : (
@@ -609,11 +606,9 @@ function PropertiesSection({ items, loading }: { items: ListingCard[]; loading: 
         )}
 
         <div className="text-center mt-10">
-          <Link href="/search">
-            <Button size="lg" variant="outline" className="h-11 px-6">
-              Browse all properties
-            </Button>
-          </Link>
+          <Button asChild size="lg" variant="outline" className="h-11 px-6">
+            <Link href="/search">Browse all properties</Link>
+          </Button>
         </div>
       </div>
     </section>

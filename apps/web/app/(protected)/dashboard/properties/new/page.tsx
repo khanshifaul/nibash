@@ -1,9 +1,10 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { FiArrowLeft, FiCheck, FiChevronRight } from "react-icons/fi";
+import { useMemo, useRef, useState } from "react";
+import { FiArrowLeft, FiCheck, FiChevronRight, FiImage, FiUpload } from "react-icons/fi";
 import {
   MdBolt,
   MdElevator,
@@ -21,8 +22,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
-import { apartmentsApi, buildingsApi } from "@/lib/api";
+import { apartmentsApi, buildingsApi, mediaApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+
+const LocationPicker = dynamic(() => import("@/components/ui/location-picker"), { ssr: false });
 
 type PropertyKind = "building" | "single_house" | "duplex" | "other";
 
@@ -37,25 +40,47 @@ type AddedUnit = {
   salePrice: number | null;
   availabilityStatus: string;
   listed: boolean;
+  images: { id: string; url: string }[];
 };
 
 const steps = [
-  { id: 1, title: "Building / Property" },
-  { id: 2, title: "Floors" },
-  { id: 3, title: "Units / Apartments" },
+  { id: 1, title: "Property details" },
+  { id: 2, title: "Units / Apartments" },
 ] as const;
+
+async function uploadApartmentImage(apartmentId: string, file: File) {
+  const presign = await mediaApi.presign({
+    entity: "APARTMENT",
+    entityId: apartmentId,
+    contentType: file.type || "image/jpeg",
+    fileName: file.name || "image.jpg",
+  });
+  const put = await fetch(presign.uploadUrl, {
+    method: "PUT",
+    headers: { "Content-Type": file.type || "image/jpeg" },
+    body: file,
+  });
+  if (!put.ok) throw new Error("Image upload failed");
+  const attached = await mediaApi.attachApartment(apartmentId, {
+    storageKey: presign.storageKey,
+    url: presign.url,
+    roomTag: "OTHER",
+  });
+  return { id: (attached as { id?: string }).id ?? presign.storageKey, url: presign.url };
+}
 
 export default function NewPropertyWizardPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2>(1);
   const [propertyKind, setPropertyKind] = useState<PropertyKind>("building");
   const [buildingId, setBuildingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [ensuredFloors, setEnsuredFloors] = useState<number[]>([]);
-  const [floorInput, setFloorInput] = useState("1");
   const [addedUnits, setAddedUnits] = useState<AddedUnit[]>([]);
+  const [uploadingUnitId, setUploadingUnitId] = useState<string | null>(null);
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
   const [form, setForm] = useState({
     name: "",
     areaZone: "",
@@ -77,6 +102,7 @@ export default function NewPropertyWizardPage() {
     hasRooftop: false,
     hasSubmersiblePump: false,
   });
+
   const [apt, setApt] = useState({
     floorNumber: "1",
     unitLabel: "",
@@ -108,15 +134,12 @@ export default function NewPropertyWizardPage() {
     setPropertyKind(kind);
     if (kind === "single_house") {
       set("totalFloors", "1");
-      setFloorInput("0");
       setApt((a) => ({ ...a, floorNumber: "0", unitLabel: "House" }));
     } else if (kind === "duplex") {
       set("totalFloors", "2");
-      setFloorInput("1");
       setApt((a) => ({ ...a, floorNumber: "1", unitLabel: "Duplex" }));
     } else if (kind === "building") {
       set("totalFloors", "10");
-      setFloorInput("1");
       setApt((a) => ({ ...a, floorNumber: "1", unitLabel: "" }));
     }
   }
@@ -134,7 +157,7 @@ export default function NewPropertyWizardPage() {
       hasElevator: form.hasElevator,
       elevatorCount: form.hasElevator ? Number(form.elevatorCount) || 1 : undefined,
       hasParking: form.hasParking,
-      parkingType: form.parkingType as "NONE" | "BIKE" | "CAR" | "CAR_AND_BIKE" | "PAID",
+      parkingType: form.parkingType,
       hasGenerator: form.hasGenerator,
       generatorScope: form.generatorScope || undefined,
       hasSecurityGuard: form.hasSecurityGuard,
@@ -164,26 +187,6 @@ export default function NewPropertyWizardPage() {
     }
   }
 
-  async function ensureFloor() {
-    if (!buildingId) return;
-    const n = Number(floorInput);
-    if (!Number.isInteger(n) || n < 0 || n > Math.max(1, Number(form.totalFloors || 1))) {
-      setError(`Floor must be between 0 and ${Math.max(1, Number(form.totalFloors || 1))}.`);
-      return;
-    }
-    setError(null);
-    setSaving(true);
-    try {
-      await buildingsApi.ensureFloor(buildingId, n);
-      setEnsuredFloors((prev) => Array.from(new Set([...prev, n])).sort((a, b) => a - b));
-      setApt((a) => ({ ...a, floorNumber: String(n) }));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add floor");
-    } finally {
-      setSaving(false);
-    }
-  }
-
   async function addApartment(e: React.FormEvent) {
     e.preventDefault();
     if (!buildingId) return;
@@ -208,9 +211,6 @@ export default function NewPropertyWizardPage() {
         publish: apt.listed,
       };
       const created = await apartmentsApi.create(buildingId, payload);
-      setEnsuredFloors((prev) =>
-        Array.from(new Set([...prev, payload.floorNumber])).sort((a, b) => a - b),
-      );
       setAddedUnits((prev) => [
         ...prev,
         {
@@ -224,6 +224,7 @@ export default function NewPropertyWizardPage() {
           salePrice: payload.salePrice ?? null,
           availabilityStatus: payload.availabilityStatus,
           listed: !!payload.publish,
+          images: [],
         },
       ]);
       setApt((a) => ({ ...a, unitLabel: "" }));
@@ -234,13 +235,32 @@ export default function NewPropertyWizardPage() {
     }
   }
 
+  async function handleUnitImages(unitId: string, files: FileList | null) {
+    if (!files?.length) return;
+    setError(null);
+    setUploadingUnitId(unitId);
+    try {
+      for (const file of Array.from(files)) {
+        const img = await uploadApartmentImage(unitId, file);
+        setAddedUnits((prev) =>
+          prev.map((u) => (u.id === unitId ? { ...u, images: [...u.images, img] } : u)),
+        );
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Image upload failed");
+    } finally {
+      setUploadingUnitId(null);
+      const input = fileInputRefs.current[unitId];
+      if (input) input.value = "";
+    }
+  }
+
   const kindHelp: Record<PropertyKind, string> = {
     building:
-      "Multi-unit building. Add as many floors and units as needed (different floors can have different unit counts, e.g. 5 floors × 2 units + 5 floors × 3 units = 25).",
+      "Multi-unit building. Add as many units as needed on any floor (different floors can have different unit counts).",
     single_house:
-      "Single-story house rented as one home: usually 1 floor and 1 unit (the whole house). You can still add units later if needed.",
-    duplex:
-      "Duplex (two levels). If rented as one home across levels, add one unit and describe it clearly (e.g. unit label “Duplex”). If levels are rented separately, add one unit per level/floor.",
+      "Single-story house rented as one home: usually 1 floor and 1 unit (the whole house).",
+    duplex: "Duplex (two levels). Rent as one home or add one unit per level/floor.",
     other: "Other property type. Use floors/units to match your structure.",
   };
 
@@ -254,11 +274,11 @@ export default function NewPropertyWizardPage() {
       </Link>
       <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-2 mb-2">Add property</h1>
       <p className="text-muted-foreground mb-6">
-        Multistep: create the building/property first, then optionally add floors and
-        units/apartments. You can save after step 1 (building only) and add floors/units later.
+        Create the property first, then add units/apartments. You can save after step 1 and add
+        units later.
       </p>
 
-      <ol className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+      <ol className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
         {steps.map((s) => {
           const done = step > s.id || (s.id === 1 && !!buildingId);
           const active = step === s.id;
@@ -356,10 +376,6 @@ export default function NewPropertyWizardPage() {
                   onChange={(e) => set("totalFloors", e.target.value.replace(/[^0-9]/g, ""))}
                   required
                 />
-                <p className="text-xs text-muted-foreground">
-                  Single house: usually 1. Duplex: usually 2. Multi-story building: total floor
-                  count. You can add units on specific floor numbers (0 = ground where used).
-                </p>
               </div>
             </div>
             <div className="space-y-1.5">
@@ -391,31 +407,19 @@ export default function NewPropertyWizardPage() {
                 onChange={(e) => set("contactPhone", e.target.value)}
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="lat">Latitude</Label>
-                <Input
-                  id="lat"
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="e.g. 23.8103"
-                  value={form.lat}
-                  onChange={(e) => set("lat", e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="lng">Longitude</Label>
-                <Input
-                  id="lng"
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="e.g. 90.4125"
-                  value={form.lng}
-                  onChange={(e) => set("lng", e.target.value)}
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label>Map location</Label>
+              <LocationPicker
+                lat={Number(form.lat)}
+                lng={Number(form.lng)}
+                onChange={(lat, lng) => {
+                  set("lat", String(lat));
+                  set("lng", String(lng));
+                }}
+              />
+              <p className="text-xs text-muted-foreground">
+                Selected: {Number(form.lat).toFixed(6)}, {Number(form.lng).toFixed(6)}
+              </p>
             </div>
           </section>
 
@@ -425,7 +429,7 @@ export default function NewPropertyWizardPage() {
               <Checkbox
                 checked={form.hasElevator}
                 onCheckedChange={(v) => set("hasElevator", !!v)}
-              />{" "}
+              />
               <MdElevator className="h-4 w-4 text-muted-foreground" /> <span>Lift/Elevator</span>
             </label>
             {form.hasElevator && (
@@ -435,14 +439,13 @@ export default function NewPropertyWizardPage() {
                   id="elevatorCount"
                   type="text"
                   inputMode="numeric"
-                  placeholder="e.g. 1"
                   value={form.elevatorCount}
                   onChange={(e) => set("elevatorCount", e.target.value.replace(/[^0-9]/g, ""))}
                 />
               </div>
             )}
             <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox checked={form.hasParking} onCheckedChange={(v) => set("hasParking", !!v)} />{" "}
+              <Checkbox checked={form.hasParking} onCheckedChange={(v) => set("hasParking", !!v)} />
               <MdLocalParking className="h-4 w-4 text-muted-foreground" /> <span>Parking</span>
             </label>
             {form.hasParking && (
@@ -461,7 +464,7 @@ export default function NewPropertyWizardPage() {
               <Checkbox
                 checked={form.hasGenerator}
                 onCheckedChange={(v) => set("hasGenerator", !!v)}
-              />{" "}
+              />
               <MdBolt className="h-4 w-4 text-muted-foreground" /> <span>Generator</span>
             </label>
             {form.hasGenerator && (
@@ -475,29 +478,29 @@ export default function NewPropertyWizardPage() {
               <Checkbox
                 checked={form.hasSecurityGuard}
                 onCheckedChange={(v) => set("hasSecurityGuard", !!v)}
-              />{" "}
+              />
               <MdSecurity className="h-4 w-4 text-muted-foreground" /> <span>Security guard</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox checked={form.hasCctv} onCheckedChange={(v) => set("hasCctv", !!v)} />{" "}
+              <Checkbox checked={form.hasCctv} onCheckedChange={(v) => set("hasCctv", !!v)} />
               <MdVideocam className="h-4 w-4 text-muted-foreground" /> <span>CCTV</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <Checkbox
                 checked={form.hasIntercom}
                 onCheckedChange={(v) => set("hasIntercom", !!v)}
-              />{" "}
+              />
               <MdPhoneInTalk className="h-4 w-4 text-muted-foreground" /> <span>Intercom</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox checked={form.hasRooftop} onCheckedChange={(v) => set("hasRooftop", !!v)} />{" "}
+              <Checkbox checked={form.hasRooftop} onCheckedChange={(v) => set("hasRooftop", !!v)} />
               <MdRoofing className="h-4 w-4 text-muted-foreground" /> <span>Rooftop access</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <Checkbox
                 checked={form.hasSubmersiblePump}
                 onCheckedChange={(v) => set("hasSubmersiblePump", !!v)}
-              />{" "}
+              />
               <MdWaterDrop className="h-4 w-4 text-muted-foreground" />{" "}
               <span>Submersible pump</span>
             </label>
@@ -516,14 +519,10 @@ export default function NewPropertyWizardPage() {
               type="submit"
               disabled={saving || !form.name || !form.areaZone || !form.totalFloors}
             >
-              {saving ? "Saving..." : "Save & continue to floors/units"}{" "}
+              {saving ? "Saving..." : "Save & continue to units"}{" "}
               <FiChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            "Save property only" creates the building/property now; you can add floors and units
-            later from its page.
-          </p>
         </form>
       )}
 
@@ -531,92 +530,12 @@ export default function NewPropertyWizardPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Floors (optional step)</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Building saved (total floors/levels:{" "}
-                <strong>{Math.max(1, Number(form.totalFloors || 1))}</strong>). A floor is required
-                before adding a unit on it. You can explicitly add/ensure floors here, or skip —
-                creating a unit in the next step will create its floor automatically.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Variable units per floor are supported: add as many units as you need to any floor
-                (e.g. 2 units on floor 5 and 3 units on floor 6). Ground floor can be entered as{" "}
-                <strong>0</strong> if applicable (allowed up to total floors).
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 items-end max-w-md">
-                <div className="space-y-1.5 flex-1">
-                  <Label htmlFor="floorInput">Floor number</Label>
-                  <Input
-                    id="floorInput"
-                    type="text"
-                    inputMode="numeric"
-                    placeholder={`0–${Math.max(1, Number(form.totalFloors || 1))}`}
-                    value={floorInput}
-                    onChange={(e) => setFloorInput(e.target.value.replace(/[^0-9]/g, ""))}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  onClick={() => void ensureFloor()}
-                  disabled={saving || !floorInput}
-                >
-                  {" "}
-                  {saving ? "Adding..." : "Add/ensure floor"}{" "}
-                </Button>
-              </div>
-              {ensuredFloors.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {ensuredFloors.map((f) => (
-                    <Badge key={f} variant="secondary">
-                      Floor {f}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.push(`/dashboard/properties/${buildingId}`)}
-                >
-                  Finish (building/floors only)
-                </Button>
-                <Button type="button" onClick={() => setStep(3)}>
-                  Continue to add units{" "}
-                  <FiChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {step === 3 && buildingId && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
               <CardTitle className="text-lg">Add units / apartments</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Apartment/unit needs a floor (created automatically if missing). You can add
-                multiple units to the same floor and different numbers of units on different floors.
+                Add units on any floor. The floor is created automatically when needed.
               </p>
-              {propertyKind === "single_house" && (
-                <p className="text-sm text-muted-foreground">
-                  <strong>Single-story house:</strong> typically add 1 unit (the whole house) on
-                  floor 0 or 1.
-                </p>
-              )}
-              {propertyKind === "duplex" && (
-                <p className="text-sm text-muted-foreground">
-                  <strong>Duplex:</strong> for one home across levels, add 1 unit and label it
-                  clearly (e.g. “Duplex”). For separately rented levels, add one unit per
-                  floor/level.
-                </p>
-              )}
 
               <form onSubmit={addApartment} className="border rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -638,12 +557,11 @@ export default function NewPropertyWizardPage() {
                     <Label htmlFor="apt-unit">Unit label</Label>
                     <Input
                       id="apt-unit"
-                      type="text"
+                      value={apt.unitLabel}
+                      onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })}
                       placeholder={
                         propertyKind === "single_house" ? "e.g. House / Unit A" : "e.g. A-1"
                       }
-                      value={apt.unitLabel}
-                      onChange={(e) => setApt({ ...apt, unitLabel: e.target.value })}
                       required
                     />
                   </div>
@@ -653,7 +571,6 @@ export default function NewPropertyWizardPage() {
                       id="apt-bedrooms"
                       type="text"
                       inputMode="numeric"
-                      placeholder="e.g. 3"
                       value={apt.bedrooms}
                       onChange={(e) =>
                         setApt({ ...apt, bedrooms: e.target.value.replace(/[^0-9]/g, "") })
@@ -666,7 +583,6 @@ export default function NewPropertyWizardPage() {
                       id="apt-bathrooms"
                       type="text"
                       inputMode="numeric"
-                      placeholder="e.g. 2"
                       value={apt.bathrooms}
                       onChange={(e) =>
                         setApt({ ...apt, bathrooms: e.target.value.replace(/[^0-9]/g, "") })
@@ -679,7 +595,6 @@ export default function NewPropertyWizardPage() {
                       id="apt-verandas"
                       type="text"
                       inputMode="numeric"
-                      placeholder="e.g. 2"
                       value={apt.verandas}
                       onChange={(e) =>
                         setApt({ ...apt, verandas: e.target.value.replace(/[^0-9]/g, "") })
@@ -692,7 +607,6 @@ export default function NewPropertyWizardPage() {
                       id="apt-dining"
                       type="text"
                       inputMode="numeric"
-                      placeholder="e.g. 1"
                       value={apt.diningRooms}
                       onChange={(e) =>
                         setApt({ ...apt, diningRooms: e.target.value.replace(/[^0-9]/g, "") })
@@ -705,7 +619,6 @@ export default function NewPropertyWizardPage() {
                       id="apt-drawing"
                       type="text"
                       inputMode="numeric"
-                      placeholder="e.g. 1"
                       value={apt.drawingRooms}
                       onChange={(e) =>
                         setApt({ ...apt, drawingRooms: e.target.value.replace(/[^0-9]/g, "") })
@@ -718,7 +631,6 @@ export default function NewPropertyWizardPage() {
                       id="apt-kitchens"
                       type="text"
                       inputMode="numeric"
-                      placeholder="e.g. 1"
                       value={apt.kitchens}
                       onChange={(e) =>
                         setApt({ ...apt, kitchens: e.target.value.replace(/[^0-9]/g, "") })
@@ -726,6 +638,7 @@ export default function NewPropertyWizardPage() {
                     />
                   </div>
                 </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <Label htmlFor="apt-listing-type">Listing type</Label>
@@ -767,11 +680,7 @@ export default function NewPropertyWizardPage() {
                     <span className="text-sm">List publicly</span>
                   </label>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Uncheck &quot;List publicly&quot; to keep a unit unlisted/hidden from public
-                  search. Public search shows listed units with status Available or Coming soon
-                  (rent or sale). Mark Rented/Sold/Maintenance or unlist units as needed.
-                </p>
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <Label htmlFor="apt-rent">
@@ -784,7 +693,6 @@ export default function NewPropertyWizardPage() {
                         id="apt-rent"
                         type="text"
                         inputMode="numeric"
-                        placeholder="e.g. 1250000000"
                         value={apt.salePrice}
                         onChange={(e) =>
                           setApt({ ...apt, salePrice: e.target.value.replace(/[^0-9]/g, "") })
@@ -796,7 +704,6 @@ export default function NewPropertyWizardPage() {
                         id="apt-rent"
                         type="text"
                         inputMode="numeric"
-                        placeholder="e.g. 2500000"
                         value={apt.rentAmount}
                         onChange={(e) =>
                           setApt({ ...apt, rentAmount: e.target.value.replace(/[^0-9]/g, "") })
@@ -811,7 +718,6 @@ export default function NewPropertyWizardPage() {
                       id="apt-service"
                       type="text"
                       inputMode="numeric"
-                      placeholder="e.g. 0"
                       value={apt.serviceCharge}
                       onChange={(e) =>
                         setApt({ ...apt, serviceCharge: e.target.value.replace(/[^0-9]/g, "") })
@@ -824,7 +730,6 @@ export default function NewPropertyWizardPage() {
                       id="apt-deposit"
                       type="text"
                       inputMode="numeric"
-                      placeholder="e.g. 0"
                       value={apt.securityDepositAmount}
                       onChange={(e) =>
                         setApt({
@@ -835,39 +740,79 @@ export default function NewPropertyWizardPage() {
                     />
                   </div>
                 </div>
+
                 <div className="flex gap-3">
                   <Button type="submit" disabled={saving}>
                     {saving ? "Saving..." : "Add unit"}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setStep(2)}>
-                    Back to floors
                   </Button>
                 </div>
               </form>
 
               {addedUnits.length > 0 ? (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <h3 className="font-medium text-sm">Added units ({addedUnits.length})</h3>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {addedUnits.map((u) => (
-                      <div
-                        key={u.id}
-                        className="flex flex-wrap items-center justify-between gap-2 rounded border p-3 text-sm"
-                      >
-                        <div>
-                          <span className="font-medium">
-                            Floor {u.floorNumber} · {u.unitLabel}
-                          </span>
-                          <span className="text-muted-foreground">
-                            {" "}
-                            — {u.bedrooms} bed, {u.bathrooms} bath,{" "}
-                            {u.listingType === "SALE"
-                              ? `৳${((u.salePrice ?? 0) / 100).toLocaleString()} sale`
-                              : `৳${(u.rentAmount / 100).toLocaleString()}/mo rent`}{" "}
-                            · {u.availabilityStatus} · {u.listed ? "Listed" : "Unlisted"}
-                          </span>
+                      <div key={u.id} className="rounded border p-3 text-sm space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div>
+                            <span className="font-medium">
+                              Floor {u.floorNumber} · {u.unitLabel}
+                            </span>
+                            <span className="text-muted-foreground">
+                              {" "}
+                              — {u.bedrooms} bed, {u.bathrooms} bath,{" "}
+                              {u.listingType === "SALE"
+                                ? `৳${((u.salePrice ?? 0) / 100).toLocaleString()} sale`
+                                : `৳${(u.rentAmount / 100).toLocaleString()}/mo rent`}{" "}
+                              · {u.availabilityStatus} · {u.listed ? "Listed" : "Unlisted"}
+                            </span>
+                          </div>
+                          <Badge variant="secondary">Saved</Badge>
                         </div>
-                        <Badge variant="secondary">Saved</Badge>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <FiImage className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-xs font-medium text-muted-foreground">
+                              Apartment images
+                            </span>
+                          </div>
+                          {u.images.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {u.images.map((img) => (
+                                <img
+                                  key={img.id}
+                                  src={img.url}
+                                  alt={`Unit ${u.unitLabel}`}
+                                  className="h-16 w-24 rounded border object-cover"
+                                />
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2">
+                            <input
+                              ref={(el) => {
+                                fileInputRefs.current[u.id] = el;
+                              }}
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              className="hidden"
+                              onChange={(e) => void handleUnitImages(u.id, e.target.files)}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              disabled={uploadingUnitId === u.id}
+                              onClick={() => fileInputRefs.current[u.id]?.click()}
+                            >
+                              <FiUpload className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                              {uploadingUnitId === u.id ? "Uploading..." : "Upload images"}
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

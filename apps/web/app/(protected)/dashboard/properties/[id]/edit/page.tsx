@@ -1,16 +1,32 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { FiArrowLeft } from "react-icons/fi";
+import {
+  MdBolt,
+  MdElevator,
+  MdLocalParking,
+  MdPhoneInTalk,
+  MdRoofing,
+  MdSecurity,
+  MdVideocam,
+  MdWaterDrop,
+} from "react-icons/md";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Separator } from "@/components/ui/separator";
 import { type Building, buildingsApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+
+const LocationPicker = dynamic(() => import("@/components/ui/location-picker"), { ssr: false });
 
 export default function EditBuildingPage() {
   const params = useParams<{ id: string }>();
@@ -26,15 +42,21 @@ export default function EditBuildingPage() {
     areaZone: "",
     roadBlock: "",
     addressLine: "",
-    lat: "",
-    lng: "",
-    totalFloors: "",
+    contactPhone: "",
+    lat: "23.8103",
+    lng: "90.4125",
+    totalFloors: "1",
     hasElevator: false,
+    elevatorCount: "1",
     hasParking: false,
+    parkingType: "NONE" as "NONE" | "BIKE" | "CAR" | "CAR_AND_BIKE" | "PAID",
     hasGenerator: false,
+    generatorScope: "",
     hasSecurityGuard: false,
     hasCctv: false,
+    hasIntercom: false,
     hasRooftop: false,
+    hasSubmersiblePump: false,
   });
 
   const load = useCallback(async () => {
@@ -46,15 +68,21 @@ export default function EditBuildingPage() {
         areaZone: data.areaZone,
         roadBlock: data.roadBlock ?? "",
         addressLine: data.addressLine ?? "",
+        contactPhone: data.contactPhone ?? "",
         lat: String(data.lat),
         lng: String(data.lng),
         totalFloors: String(data.totalFloors),
         hasElevator: data.hasElevator,
+        elevatorCount: String(data.elevatorCount ?? 1),
         hasParking: data.hasParking,
+        parkingType: (data.parkingType as typeof form.parkingType) ?? "NONE",
         hasGenerator: data.hasGenerator,
+        generatorScope: data.generatorScope ?? "",
         hasSecurityGuard: data.hasSecurityGuard,
         hasCctv: data.hasCctv,
+        hasIntercom: data.hasIntercom,
         hasRooftop: data.hasRooftop,
+        hasSubmersiblePump: data.hasSubmersiblePump,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load building");
@@ -64,10 +92,14 @@ export default function EditBuildingPage() {
   }, [id]);
 
   useEffect(() => {
-    if (user && id) load();
+    if (user && id) void load();
   }, [user, id, load]);
 
-  const update = async (e: React.FormEvent) => {
+  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  async function update(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
@@ -77,15 +109,21 @@ export default function EditBuildingPage() {
         areaZone: form.areaZone,
         roadBlock: form.roadBlock || undefined,
         addressLine: form.addressLine || undefined,
+        contactPhone: form.contactPhone || undefined,
         lat: Number(form.lat),
         lng: Number(form.lng),
         totalFloors: Number(form.totalFloors),
         hasElevator: form.hasElevator,
+        elevatorCount: form.hasElevator ? Number(form.elevatorCount) || 1 : undefined,
         hasParking: form.hasParking,
+        parkingType: form.parkingType,
         hasGenerator: form.hasGenerator,
+        generatorScope: form.generatorScope || undefined,
         hasSecurityGuard: form.hasSecurityGuard,
         hasCctv: form.hasCctv,
+        hasIntercom: form.hasIntercom,
         hasRooftop: form.hasRooftop,
+        hasSubmersiblePump: form.hasSubmersiblePump,
       });
       await load();
     } catch (err) {
@@ -93,7 +131,7 @@ export default function EditBuildingPage() {
     } finally {
       setSaving(false);
     }
-  };
+  }
 
   if (loading || !user || !building) return <div className="p-8">Loading...</div>;
 
@@ -119,73 +157,76 @@ export default function EditBuildingPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium block">Building name</label>
+                <Label htmlFor="name">Building name</Label>
                 <Input
+                  id="name"
                   value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  className="border rounded px-3 py-2 w-full"
+                  onChange={(e) => set("name", e.target.value)}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium block">Total floors</label>
+                <Label htmlFor="totalFloors">Total floors</Label>
                 <Input
-                  type="number"
-                  min={1}
+                  id="totalFloors"
+                  type="text"
+                  inputMode="numeric"
                   value={form.totalFloors}
-                  onChange={(e) => setForm((f) => ({ ...f, totalFloors: e.target.value }))}
-                  className="border rounded px-3 py-2 w-full"
+                  onChange={(e) => set("totalFloors", e.target.value.replace(/[^0-9]/g, ""))}
                   required
                 />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium block">Area / neighborhood</label>
+                <Label htmlFor="areaZone">Area / neighborhood</Label>
                 <Input
+                  id="areaZone"
                   value={form.areaZone}
-                  onChange={(e) => setForm((f) => ({ ...f, areaZone: e.target.value }))}
-                  className="border rounded px-3 py-2 w-full"
+                  onChange={(e) => set("areaZone", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium block">Road / block</label>
+                <Label htmlFor="roadBlock">Road / block</Label>
                 <Input
+                  id="roadBlock"
                   value={form.roadBlock}
-                  onChange={(e) => setForm((f) => ({ ...f, roadBlock: e.target.value }))}
-                  className="border rounded px-3 py-2 w-full"
+                  onChange={(e) => set("roadBlock", e.target.value)}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium block">Full address</label>
+              <Label htmlFor="addressLine">Full address</Label>
               <Input
+                id="addressLine"
                 value={form.addressLine}
-                onChange={(e) => setForm((f) => ({ ...f, addressLine: e.target.value }))}
-                className="border rounded px-3 py-2 w-full"
+                onChange={(e) => set("addressLine", e.target.value)}
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium block">Latitude</label>
-                <Input
-                  type="number"
-                  step="any"
-                  value={form.lat}
-                  onChange={(e) => setForm((f) => ({ ...f, lat: e.target.value }))}
-                  className="border rounded px-3 py-2 w-full"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium block">Longitude</label>
-                <Input
-                  type="number"
-                  step="any"
-                  value={form.lng}
-                  onChange={(e) => setForm((f) => ({ ...f, lng: e.target.value }))}
-                  className="border rounded px-3 py-2 w-full"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="contactPhone">Contact phone</Label>
+              <Input
+                id="contactPhone"
+                type="text"
+                inputMode="tel"
+                value={form.contactPhone}
+                onChange={(e) => set("contactPhone", e.target.value)}
+                placeholder="e.g. +8801XXXXXXXXX"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Map location</Label>
+              <LocationPicker
+                lat={Number(form.lat)}
+                lng={Number(form.lng)}
+                onChange={(lat, lng) => {
+                  set("lat", String(lat));
+                  set("lng", String(lng));
+                }}
+              />
+              <p className="text-xs text-muted-foreground">
+                Selected: {Number(form.lat).toFixed(6)}, {Number(form.lng).toFixed(6)}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -195,73 +236,92 @@ export default function EditBuildingPage() {
             <CardTitle>Amenities</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.hasElevator}
-                  onChange={(e) => setForm((f) => ({ ...f, hasElevator: e.target.checked }))}
-                  className="rounded border-gray-300"
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox
+                checked={form.hasElevator}
+                onCheckedChange={(v) => set("hasElevator", !!v)}
+              />
+              <MdElevator className="h-4 w-4 text-muted-foreground" /> <span>Lift/Elevator</span>
+            </label>
+            {form.hasElevator && (
+              <div className="ml-6 space-y-1.5 max-w-xs">
+                <Label htmlFor="elevatorCount">Number of elevators</Label>
+                <Input
+                  id="elevatorCount"
+                  type="text"
+                  inputMode="numeric"
+                  value={form.elevatorCount}
+                  onChange={(e) => set("elevatorCount", e.target.value.replace(/[^0-9]/g, ""))}
                 />
-                Lift / Elevator
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.hasParking}
-                  onChange={(e) => setForm((f) => ({ ...f, hasParking: e.target.checked }))}
-                  className="rounded border-gray-300"
-                />
-                Parking
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.hasGenerator}
-                  onChange={(e) => setForm((f) => ({ ...f, hasGenerator: e.target.checked }))}
-                  className="rounded border-gray-300"
-                />
-                Generator
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.hasSecurityGuard}
-                  onChange={(e) => setForm((f) => ({ ...f, hasSecurityGuard: e.target.checked }))}
-                  className="rounded border-gray-300"
-                />
-                Security guard
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.hasCctv}
-                  onChange={(e) => setForm((f) => ({ ...f, hasCctv: e.target.checked }))}
-                  className="rounded border-gray-300"
-                />
-                CCTV
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.hasRooftop}
-                  onChange={(e) => setForm((f) => ({ ...f, hasRooftop: e.target.checked }))}
-                  className="rounded border-gray-300"
-                />
-                Rooftop access
-              </label>
-            </div>
+              </div>
+            )}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox checked={form.hasParking} onCheckedChange={(v) => set("hasParking", !!v)} />
+              <MdLocalParking className="h-4 w-4 text-muted-foreground" /> <span>Parking</span>
+            </label>
+            {form.hasParking && (
+              <NativeSelect
+                className="w-auto"
+                value={form.parkingType}
+                onChange={(e) => set("parkingType", e.target.value as typeof form.parkingType)}
+              >
+                <option value="CAR">Car</option>
+                <option value="BIKE">Bike</option>
+                <option value="CAR_AND_BIKE">Car + Bike</option>
+                <option value="PAID">Paid</option>
+              </NativeSelect>
+            )}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox
+                checked={form.hasGenerator}
+                onCheckedChange={(v) => set("hasGenerator", !!v)}
+              />
+              <MdBolt className="h-4 w-4 text-muted-foreground" /> <span>Generator</span>
+            </label>
+            {form.hasGenerator && (
+              <Input
+                placeholder="Scope (full/common)"
+                value={form.generatorScope}
+                onChange={(e) => set("generatorScope", e.target.value)}
+              />
+            )}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox
+                checked={form.hasSecurityGuard}
+                onCheckedChange={(v) => set("hasSecurityGuard", !!v)}
+              />
+              <MdSecurity className="h-4 w-4 text-muted-foreground" /> <span>Security guard</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox checked={form.hasCctv} onCheckedChange={(v) => set("hasCctv", !!v)} />
+              <MdVideocam className="h-4 w-4 text-muted-foreground" /> <span>CCTV</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox
+                checked={form.hasIntercom}
+                onCheckedChange={(v) => set("hasIntercom", !!v)}
+              />
+              <MdPhoneInTalk className="h-4 w-4 text-muted-foreground" /> <span>Intercom</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox checked={form.hasRooftop} onCheckedChange={(v) => set("hasRooftop", !!v)} />
+              <MdRoofing className="h-4 w-4 text-muted-foreground" /> <span>Rooftop access</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox
+                checked={form.hasSubmersiblePump}
+                onCheckedChange={(v) => set("hasSubmersiblePump", !!v)}
+              />
+              <MdWaterDrop className="h-4 w-4 text-muted-foreground" />{" "}
+              <span>Submersible pump</span>
+            </label>
           </CardContent>
         </Card>
 
         <Separator />
 
         <div className="flex items-center gap-2">
-          <Button
-            type="submit"
-            disabled={saving}
-            className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
-          >
+          <Button type="submit" disabled={saving}>
             {saving ? "Saving…" : "Save changes"}
           </Button>
           <Button

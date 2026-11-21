@@ -3,7 +3,17 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FiArrowLeft, FiCopy, FiEdit2, FiEye, FiEyeOff, FiImage, FiPlus } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiCopy,
+  FiEdit2,
+  FiEye,
+  FiEyeOff,
+  FiImage,
+  FiPlus,
+  FiTrash2,
+  FiUpload,
+} from "react-icons/fi";
 import {
   MdBolt,
   MdElevator,
@@ -89,6 +99,14 @@ export default function OwnerBuildingPage() {
   }>({ open: false, apartmentId: null, unitLabel: "", floorNumber: "1" });
   const [cloning, setCloning] = useState(false);
 
+  const [aptImageDialog, setAptImageDialog] = useState<{
+    open: boolean;
+    apartmentId: string | null;
+    unitLabel: string;
+    images: { id: string; url: string }[];
+  }>({ open: false, apartmentId: null, unitLabel: "", images: [] });
+  const [uploadingAptImage, setUploadingAptImage] = useState(false);
+
   useEffect(() => {
     if (!authLoading && !user) router.push("/sign-in");
   }, [authLoading, user, router]);
@@ -167,6 +185,62 @@ export default function OwnerBuildingPage() {
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Update failed");
+    }
+  }
+
+  function openAptImages(
+    apartmentId: string,
+    unitLabel: string,
+    images: { id: string; url: string }[],
+  ) {
+    setAptImageDialog({ open: true, apartmentId, unitLabel, images: images ?? [] });
+  }
+
+  async function uploadAptImages(files: FileList | null) {
+    if (!files?.length || !aptImageDialog.apartmentId) return;
+    setUploadingAptImage(true);
+    setError(null);
+    try {
+      for (const file of Array.from(files)) {
+        const presign = await mediaApi.presign({
+          entity: "APARTMENT",
+          entityId: aptImageDialog.apartmentId,
+          contentType: file.type || "image/jpeg",
+          fileName: file.name || "image.jpg",
+        });
+        const put = await fetch(presign.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "image/jpeg" },
+          body: file,
+        });
+        if (!put.ok) throw new Error("Image upload failed");
+        const attached = await mediaApi.attachApartment(aptImageDialog.apartmentId, {
+          storageKey: presign.storageKey,
+          url: presign.url,
+          roomTag: "OTHER",
+        });
+        const attachedId = (attached as { id?: string }).id ?? presign.storageKey;
+        setAptImageDialog((d) => ({
+          ...d,
+          images: [...d.images, { id: attachedId, url: presign.url }],
+        }));
+      }
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to upload apartment image");
+    } finally {
+      setUploadingAptImage(false);
+    }
+  }
+
+  async function deleteAptImage(imageId: string) {
+    setError(null);
+    try {
+      await mediaApi.deleteApartmentImage(imageId);
+      setAptImageDialog((d) => ({ ...d, images: d.images.filter((img) => img.id !== imageId) }));
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete apartment image");
     }
   }
 
@@ -769,6 +843,24 @@ export default function OwnerBuildingPage() {
                                 size="sm"
                                 variant="outline"
                                 className="h-9 cursor-pointer"
+                                onClick={() =>
+                                  openAptImages(
+                                    a.id,
+                                    a.unitLabel,
+                                    (a.images ?? []).map((img: { id: string; url: string }) => ({
+                                      id: img.id,
+                                      url: img.url,
+                                    })),
+                                  )
+                                }
+                              >
+                                <FiImage className="mr-2 h-4 w-4" aria-hidden="true" />
+                                Images
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-9 cursor-pointer"
                                 onClick={() => openClone(a.id, floor.floorNumber)}
                               >
                                 <FiCopy className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -831,6 +923,64 @@ export default function OwnerBuildingPage() {
               {uploadingImage ? "Attaching…" : "Attach cover photo"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={aptImageDialog.open}
+        onOpenChange={(open) =>
+          !open && setAptImageDialog({ open: false, apartmentId: null, unitLabel: "", images: [] })
+        }
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unit {aptImageDialog.unitLabel} images</DialogTitle>
+            <DialogDescription>Upload and manage images for this apartment.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {aptImageDialog.images.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {aptImageDialog.images.map((img) => (
+                  <div key={img.id} className="relative group rounded border overflow-hidden">
+                    <img
+                      src={img.url}
+                      alt={`Unit ${aptImageDialog.unitLabel}`}
+                      className="h-24 w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 rounded bg-black/60 p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => void deleteAptImage(img.id)}
+                      aria-label="Delete image"
+                    >
+                      <FiTrash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No images yet.</p>
+            )}
+            <div>
+              <input
+                id="apt-image-upload"
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => void uploadAptImages(e.target.files)}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                disabled={uploadingAptImage}
+                onClick={() => document.getElementById("apt-image-upload")?.click()}
+              >
+                <FiUpload className="mr-2 h-4 w-4" aria-hidden="true" />
+                {uploadingAptImage ? "Uploading..." : "Upload images"}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

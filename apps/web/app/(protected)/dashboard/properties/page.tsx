@@ -46,11 +46,11 @@ export default function DashboardPropertiesPage() {
             Manage your buildings and apartments as an owner.
           </p>
         </div>
-        <Link href="/dashboard/properties/new">
-          <Button className="gap-2">
+        <Button asChild className="gap-2">
+          <Link href="/dashboard/properties/new">
             <Plus className="h-4 w-4" /> Add property
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {error && <p className="text-destructive text-sm mb-4">{error}</p>}
@@ -64,9 +64,9 @@ export default function DashboardPropertiesPage() {
               List your first building to add apartments, publish availability, and receive
               inquiries from renters.
             </p>
-            <Link href="/dashboard/properties/new" className="inline-block mt-5">
-              <Button>Add your first property</Button>
-            </Link>
+            <Button asChild className="mt-5">
+              <Link href="/dashboard/properties/new">Add your first property</Link>
+            </Button>
           </CardContent>
         </Card>
       ) : (

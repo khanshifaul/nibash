@@ -16,11 +16,21 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { api, type ListingDetail, searchApi } from "@/lib/api";
+import { authApi } from "@/lib/api/services";
 import { useAuth } from "@/lib/auth";
 
 const MONTH_NAMES = [
@@ -47,7 +57,7 @@ function formatDate(iso: string | null) {
 export default function ListingDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
   const [listing, setListing] = useState<ListingDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +67,11 @@ export default function ListingDetailPage() {
   const [inquiryStatus, setInquiryStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [inquiryMsgText, setInquiryMsgText] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
+  const [signInOpen, setSignInOpen] = useState(false);
+  const [signInEmail, setSignInEmail] = useState("");
+  const [signInPassword, setSignInPassword] = useState("");
+  const [signInError, setSignInError] = useState<string | null>(null);
+  const [signingIn, setSigningIn] = useState(false);
 
   const loadListing = useCallback(async () => {
     setLoading(true);
@@ -84,9 +99,29 @@ export default function ListingDetailPage() {
   const deposit = listing ? listing.securityDepositAmount / 100 : 0;
   const moveInTotal = isSale ? priceMajor : priceMajor + serviceCharge + deposit;
 
+  async function submitSignIn(e: React.FormEvent) {
+    e.preventDefault();
+    setSignInError(null);
+    setSigningIn(true);
+    try {
+      await authApi.login({ email: signInEmail, password: signInPassword });
+      await refresh();
+      setSignInOpen(false);
+      setSignInPassword("");
+    } catch (err) {
+      setSignInError(err instanceof Error ? err.message : "Sign in failed");
+    } finally {
+      setSigningIn(false);
+    }
+  }
+
   async function submitInquiry(e: React.FormEvent) {
     e.preventDefault();
     if (!listing) return;
+    if (!user) {
+      setSignInOpen(true);
+      return;
+    }
     setInquiryStatus("sending");
     setInquiryMsgText(null);
     try {
@@ -422,42 +457,57 @@ export default function ListingDetailPage() {
               <CardTitle className="text-sm font-medium">Send inquiry</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={submitInquiry} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium block" htmlFor="inquiry-message">
-                    Message
-                  </label>
-                  <Textarea
-                    id="inquiry-message"
-                    value={inquiryMsg}
-                    onChange={(e) => setInquiryMsg(e.target.value)}
-                    rows={4}
-                    required
-                    className="resize-y min-h-[110px]"
-                    placeholder="Tell the owner what you need, preferred visit time, or any questions..."
-                  />
-                </div>
-                {inquiryMsgText && (
-                  <div
-                    className={`rounded-md px-3 py-2 text-sm ${inquiryStatus === "ok" ? "bg-green-50 text-green-800 dark:bg-green-950/30 dark:text-green-300" : "bg-red-50 text-red-800 dark:bg-red-950/30 dark:text-red-300"}`}
-                  >
-                    {inquiryMsgText}
+              {user ? (
+                <form onSubmit={submitInquiry} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium block" htmlFor="inquiry-message">
+                      Message
+                    </label>
+                    <Textarea
+                      id="inquiry-message"
+                      value={inquiryMsg}
+                      onChange={(e) => setInquiryMsg(e.target.value)}
+                      rows={4}
+                      required
+                      className="resize-y min-h-[110px]"
+                      placeholder="Tell the owner what you need, preferred visit time, or any questions..."
+                    />
                   </div>
-                )}
-                <Button
-                  type="submit"
-                  disabled={inquiryStatus === "sending"}
-                  className="w-full sm:w-auto sm:min-w-[160px]"
-                >
-                  {inquiryStatus === "sending" ? "Sending…" : "Send inquiry"}
-                </Button>
-              </form>
+                  {inquiryMsgText && (
+                    <div
+                      className={`rounded-md px-3 py-2 text-sm ${inquiryStatus === "ok" ? "bg-green-50 text-green-800 dark:bg-green-950/30 dark:text-green-300" : "bg-red-50 text-red-800 dark:bg-red-950/30 dark:text-red-300"}`}
+                    >
+                      {inquiryMsgText}
+                    </div>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={inquiryStatus === "sending"}
+                    className="w-full sm:w-auto sm:min-w-[160px]"
+                  >
+                    {inquiryStatus === "sending" ? "Sending…" : "Send inquiry"}
+                  </Button>
+                </form>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Sign in to send an inquiry to the owner.
+                  </p>
+                  <Button
+                    type="button"
+                    className="w-full sm:w-auto"
+                    onClick={() => setSignInOpen(true)}
+                  >
+                    Sign in to inquire
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </section>
 
         {/* Right: contact + building info */}
-        <section className="lg:col-span-4 space-y-6">
+        <section className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 lg:self-start">
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-medium">Contact</CardTitle>
@@ -469,18 +519,31 @@ export default function ListingDetailPage() {
                   {user ? (
                     (contact?.phone ?? "Not listed")
                   ) : (
-                    <>
-                      <span className="text-muted-foreground">Sign in to view phone</span>
-                      <Link href="/sign-in" className="text-sm underline ml-2">
-                        Sign in
-                      </Link>
-                    </>
+                    <button
+                      type="button"
+                      className="text-primary underline underline-offset-2"
+                      onClick={() => setSignInOpen(true)}
+                    >
+                      Sign in to view phone
+                    </button>
                   )}
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-muted-foreground" />
-                <div className="text-sm">{contact?.email ?? "Not listed"}</div>
+                <div className="text-sm">
+                  {user ? (
+                    (contact?.email ?? "Not listed")
+                  ) : (
+                    <button
+                      type="button"
+                      className="text-primary underline underline-offset-2"
+                      onClick={() => setSignInOpen(true)}
+                    >
+                      Sign in to view email
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="text-sm text-muted-foreground">Owner: {ownerName}</div>
             </CardContent>
@@ -541,6 +604,49 @@ export default function ListingDetailPage() {
           </Card>
         </section>
       </div>
+
+      <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign in</DialogTitle>
+            <DialogDescription>
+              Sign in to view contact details and send inquiries.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitSignIn} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="listing-signin-email">Email</Label>
+              <Input
+                id="listing-signin-email"
+                type="email"
+                value={signInEmail}
+                onChange={(e) => setSignInEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="listing-signin-password">Password</Label>
+              <Input
+                id="listing-signin-password"
+                type="password"
+                value={signInPassword}
+                onChange={(e) => setSignInPassword(e.target.value)}
+                required
+              />
+            </div>
+            {signInError && <p className="text-sm text-destructive">{signInError}</p>}
+            <Button type="submit" disabled={signingIn} className="w-full">
+              {signingIn ? "Signing in..." : "Sign in"}
+            </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              No account?{" "}
+              <Link href="/sign-up" className="underline">
+                Create one
+              </Link>
+            </p>
+          </form>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

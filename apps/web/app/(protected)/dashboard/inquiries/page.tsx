@@ -55,9 +55,9 @@ export default function DashboardInquiriesPage() {
             <p className="text-muted-foreground text-sm mt-1">
               When you contact an owner about a property, your inquiries will appear here.
             </p>
-            <Link href="/search" className="inline-block mt-5">
-              <Button>Browse properties</Button>
-            </Link>
+            <Button asChild className="mt-5">
+              <Link href="/search">Browse properties</Link>
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -79,11 +79,9 @@ export default function DashboardInquiriesPage() {
                       {new Date(q.createdAt).toLocaleString()}
                     </p>
                   </div>
-                  <Link href={`/listings/${q.apartment.id}`} className="shrink-0">
-                    <Button variant="outline" size="sm">
-                      View property
-                    </Button>
-                  </Link>
+                  <Button asChild variant="outline" size="sm" className="shrink-0">
+                    <Link href={`/listings/${q.apartment.id}`}>View property</Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
