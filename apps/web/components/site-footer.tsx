@@ -1,81 +1,76 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 
+const footerSections = [
+  {
+    title: "Explore",
+    links: [
+      { href: "/search", label: "Search properties" },
+      { href: "/sign-up", label: "Create account" },
+    ],
+  },
+  {
+    title: "For owners",
+    links: [
+      { href: "/dashboard", label: "Dashboard" },
+      { href: "/dashboard/properties/new", label: "List a property" },
+      { href: "/dashboard/inbox", label: "Inbox" },
+    ],
+  },
+  {
+    title: "Account",
+    links: [
+      { href: "/sign-in", label: "Sign in" },
+      { href: "/dashboard/profile", label: "Profile" },
+      { href: "/forgot-password", label: "Forgot password" },
+    ],
+  },
+];
+
 export function SiteFooter() {
   return (
     <footer className="border-t bg-muted/30 mt-16">
       <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
+          <div>
             <Link href="/" className="inline-block">
               <Logo />
             </Link>
-            <p className="text-sm text-muted-foreground mt-3">
-              Find verified apartments across buildings. Compare details, inquire, and move in with
-              confidence.
+            <p className="mt-3 max-w-sm text-sm text-muted-foreground">
+              Nibash helps renters discover verified apartments and helps owners manage listings,
+              inquiries, and property details in one place.
             </p>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-sm mb-3">Product</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link href="/search" className="hover:text-foreground transition-colors">
-                  Search properties
-                </Link>
-              </li>
-              <li>
-                <Link href="/search" className="hover:text-foreground transition-colors">
-                  Featured properties
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-sm mb-3">For owners</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard/properties/new"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Add property
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard/inbox" className="hover:text-foreground transition-colors">
-                  Inbox
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-sm mb-3">Account</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link href="/sign-in" className="hover:text-foreground transition-colors">
-                  Sign in
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard/profile" className="hover:text-foreground transition-colors">
-                  Profile
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {footerSections.map((section) => (
+            <div key={section.title}>
+              <h3 className="mb-3 text-sm font-semibold">{section.title}</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                {section.links.map((link) => (
+                  <li key={link.href + link.label}>
+                    <Link href={link.href} className="transition-colors hover:text-foreground">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="border-t mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} nibash. All rights reserved.</p>
-          <p>Built for renters and property owners.</p>
+        <div className="mt-10 flex flex-col gap-3 border-t pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Nibash. All rights reserved.</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <Link href="/search" className="transition-colors hover:text-foreground">
+              Browse listings
+            </Link>
+            <Link
+              href="/dashboard/properties/new"
+              className="transition-colors hover:text-foreground"
+            >
+              List your property
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
