@@ -19,11 +19,11 @@ export enum RoomTagDto {
 }
 
 export class PresignDto {
-  @ApiProperty({ enum: ImageEntityDto })
+  @ApiProperty({ enum: ImageEntityDto, example: ImageEntityDto.APARTMENT })
   @IsEnum(ImageEntityDto)
   entity!: ImageEntityDto;
 
-  @ApiProperty({ description: "Building or Apartment ID" })
+  @ApiProperty({ description: "Building or Apartment ID", example: "cmwouplu80024w0rrda43kaxn" })
   @IsString()
   @IsNotEmpty()
   entityId!: string;
@@ -33,31 +33,48 @@ export class PresignDto {
   @IsNotEmpty()
   contentType!: string;
 
-  @ApiProperty({ example: "photo.jpg" })
+  @ApiProperty({ example: "living-room.jpg" })
   @IsString()
   @IsNotEmpty()
   fileName!: string;
 }
 
 export class AttachBuildingImageDto {
-  @ApiProperty() @IsString() @IsNotEmpty() storageKey!: string;
-  @ApiProperty() @IsString() @IsNotEmpty() url!: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() caption?: string;
-  @ApiProperty({ required: false, default: 0 })
+  @ApiProperty({ example: "buildings/abc123/cover.jpg" })
+  @IsString()
+  @IsNotEmpty()
+  storageKey!: string;
+  @ApiProperty({ example: "https://cdn.example.com/buildings/abc123/cover.jpg" })
+  @IsString()
+  @IsNotEmpty()
+  url!: string;
+  @ApiProperty({ required: false, example: "Front elevation" })
+  @IsString()
+  @IsOptional()
+  caption?: string;
+  @ApiProperty({ required: false, default: 0, example: 0 })
   @IsInt()
   @Min(0)
   @IsOptional()
   sortOrder?: number;
-  @ApiProperty({ required: false, default: false })
+  @ApiProperty({ required: false, default: false, example: true })
   @IsOptional()
   isCover?: boolean;
 }
 
 export class AttachApartmentImageDto {
-  @ApiProperty() @IsString() @IsNotEmpty() storageKey!: string;
-  @ApiProperty() @IsString() @IsNotEmpty() url!: string;
-  @ApiProperty({ enum: RoomTagDto }) @IsEnum(RoomTagDto) roomTag!: RoomTagDto;
-  @ApiProperty({ required: false, default: 0 })
+  @ApiProperty({ example: "apartments/apt123/bedroom.jpg" })
+  @IsString()
+  @IsNotEmpty()
+  storageKey!: string;
+  @ApiProperty({ example: "https://cdn.example.com/apartments/apt123/bedroom.jpg" })
+  @IsString()
+  @IsNotEmpty()
+  url!: string;
+  @ApiProperty({ enum: RoomTagDto, example: RoomTagDto.BEDROOM })
+  @IsEnum(RoomTagDto)
+  roomTag!: RoomTagDto;
+  @ApiProperty({ required: false, default: 0, example: 0 })
   @IsInt()
   @Min(0)
   @IsOptional()

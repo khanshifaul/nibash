@@ -13,6 +13,7 @@ export class UpdateApartmentDto extends PartialType(CreateApartmentDto) {
 export class CloneApartmentDto {
   @ApiProperty({
     description: "Target floor number (defaults to next floor suggestion)",
+    example: 5,
   })
   @Type(() => Number)
   @IsInt()
@@ -21,13 +22,16 @@ export class CloneApartmentDto {
 
   @ApiProperty({
     description: "New unit label (must be unique on target floor)",
+    example: "5B",
   })
+  @IsString()
   unitLabel!: string;
 }
 
 export class UpdateApartmentStatusDto {
   @ApiProperty({
     enum: ["AVAILABLE", "RENTED", "MAINTENANCE", "COMING_SOON", "SOLD"],
+    example: "AVAILABLE",
   })
   @IsEnum(["AVAILABLE", "RENTED", "MAINTENANCE", "COMING_SOON", "SOLD"])
   availabilityStatus!: "AVAILABLE" | "RENTED" | "MAINTENANCE" | "COMING_SOON" | "SOLD";
