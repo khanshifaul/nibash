@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
-import { FiArrowLeft, FiCheck, FiChevronRight, FiImage, FiUpload } from "react-icons/fi";
+import { FiArrowLeft, FiCheck, FiChevronRight, FiImage, FiUpload, FiX } from "react-icons/fi";
 import {
   MdBolt,
   MdElevator,
@@ -84,6 +84,7 @@ export default function NewPropertyWizardPage() {
   const [coverPhoto, setCoverPhoto] = useState<{ url: string; storageKey: string } | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverError, setCoverError] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -250,19 +251,32 @@ export default function NewPropertyWizardPage() {
     }
   }
 
+  function clearCoverFile() {
+    setCoverFile(null);
+    setCoverPreview((prev) => {
+      if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setCoverError(null);
+    if (coverInputRef.current) coverInputRef.current.value = "";
+  }
+
   function selectCoverFile(files: FileList | null) {
     const file = files?.[0];
     if (!file) return;
     void (async () => {
       const validation = await validateImageFile(file);
       if (!validation.ok) {
-        setError(validation.error);
+        setCoverError(validation.error);
         if (coverInputRef.current) coverInputRef.current.value = "";
         return;
       }
-      setError(null);
+      setCoverError(null);
       setCoverFile(file);
-      setCoverPreview(URL.createObjectURL(file));
+      setCoverPreview((prev) => {
+        if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+        return URL.createObjectURL(file);
+      });
     })();
   }
 
@@ -290,10 +304,10 @@ export default function NewPropertyWizardPage() {
   async function uploadCoverPhoto(files: FileList | null) {
     const file = files?.[0];
     if (!file || !buildingId) return;
-    setError(null);
+    setCoverError(null);
     const validation = await validateImageFile(file);
     if (!validation.ok) {
-      setError(validation.error);
+      setCoverError(validation.error);
       if (coverInputRef.current) coverInputRef.current.value = "";
       return;
     }
@@ -301,9 +315,12 @@ export default function NewPropertyWizardPage() {
     try {
       await uploadCoverPhotoForBuilding(buildingId, file);
       setCoverFile(file);
-      setCoverPreview(URL.createObjectURL(file));
+      setCoverPreview((prev) => {
+        if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+        return URL.createObjectURL(file);
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Cover photo upload failed");
+      setCoverError(err instanceof Error ? err.message : "Cover photo upload failed");
     } finally {
       setUploadingCover(false);
       if (coverInputRef.current) coverInputRef.current.value = "";
@@ -524,11 +541,24 @@ export default function NewPropertyWizardPage() {
             >
               {coverPreview ? (
                 <div className="space-y-3">
-                  <img
-                    src={coverPreview}
-                    alt="Cover preview"
-                    className="mx-auto h-44 w-full max-w-md rounded-lg border object-cover"
-                  />
+                  <div className="relative mx-auto w-full max-w-md">
+                    <img
+                      src={coverPreview}
+                      alt="Cover preview"
+                      className="h-44 w-full rounded-lg border object-cover"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+                      aria-label="Remove selected photo"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clearCoverFile();
+                      }}
+                    >
+                      <FiX className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </div>
                   <p className="text-sm text-muted-foreground">Click or drop to replace</p>
                 </div>
               ) : (
@@ -541,6 +571,7 @@ export default function NewPropertyWizardPage() {
                 </div>
               )}
             </div>
+            {coverError ? <p className="text-sm text-destructive">{coverError}</p> : null}
             <input
               ref={coverInputRef}
               type="file"
@@ -695,6 +726,7 @@ export default function NewPropertyWizardPage() {
                       : "Upload cover photo"}
                 </Button>
               </div>
+              {coverError ? <p className="text-sm text-destructive">{coverError}</p> : null}
             </CardContent>
           </Card>
 

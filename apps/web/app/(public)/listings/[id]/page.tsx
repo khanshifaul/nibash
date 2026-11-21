@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Mail, MapPin, Phone } from "lucide-react";
+import { Building2, Eye, EyeOff, Loader2, Lock, Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -70,6 +70,7 @@ export default function ListingDetailPage() {
   const [signInOpen, setSignInOpen] = useState(false);
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
+  const [showSignInPassword, setShowSignInPassword] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
   const [signingIn, setSigningIn] = useState(false);
 
@@ -120,11 +121,17 @@ export default function ListingDetailPage() {
       await refresh();
       setSignInOpen(false);
       setSignInPassword("");
+      setShowSignInPassword(false);
     } catch (err) {
       setSignInError(err instanceof Error ? err.message : "Sign in failed");
     } finally {
       setSigningIn(false);
     }
+  }
+
+  function onGoogleSignIn() {
+    setSignInError(null);
+    window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000"}/auth/google`;
   }
 
   async function submitInquiry(e: React.FormEvent) {
@@ -607,45 +614,121 @@ export default function ListingDetailPage() {
       </div>
 
       <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Sign in</DialogTitle>
+        <DialogContent className="sm:max-w-[440px]">
+          <DialogHeader className="text-center sm:text-center">
+            <DialogTitle className="text-2xl font-bold tracking-tight">Welcome back</DialogTitle>
             <DialogDescription>
-              Sign in to view contact details and send inquiries.
+              Sign in to view contact details and send inquiries
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={submitSignIn} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="listing-signin-email">Email</Label>
-              <Input
-                id="listing-signin-email"
-                type="email"
-                value={signInEmail}
-                onChange={(e) => setSignInEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="listing-signin-password">Password</Label>
-              <Input
-                id="listing-signin-password"
-                type="password"
-                value={signInPassword}
-                onChange={(e) => setSignInPassword(e.target.value)}
-                required
-              />
-            </div>
-            {signInError && <p className="text-sm text-destructive">{signInError}</p>}
-            <Button type="submit" disabled={signingIn} className="w-full">
-              {signingIn ? "Signing in..." : "Sign in"}
+
+          <div className="space-y-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 text-base font-semibold rounded-lg"
+              onClick={onGoogleSignIn}
+              disabled={signingIn}
+            >
+              Continue with Google
             </Button>
-            <p className="text-xs text-muted-foreground text-center">
-              No account?{" "}
-              <Link href="/sign-up" className="underline">
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border/50" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
+
+            <form onSubmit={submitSignIn} className="space-y-4">
+              {signInError && (
+                <div
+                  role="alert"
+                  className="rounded-lg border border-destructive/25 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive"
+                >
+                  {signInError}
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="listing-signin-email">Email address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="listing-signin-email"
+                    type="email"
+                    value={signInEmail}
+                    onChange={(e) => setSignInEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="h-10 pl-9"
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="listing-signin-password">Password</Label>
+                  <Link href="/forgot-password" className="text-xs text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="listing-signin-password"
+                    type={showSignInPassword ? "text" : "password"}
+                    value={signInPassword}
+                    onChange={(e) => setSignInPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="h-10 pl-9 pr-10"
+                    required
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowSignInPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showSignInPassword ? "Hide password" : "Show password"}
+                  >
+                    {showSignInPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={signingIn}
+                className="w-full h-10 text-base font-semibold"
+              >
+                {signingIn ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
+              </Button>
+            </form>
+
+            <p className="text-sm text-muted-foreground text-center">
+              Don&apos;t have an account?{" "}
+              <Link href="/sign-up" className="text-primary font-medium hover:underline">
                 Create one
               </Link>
             </p>
-          </form>
+          </div>
         </DialogContent>
       </Dialog>
     </main>
