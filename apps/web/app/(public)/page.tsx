@@ -149,7 +149,13 @@ function HeroSection() {
         <div className="flex h-full">
           {HERO_IMAGES.map((src, i) => (
             <div key={i} className="relative flex-[0_0_100%] min-w-0 h-full">
-              <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              <img
+                src={src}
+                alt=""
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : "auto"}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
             </div>
           ))}
         </div>
