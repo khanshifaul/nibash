@@ -91,7 +91,19 @@ export default function ListingDetailPage() {
     loadListing();
   }, [loadListing]);
 
-  const apartmentImages = listing?.images ?? [];
+  const buildingCover =
+    listing?.building.images?.find((img) => img.isCover) ?? listing?.building.images?.[0];
+  const apartmentImages = (() => {
+    const apt = listing?.images ?? [];
+    if (!buildingCover) return apt;
+    const coverAsGallery = {
+      id: `building-cover-${buildingCover.id}`,
+      url: buildingCover.url,
+      roomTag: "COVER",
+    } as (typeof apt)[number];
+    const seen = new Set(apt.map((img) => img.url));
+    return seen.has(buildingCover.url) ? apt : [coverAsGallery, ...apt];
+  })();
 
   const isSale = listing?.listingType === "SALE";
   const priceMajor = listing ? (isSale ? (listing.salePrice ?? 0) : listing.rentAmount) / 100 : 0;
