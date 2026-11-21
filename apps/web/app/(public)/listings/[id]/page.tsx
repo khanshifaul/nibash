@@ -262,44 +262,53 @@ export default function ListingDetailPage() {
               <TabsTrigger value="amenities">Amenities</TabsTrigger>
               <TabsTrigger value="floorplan">Floor plan</TabsTrigger>
             </TabsList>
-            <TabsContent value="details" className="mt-4 space-y-3">
-              <div className="text-sm text-muted-foreground leading-relaxed">
-                {listing.bedrooms} bedroom(s) with {listing.bathrooms} bathroom(s) on floor{" "}
-                {listing.floorNumber}. Available from {formatDate(listing.availableFrom)}.
+            <TabsContent value="details" className="mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { label: "Unit", value: listing.unitLabel },
+                  {
+                    label: "Floor",
+                    value: listing.floorNumber != null ? `${listing.floorNumber}` : "—",
+                  },
+                  { label: "Bedrooms", value: `${listing.bedrooms}` },
+                  {
+                    label: "Bathrooms",
+                    value: `${listing.bathrooms}${listing.attachedBathrooms ? ` (${listing.attachedBathrooms} attached)` : ""}`,
+                  },
+                  { label: "Dining rooms", value: `${listing.diningRooms}` },
+                  { label: "Drawing rooms", value: `${listing.drawingRooms}` },
+                  { label: "Kitchens", value: `${listing.kitchens}` },
+                  { label: "Verandas", value: `${listing.verandas}` },
+                  { label: "Size", value: listing.sizeSqft ? `${listing.sizeSqft} sqft` : "—" },
+                  { label: "Facing", value: listing.facing || "—" },
+                  { label: "Gas", value: listing.gasType?.replace(/_/g, " ") || "—" },
+                  {
+                    label: "Utility billing",
+                    value: listing.utilityBillingType?.replace(/_/g, " ") || "—",
+                  },
+                  { label: "Available from", value: formatDate(listing.availableFrom) },
+                  {
+                    label: "Preferred tenants",
+                    value:
+                      listing.preferredTenantTypes?.length > 0
+                        ? listing.preferredTenantTypes.map((t) => t.replace(/_/g, " ")).join(", ")
+                        : "—",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex items-start justify-between gap-3 rounded-lg border bg-muted/30 px-3 py-2.5"
+                  >
+                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {item.label}
+                    </span>
+                    <span className="text-sm font-medium text-right">{item.value}</span>
+                  </div>
+                ))}
               </div>
-              <div className="border rounded p-3 bg-muted text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  {listing.building.areaZone} • {listing.building.totalFloors} floors
-                </span>
-                <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                  <span className="inline-flex items-center gap-1">
-                    {listing.building.hasElevator ? (
-                      <>
-                        <MdElevator className="h-3.5 w-3.5" /> Lift
-                      </>
-                    ) : (
-                      "No lift"
-                    )}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    {listing.building.hasParking ? (
-                      <>
-                        <MdLocalParking className="h-3.5 w-3.5" /> Parking
-                      </>
-                    ) : (
-                      "No parking"
-                    )}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    {listing.building.hasGenerator ? (
-                      <>
-                        <MdBolt className="h-3.5 w-3.5" /> Generator
-                      </>
-                    ) : (
-                      "No generator"
-                    )}
-                  </span>
-                </span>
+              <div className="mt-4 rounded-lg border bg-muted/20 px-3 py-3 text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">{listing.building.name}</span> ·{" "}
+                {listing.building.areaZone} · {listing.building.totalFloors} floors
               </div>
             </TabsContent>
             <TabsContent value="amenities" className="mt-4 grid grid-cols-2 gap-2">
@@ -320,10 +329,89 @@ export default function ListingDetailPage() {
                 ))}
             </TabsContent>
             <TabsContent value="floorplan" className="mt-4">
-              <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/40 px-6 text-center">
-                <p className="text-sm font-medium text-foreground">Floor plan coming soon</p>
-                <p className="text-xs text-muted-foreground">
-                  The owner hasn&apos;t uploaded a floor plan for this unit yet.
+              <div className="rounded-xl border bg-muted/20 p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Unit schematic</p>
+                    <p className="text-xs text-muted-foreground">
+                      Generated from unit details ·{" "}
+                      {listing.sizeSqft ? `${listing.sizeSqft} sqft` : "Size not specified"}
+                    </p>
+                  </div>
+                  <Badge variant="secondary">Floor {listing.floorNumber ?? "—"}</Badge>
+                </div>
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 auto-rows-[72px] sm:auto-rows-[84px]">
+                  {Array.from({ length: Math.max(1, listing.bedrooms) }).map((_, i) => (
+                    <div
+                      key={`bed-${i}`}
+                      className="col-span-2 row-span-2 rounded-lg border border-blue-200 bg-blue-50/70 dark:border-blue-900/60 dark:bg-blue-950/30 p-3 flex flex-col justify-between"
+                    >
+                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
+                        Bedroom {i + 1}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">Sleeping area</span>
+                    </div>
+                  ))}
+                  {Array.from({ length: Math.max(1, listing.drawingRooms) }).map((_, i) => (
+                    <div
+                      key={`draw-${i}`}
+                      className="col-span-2 row-span-1 rounded-lg border border-violet-200 bg-violet-50/70 dark:border-violet-900/60 dark:bg-violet-950/30 p-3 flex flex-col justify-between"
+                    >
+                      <span className="text-xs font-medium text-violet-700 dark:text-violet-300">
+                        Drawing {listing.drawingRooms > 1 ? i + 1 : ""}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">Living</span>
+                    </div>
+                  ))}
+                  {Array.from({ length: Math.max(1, listing.diningRooms) }).map((_, i) => (
+                    <div
+                      key={`din-${i}`}
+                      className="col-span-2 row-span-1 rounded-lg border border-amber-200 bg-amber-50/70 dark:border-amber-900/60 dark:bg-amber-950/30 p-3 flex flex-col justify-between"
+                    >
+                      <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                        Dining {listing.diningRooms > 1 ? i + 1 : ""}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">Shared</span>
+                    </div>
+                  ))}
+                  {Array.from({ length: Math.max(1, listing.kitchens) }).map((_, i) => (
+                    <div
+                      key={`kit-${i}`}
+                      className="col-span-2 row-span-1 rounded-lg border border-emerald-200 bg-emerald-50/70 dark:border-emerald-900/60 dark:bg-emerald-950/30 p-3 flex flex-col justify-between"
+                    >
+                      <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                        Kitchen {listing.kitchens > 1 ? i + 1 : ""}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">Utility</span>
+                    </div>
+                  ))}
+                  {Array.from({ length: Math.max(1, listing.bathrooms) }).map((_, i) => (
+                    <div
+                      key={`bath-${i}`}
+                      className="col-span-1 sm:col-span-2 row-span-1 rounded-lg border border-cyan-200 bg-cyan-50/70 dark:border-cyan-900/60 dark:bg-cyan-950/30 p-3 flex flex-col justify-between"
+                    >
+                      <span className="text-xs font-medium text-cyan-700 dark:text-cyan-300">
+                        Bath {i + 1}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">
+                        {i < listing.attachedBathrooms ? "Attached" : "Common"}
+                      </span>
+                    </div>
+                  ))}
+                  {Array.from({ length: Math.max(0, listing.verandas) }).map((_, i) => (
+                    <div
+                      key={`ver-${i}`}
+                      className="col-span-1 sm:col-span-2 row-span-1 rounded-lg border border-rose-200 bg-rose-50/70 dark:border-rose-900/60 dark:bg-rose-950/30 p-3 flex flex-col justify-between"
+                    >
+                      <span className="text-xs font-medium text-rose-700 dark:text-rose-300">
+                        Veranda {listing.verandas > 1 ? i + 1 : ""}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">Outdoor</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 text-[11px] text-muted-foreground">
+                  Schematic layout for quick understanding; exact dimensions and positions may vary.
                 </p>
               </div>
             </TabsContent>
@@ -333,25 +421,34 @@ export default function ListingDetailPage() {
             <CardHeader>
               <CardTitle className="text-sm font-medium">Send inquiry</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <form onSubmit={submitInquiry}>
+            <CardContent>
+              <form onSubmit={submitInquiry} className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium block">Message</label>
+                  <label className="text-sm font-medium block" htmlFor="inquiry-message">
+                    Message
+                  </label>
                   <Textarea
+                    id="inquiry-message"
                     value={inquiryMsg}
                     onChange={(e) => setInquiryMsg(e.target.value)}
-                    rows={3}
+                    rows={4}
                     required
+                    className="resize-y min-h-[110px]"
+                    placeholder="Tell the owner what you need, preferred visit time, or any questions..."
                   />
                 </div>
                 {inquiryMsgText && (
                   <div
-                    className={`p-2 rounded text-sm ${inquiryStatus === "ok" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}
+                    className={`rounded-md px-3 py-2 text-sm ${inquiryStatus === "ok" ? "bg-green-50 text-green-800 dark:bg-green-950/30 dark:text-green-300" : "bg-red-50 text-red-800 dark:bg-red-950/30 dark:text-red-300"}`}
                   >
                     {inquiryMsgText}
                   </div>
                 )}
-                <Button type="submit" disabled={inquiryStatus === "sending"} className="w-full">
+                <Button
+                  type="submit"
+                  disabled={inquiryStatus === "sending"}
+                  className="w-full sm:w-auto sm:min-w-[160px]"
+                >
                   {inquiryStatus === "sending" ? "Sending…" : "Send inquiry"}
                 </Button>
               </form>
