@@ -489,18 +489,16 @@ export default function ListingDetailPage() {
                   </Button>
                 </form>
               ) : (
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Sign in to send an inquiry to the owner.
-                  </p>
-                  <Button
+                <p className="text-sm text-muted-foreground">
+                  <button
                     type="button"
-                    className="w-full sm:w-auto"
+                    className="text-primary underline underline-offset-2"
                     onClick={() => setSignInOpen(true)}
                   >
-                    Sign in to inquire
-                  </Button>
-                </div>
+                    Sign in
+                  </button>{" "}
+                  to send an inquiry to the owner.
+                </p>
               )}
             </CardContent>
           </Card>
@@ -513,38 +511,29 @@ export default function ListingDetailPage() {
               <CardTitle className="text-sm font-medium">Contact</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-muted-foreground" />
-                <div className="text-sm">
-                  {user ? (
-                    (contact?.phone ?? "Not listed")
-                  ) : (
-                    <button
-                      type="button"
-                      className="text-primary underline underline-offset-2"
-                      onClick={() => setSignInOpen(true)}
-                    >
-                      Sign in to view phone
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-muted-foreground" />
-                <div className="text-sm">
-                  {user ? (
-                    (contact?.email ?? "Not listed")
-                  ) : (
-                    <button
-                      type="button"
-                      className="text-primary underline underline-offset-2"
-                      onClick={() => setSignInOpen(true)}
-                    >
-                      Sign in to view email
-                    </button>
-                  )}
-                </div>
-              </div>
+              {user ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-5 w-5 text-muted-foreground" />
+                    <div className="text-sm">{contact?.phone ?? "Not listed"}</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-muted-foreground" />
+                    <div className="text-sm">{contact?.email ?? "Not listed"}</div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  <button
+                    type="button"
+                    className="text-primary underline underline-offset-2"
+                    onClick={() => setSignInOpen(true)}
+                  >
+                    Sign in
+                  </button>{" "}
+                  to view contact info.
+                </p>
+              )}
               <div className="text-sm text-muted-foreground">Owner: {ownerName}</div>
             </CardContent>
           </Card>
