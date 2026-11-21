@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   lat: number;
@@ -10,8 +10,38 @@ type Props = {
   className?: string;
 };
 
-type LeafletMap = import("leaflet").Map;
-type LeafletMarker = import("leaflet").Marker;
+declare global {
+  interface Window {
+    google?: any;
+    __nibashGoogleMapsLoading?: Promise<void>;
+  }
+}
+
+function loadGoogleMaps(apiKey: string) {
+  if (window.google?.maps) return Promise.resolve();
+  if (window.__nibashGoogleMapsLoading) return window.__nibashGoogleMapsLoading;
+  window.__nibashGoogleMapsLoading = new Promise<void>((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      'script[data-nibash-google-maps="1"]',
+    );
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Google Maps failed to load")), {
+        once: true,
+      });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}`;
+    script.async = true;
+    script.defer = true;
+    script.dataset.nibashGoogleMaps = "1";
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Google Maps failed to load"));
+    document.head.appendChild(script);
+  });
+  return window.__nibashGoogleMapsLoading;
+}
 
 export default function LocationPicker({
   lat,
@@ -21,65 +51,70 @@ export default function LocationPicker({
   className = "",
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<LeafletMap | null>(null);
-  const markerRef = useRef<LeafletMarker | null>(null);
+  const mapRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
   const onChangeRef = useRef(onChange);
   const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  const center = useMemo(() => {
-    const safeLat = Number.isFinite(lat) ? lat : 23.8103;
-    const safeLng = Number.isFinite(lng) ? lng : 90.4125;
-    return [safeLat, safeLng] as [number, number];
-  }, [lat, lng]);
-
-  const initialCenter = useRef(center);
-  initialCenter.current = center;
+  const initialLat = useRef(lat);
+  const initialLng = useRef(lng);
+  initialLat.current = lat;
+  initialLng.current = lng;
 
   useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim();
+    if (!apiKey) {
+      setError("Google Maps API key is missing (NEXT_PUBLIC_GOOGLE_MAPS_API_KEY).");
+      return;
+    }
+
     let cancelled = false;
-    (async () => {
-      const L = await import("leaflet");
-      await import("leaflet/dist/leaflet.css");
-
-      if (cancelled || !containerRef.current) return;
-
-      // Fix default marker icons in bundlers
-      // @ts-expect-error leaflet icon url patch
-      delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+    loadGoogleMaps(apiKey)
+      .then(() => {
+        if (cancelled || !containerRef.current || !window.google?.maps) return;
+        const center = {
+          lat: Number.isFinite(initialLat.current) ? initialLat.current : 23.8103,
+          lng: Number.isFinite(initialLng.current) ? initialLng.current : 90.4125,
+        };
+        if (!mapRef.current) {
+          const map = new window.google.maps.Map(containerRef.current, {
+            center,
+            zoom: 15,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true,
+          });
+          const marker = new window.google.maps.Marker({
+            position: center,
+            map,
+            draggable: true,
+          });
+          marker.addListener("dragend", () => {
+            const pos = marker.getPosition();
+            if (!pos) return;
+            onChangeRef.current(Number(pos.lat().toFixed(7)), Number(pos.lng().toFixed(7)));
+          });
+          map.addListener("click", (e: any) => {
+            if (!e.latLng) return;
+            marker.setPosition(e.latLng);
+            onChangeRef.current(
+              Number(e.latLng.lat().toFixed(7)),
+              Number(e.latLng.lng().toFixed(7)),
+            );
+          });
+          mapRef.current = map;
+          markerRef.current = marker;
+          setReady(true);
+        }
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load Google Maps");
       });
-
-      if (!mapRef.current) {
-        const init = initialCenter.current;
-        const map = L.map(containerRef.current, { center: init, zoom: 15 });
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          maxZoom: 19,
-        }).addTo(map);
-
-        const marker = L.marker(init, { draggable: true }).addTo(map);
-        marker.on("dragend", () => {
-          const pos = marker.getLatLng();
-          onChangeRef.current(Number(pos.lat.toFixed(7)), Number(pos.lng.toFixed(7)));
-        });
-        map.on("click", (e) => {
-          marker.setLatLng(e.latlng);
-          onChangeRef.current(Number(e.latlng.lat.toFixed(7)), Number(e.latlng.lng.toFixed(7)));
-        });
-
-        mapRef.current = map;
-        markerRef.current = marker;
-        setReady(true);
-        setTimeout(() => map.invalidateSize(), 0);
-      }
-    })();
 
     return () => {
       cancelled = true;
@@ -90,20 +125,15 @@ export default function LocationPicker({
     const map = mapRef.current;
     const marker = markerRef.current;
     if (!map || !marker) return;
-    const current = marker.getLatLng();
-    if (Math.abs(current.lat - center[0]) > 1e-7 || Math.abs(current.lng - center[1]) > 1e-7) {
-      marker.setLatLng(center);
-      map.setView(center, map.getZoom());
+    const nextLat = Number.isFinite(lat) ? lat : 23.8103;
+    const nextLng = Number.isFinite(lng) ? lng : 90.4125;
+    const pos = marker.getPosition();
+    if (!pos || Math.abs(pos.lat() - nextLat) > 1e-7 || Math.abs(pos.lng() - nextLng) > 1e-7) {
+      const next = { lat: nextLat, lng: nextLng };
+      marker.setPosition(next);
+      map.setCenter(next);
     }
-  }, [center]);
-
-  useEffect(() => {
-    return () => {
-      mapRef.current?.remove();
-      mapRef.current = null;
-      markerRef.current = null;
-    };
-  }, []);
+  }, [lat, lng]);
 
   return (
     <div className={`space-y-2 ${className}`.trim()}>
@@ -112,9 +142,13 @@ export default function LocationPicker({
         style={{ height }}
         className="w-full rounded-lg border overflow-hidden bg-muted"
       />
-      <p className="text-xs text-muted-foreground">
-        {ready ? "Click the map or drag the pin to set the property location." : "Loading map…"}
-      </p>
+      {error ? (
+        <p className="text-xs text-destructive">{error}</p>
+      ) : (
+        <p className="text-xs text-muted-foreground">
+          {ready ? "Click the map or drag the pin to set the property location." : "Loading map…"}
+        </p>
+      )}
     </div>
   );
 }

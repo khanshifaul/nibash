@@ -82,6 +82,8 @@ export default function NewPropertyWizardPage() {
   const [uploadingUnitId, setUploadingUnitId] = useState<string | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [coverPhoto, setCoverPhoto] = useState<{ url: string; storageKey: string } | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -179,6 +181,15 @@ export default function NewPropertyWizardPage() {
     try {
       const building = await buildingsApi.create(buildingPayload);
       setBuildingId(building.id);
+      if (coverFile) {
+        try {
+          await uploadCoverPhotoForBuilding(building.id, coverFile);
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Property created, but cover photo upload failed",
+          );
+        }
+      }
       if (next === "finish") {
         router.push(`/dashboard/properties/${building.id}`);
         return;
@@ -239,6 +250,43 @@ export default function NewPropertyWizardPage() {
     }
   }
 
+  function selectCoverFile(files: FileList | null) {
+    const file = files?.[0];
+    if (!file) return;
+    void (async () => {
+      const validation = await validateImageFile(file);
+      if (!validation.ok) {
+        setError(validation.error);
+        if (coverInputRef.current) coverInputRef.current.value = "";
+        return;
+      }
+      setError(null);
+      setCoverFile(file);
+      setCoverPreview(URL.createObjectURL(file));
+    })();
+  }
+
+  async function uploadCoverPhotoForBuilding(targetBuildingId: string, file: File) {
+    const presign = await mediaApi.presign({
+      entity: "BUILDING",
+      entityId: targetBuildingId,
+      contentType: file.type || "image/jpeg",
+      fileName: file.name || "cover.jpg",
+    });
+    const put = await fetch(presign.uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type || "image/jpeg" },
+      body: file,
+    });
+    if (!put.ok) throw new Error("Image upload failed");
+    await mediaApi.attachBuilding(targetBuildingId, {
+      storageKey: presign.storageKey,
+      url: presign.url,
+      isCover: true,
+    });
+    setCoverPhoto({ url: presign.url, storageKey: presign.storageKey });
+  }
+
   async function uploadCoverPhoto(files: FileList | null) {
     const file = files?.[0];
     if (!file || !buildingId) return;
@@ -251,24 +299,9 @@ export default function NewPropertyWizardPage() {
     }
     setUploadingCover(true);
     try {
-      const presign = await mediaApi.presign({
-        entity: "BUILDING",
-        entityId: buildingId,
-        contentType: file.type || "image/jpeg",
-        fileName: file.name || "cover.jpg",
-      });
-      const put = await fetch(presign.uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type || "image/jpeg" },
-        body: file,
-      });
-      if (!put.ok) throw new Error("Image upload failed");
-      await mediaApi.attachBuilding(buildingId, {
-        storageKey: presign.storageKey,
-        url: presign.url,
-        isCover: true,
-      });
-      setCoverPhoto({ url: presign.url, storageKey: presign.storageKey });
+      await uploadCoverPhotoForBuilding(buildingId, file);
+      setCoverFile(file);
+      setCoverPreview(URL.createObjectURL(file));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Cover photo upload failed");
     } finally {
@@ -468,6 +501,56 @@ export default function NewPropertyWizardPage() {
                 Selected: {Number(form.lat).toFixed(6)}, {Number(form.lng).toFixed(6)}
               </p>
             </div>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="font-semibold">Cover photo</h2>
+            <p className="text-sm text-muted-foreground">
+              Optional. JPG/PNG/WebP, max 5MB, min 800x600, ratio 3:4 to 16:9.
+            </p>
+            <div
+              className="rounded-lg border border-dashed p-6 text-center cursor-pointer hover:bg-muted/30 transition-colors"
+              onClick={() => coverInputRef.current?.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                selectCoverFile(e.dataTransfer.files);
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") coverInputRef.current?.click();
+              }}
+            >
+              {coverPreview ? (
+                <div className="space-y-3">
+                  <img
+                    src={coverPreview}
+                    alt="Cover preview"
+                    className="mx-auto h-44 w-full max-w-md rounded-lg border object-cover"
+                  />
+                  <p className="text-sm text-muted-foreground">Click or drop to replace</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <FiUpload className="mx-auto h-6 w-6 text-muted-foreground" aria-hidden="true" />
+                  <p className="text-sm font-medium">Drop cover photo here or click to upload</p>
+                  <p className="text-xs text-muted-foreground">
+                    Used in property cards and previews
+                  </p>
+                </div>
+              )}
+            </div>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept={IMAGE_UPLOAD.accept.join(",")}
+              className="hidden"
+              onChange={(e) => {
+                if (buildingId) void uploadCoverPhoto(e.target.files);
+                else selectCoverFile(e.target.files);
+              }}
+            />
           </section>
 
           <section className="space-y-2">
