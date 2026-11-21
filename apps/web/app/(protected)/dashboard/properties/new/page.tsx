@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 import { apartmentsApi, buildingsApi, mediaApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { IMAGE_UPLOAD, validateImageFile } from "@/lib/image-upload";
 
 const LocationPicker = dynamic(() => import("@/components/ui/location-picker"), { ssr: false });
 
@@ -80,6 +81,9 @@ export default function NewPropertyWizardPage() {
   const [addedUnits, setAddedUnits] = useState<AddedUnit[]>([]);
   const [uploadingUnitId, setUploadingUnitId] = useState<string | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const [coverPhoto, setCoverPhoto] = useState<{ url: string; storageKey: string } | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -235,12 +239,55 @@ export default function NewPropertyWizardPage() {
     }
   }
 
+  async function uploadCoverPhoto(files: FileList | null) {
+    const file = files?.[0];
+    if (!file || !buildingId) return;
+    setError(null);
+    const validation = await validateImageFile(file);
+    if (!validation.ok) {
+      setError(validation.error);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+      return;
+    }
+    setUploadingCover(true);
+    try {
+      const presign = await mediaApi.presign({
+        entity: "BUILDING",
+        entityId: buildingId,
+        contentType: file.type || "image/jpeg",
+        fileName: file.name || "cover.jpg",
+      });
+      const put = await fetch(presign.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "image/jpeg" },
+        body: file,
+      });
+      if (!put.ok) throw new Error("Image upload failed");
+      await mediaApi.attachBuilding(buildingId, {
+        storageKey: presign.storageKey,
+        url: presign.url,
+        isCover: true,
+      });
+      setCoverPhoto({ url: presign.url, storageKey: presign.storageKey });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Cover photo upload failed");
+    } finally {
+      setUploadingCover(false);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+    }
+  }
+
   async function handleUnitImages(unitId: string, files: FileList | null) {
     if (!files?.length) return;
     setError(null);
     setUploadingUnitId(unitId);
     try {
       for (const file of Array.from(files)) {
+        const validation = await validateImageFile(file);
+        if (!validation.ok) {
+          setError(validation.error);
+          continue;
+        }
         const img = await uploadApartmentImage(unitId, file);
         setAddedUnits((prev) =>
           prev.map((u) => (u.id === unitId ? { ...u, images: [...u.images, img] } : u)),
@@ -528,6 +575,46 @@ export default function NewPropertyWizardPage() {
 
       {step === 2 && buildingId && (
         <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Cover photo</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Optional. JPG/PNG/WebP, max 5MB, min 800x600, ratio 3:4 to 16:9.
+              </p>
+              {coverPhoto ? (
+                <img
+                  src={coverPhoto.url}
+                  alt="Building cover"
+                  className="h-40 w-full max-w-md rounded-lg border object-cover"
+                />
+              ) : null}
+              <div>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept={IMAGE_UPLOAD.accept.join(",")}
+                  className="hidden"
+                  onChange={(e) => void uploadCoverPhoto(e.target.files)}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={uploadingCover}
+                  onClick={() => coverInputRef.current?.click()}
+                >
+                  <FiUpload className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {uploadingCover
+                    ? "Uploading..."
+                    : coverPhoto
+                      ? "Replace cover photo"
+                      : "Upload cover photo"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Add units / apartments</CardTitle>

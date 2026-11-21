@@ -54,6 +54,8 @@ export class MediaService {
         endpoint,
         forcePathStyle,
         credentials: { accessKeyId, secretAccessKey },
+        requestChecksumCalculation: "WHEN_REQUIRED",
+        responseChecksumValidation: "WHEN_REQUIRED",
       });
     } else {
       this.s3 = null;

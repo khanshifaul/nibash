@@ -39,6 +39,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apartmentsApi, api, type Building, buildingsApi, mediaApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { validateImageFile } from "@/lib/image-upload";
 
 type AptForm = {
   floorNumber: string;
@@ -202,6 +203,11 @@ export default function OwnerBuildingPage() {
     setError(null);
     try {
       for (const file of Array.from(files)) {
+        const validation = await validateImageFile(file);
+        if (!validation.ok) {
+          setError(validation.error);
+          continue;
+        }
         const presign = await mediaApi.presign({
           entity: "APARTMENT",
           entityId: aptImageDialog.apartmentId,
