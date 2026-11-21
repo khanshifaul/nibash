@@ -191,6 +191,8 @@ export default function ListingDetailPage() {
                 <img
                   src={apartmentImages[activeImage]?.url ?? ""}
                   alt={apartmentImages[activeImage]?.roomTag ?? "Property image"}
+                  loading="eager"
+                  fetchPriority="high"
                   className="w-full h-full object-cover"
                 />
                 {apartmentImages.length > 1 && (
