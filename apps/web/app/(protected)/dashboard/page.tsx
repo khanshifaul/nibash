@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Inbox, MessageSquare, Plus, UserCircle } from "lucide-react";
+import { Building2, Inbox, MessageSquare, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -74,11 +74,6 @@ export default function DashboardPage() {
           )}
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href="/dashboard/profile">
-            <Button variant="outline" size="sm" className="gap-2">
-              <UserCircle className="h-4 w-4" /> Profile
-            </Button>
-          </Link>
           <Link href="/dashboard/properties/new">
             <Button size="sm" className="gap-2">
               <Plus className="h-4 w-4" /> Add property

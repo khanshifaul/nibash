@@ -1,11 +1,24 @@
 // src/auth/authentication/authentication.controller.ts
-import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Req, Res } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request, Response } from "express";
 import { clearAuthCookies, REFRESH_COOKIE, setAuthCookies } from "../../common/cookie.util";
 import { Public } from "../../common/decorators/public.decorator";
 import { User } from "../../common/decorators/user.decorator";
-import { AuthenticationService, AuthResult } from "./authentication.service";
+import { AuthenticationService, type AuthResult } from "./authentication.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dto/reset-password.dto";
@@ -14,7 +27,10 @@ import { ResendVerificationDto, VerifyEmailDto } from "./dto/verify-email.dto";
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthenticationController {
-  constructor(private readonly authService: AuthenticationService) {}
+  constructor(
+    private readonly authService: AuthenticationService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Public()
   @Post("register")
@@ -156,5 +172,30 @@ export class AuthenticationController {
     await this.authService.logout(cookies?.[REFRESH_COOKIE]);
     clearAuthCookies(res);
     return { success: true, message: "Logged out" };
+  }
+  @Public()
+  @Get("google")
+  @UseGuards(AuthGuard("google"))
+  @ApiOperation({ summary: "Initiate Google OAuth sign-in" })
+  async googleAuth(): Promise<void> {
+    // Passport redirects to Google.
+  }
+
+  @Public()
+  @Get("google/callback")
+  @UseGuards(AuthGuard("google"))
+  @ApiOperation({ summary: "Handle Google OAuth callback" })
+  async googleAuthCallback(
+    @Req() req: Request & { user?: AuthResult },
+    @Res() res: Response,
+  ): Promise<void> {
+    const webOrigin = this.configService.get<string>("webOrigin") ?? "http://localhost:3004";
+    const result = req.user;
+    if (!result?.accessToken || !result?.refreshToken) {
+      res.redirect(`${webOrigin}/sign-in?error=google_auth_failed`);
+      return;
+    }
+    setAuthCookies(res, result.accessToken, result.refreshToken, true);
+    res.redirect(`${webOrigin}/dashboard`);
   }
 }

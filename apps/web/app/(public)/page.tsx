@@ -48,6 +48,63 @@ function statusLabel(status: string) {
   return status.replace(/_/g, " ");
 }
 
+const HERO_TYPEWRITER_PHRASES = [
+  "find your next home",
+  "list your property with confidence",
+  "connect owners and renters directly",
+  "discover verified apartments",
+];
+
+function TypewriterText({ phrases, className }: { phrases: string[]; className?: string }) {
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+  const [blink, setBlink] = useState(true);
+
+  useEffect(() => {
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      setSubIndex(phrases[0]?.length ?? 0);
+      return;
+    }
+    const current = phrases[index] ?? "";
+    if (!deleting && subIndex === current.length) {
+      const timeout = setTimeout(() => setDeleting(true), 1800);
+      return () => clearTimeout(timeout);
+    }
+    if (deleting && subIndex === 0) {
+      setDeleting(false);
+      setIndex((i) => (i + 1) % phrases.length);
+      return;
+    }
+    const timeout = setTimeout(
+      () => setSubIndex((s) => s + (deleting ? -1 : 1)),
+      deleting ? 35 : 65,
+    );
+    return () => clearTimeout(timeout);
+  }, [subIndex, deleting, index, phrases]);
+
+  useEffect(() => {
+    const id = setInterval(() => setBlink((b) => !b), 530);
+    return () => clearInterval(id);
+  }, []);
+
+  const current = phrases[index] ?? "";
+  return (
+    <span className={className}>
+      {current.slice(0, subIndex)}
+      <span
+        className={`inline-block w-[3px] h-[0.82em] ml-1 align-baseline rounded-sm transition-opacity duration-100 ${
+          blink ? "bg-blue-300 opacity-100" : "bg-blue-300 opacity-0"
+        }`}
+        aria-hidden="true"
+      />
+    </span>
+  );
+}
+
 function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
@@ -109,14 +166,18 @@ function HeroSection() {
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-1 text-xs font-medium mb-4"
           >
             <Building2 className="h-3.5 w-3.5" />
-            Verified buildings & apartments
+            For renters &amp; property owners
           </motion.div>
           <h1 className="hero-title text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
-            Find your next home in <span className="text-blue-300">trusted buildings</span>
+            A smarter way to{" "}
+            <span className="text-blue-300 block sm:inline mt-1 sm:mt-0 min-h-[1.2em]">
+              <TypewriterText phrases={HERO_TYPEWRITER_PHRASES} />
+            </span>
           </h1>
           <p className="hero-sub mt-4 text-sm sm:text-base lg:text-lg text-white/85 max-w-xl leading-relaxed">
-            Explore verified apartments, compare amenities, view locations, and contact owners
-            directly — all in one place.
+            Whether you&apos;re searching for a place to call home or listing a property to reach
+            the right renters, Nibash brings verified listings, clear details, and direct
+            communication together in one trusted platform.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/search" className="hero-cta">
@@ -137,15 +198,15 @@ function HeroSection() {
           <div className="hero-cta mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-sm text-white/80">
             <span className="inline-flex items-center gap-1.5">
               <FiCheckCircle className="h-4 w-4 text-blue-300" aria-hidden="true" />
-              <strong className="text-white font-semibold">Verified</strong> buildings
+              <strong className="text-white font-semibold">Verified</strong> listings
             </span>
             <span className="inline-flex items-center gap-1.5">
               <FiMessageSquare className="h-4 w-4 text-blue-300" aria-hidden="true" />
-              <strong className="text-white font-semibold">Direct</strong> owner inquiries
+              <strong className="text-white font-semibold">Direct</strong> renter-owner chat
             </span>
             <span className="inline-flex items-center gap-1.5">
               <FiEye className="h-4 w-4 text-blue-300" aria-hidden="true" />
-              <strong className="text-white font-semibold">Transparent</strong> details
+              <strong className="text-white font-semibold">Simple</strong> for owners &amp; renters
             </span>
           </div>
         </div>
