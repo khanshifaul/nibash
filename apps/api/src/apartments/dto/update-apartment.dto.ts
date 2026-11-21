@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsBoolean, IsInt, IsOptional, Min } from "class-validator";
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, Min } from "class-validator";
 import { CreateApartmentDto } from "./create-apartment.dto";
 
 export class UpdateApartmentDto extends PartialType(CreateApartmentDto) {
@@ -29,5 +29,6 @@ export class UpdateApartmentStatusDto {
   @ApiProperty({
     enum: ["AVAILABLE", "RENTED", "MAINTENANCE", "COMING_SOON", "SOLD"],
   })
+  @IsEnum(["AVAILABLE", "RENTED", "MAINTENANCE", "COMING_SOON", "SOLD"])
   availabilityStatus!: "AVAILABLE" | "RENTED" | "MAINTENANCE" | "COMING_SOON" | "SOLD";
 }
